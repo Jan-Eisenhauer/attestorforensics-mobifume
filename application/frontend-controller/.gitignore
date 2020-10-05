@@ -1,0 +1,11 @@
+# IntelliJ
+.idea/
+out/
+*.iml
+*.ipr
+
+# Maven
+target/
+
+# Inno Setup
+Output/

@@ -1,0 +1,140 @@
+.button {
+    -fx-font-family: "Roboto Condensed";
+    -fx-font-size: 32;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 4;
+}
+
+.button:pressed {
+    -fx-background-radius: 100;
+    -fx-background-color: #8e99f3;
+}
+
+.textButton {
+    -fx-font-size: 36;
+    -fx-border-width: 1;
+    -fx-border-color: #5c6bc0;
+}
+
+.textButton:pressed {
+    -fx-background-radius: 8;
+    -fx-background-color: #8e99f3;
+}
+
+.text-field, .text-area {
+    -fx-font-size: 32;
+    -fx-font-family: "Roboto Condensed";
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.combo-box, .combo-box {
+    -fx-font-size: 32;
+    -fx-font-family: "Roboto Condensed";
+    -fx-background-color: #5c6bc0;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.combo-box:hover, .combo-box:showing {
+    -fx-background-color: #8e99f3;
+}
+
+.combo-box .list-cell {
+    -fx-font-size: 32;
+    -fx-font-family: "Roboto Condensed";
+    -fx-text-fill: #ffffff;
+}
+
+
+.combo-box:hover .list-cell, .combo-box:showing .list-cell {
+    -fx-text-fill: #000000;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #26418f;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-font-size: 16;
+}
+
+.combo-box:hover .arrow-button, .combo-box:showing .arrow-button {
+    -fx-background-color: #5c6bc0;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-background-color: #62757f;
+}
+
+.combo-box:showing .arrow-button .arrow {
+    -fx-background-color: #90a4ae;
+}
+
+.slider {
+    -fx-font-size: 32;
+    -fx-font-family: "Roboto Condensed";
+}
+
+.slider .track {
+    -fx-pref-height: 28;
+    -fx-background-color: #26418f;
+}
+
+.slider .thumb {
+    -fx-pref-height: 40;
+    -fx-pref-width: 40;
+    -fx-background-radius: 50;
+    -fx-background-color: #5c6bc0;
+}
+
+.titled-pane {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+}
+
+.titled-pane .title {
+    -fx-background-color: #62757f;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.titled-pane:collapsed .title {
+    -fx-background-radius: 8;
+}
+
+.titled-pane .content {
+    -fx-background-color: #90a4ae;
+    -fx-background-radius: 0 0 8 8;
+}
+
+.titled-pane .arrow-button .arrow {
+    -fx-background-color: #62757f;
+}
+
+.titled-pane:showing .arrow-button .arrow {
+    -fx-background-color: #90a4ae;
+}
+
+.numberGrid {
+}
+
+.numberKey {
+    -fx-pref-width: 140;
+    -fx-pref-height: 80;
+    -fx-border-insets: 2;
+    -fx-font-family: "Roboto Condensed";
+    -fx-font-size: 40;
+    -fx-border-width: 1;
+    -fx-border-color: #5c6bc0;
+}
+
+.numberKey:pressed {
+    -fx-background-radius: 8;
+}
+
+.multiplyKey {
+    -fx-pref-height: 140;
+}

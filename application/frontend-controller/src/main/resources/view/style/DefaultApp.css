@@ -1,0 +1,67 @@
+.primary {
+    -fx-background: #90a4ae;
+    -fx-background-color: #90a4ae;
+}
+
+.primaryLight {
+    -fx-background: #c1d5e0;
+    -fx-background-color: #c1d5e0;
+}
+
+.primaryDark {
+    -fx-background: #62757f;
+    -fx-background-color: #62757f;
+}
+
+.secondary {
+    -fx-background: #5c6bc0;
+    -fx-background-color: #5c6bc0;
+}
+
+.secondaryLight {
+    -fx-background: #8e99f3;
+    -fx-background-color: #8e99f3;
+}
+
+.secondaryDark {
+    -fx-background: #26418f;
+    -fx-background-color: #26418f;
+}
+
+.titleText, .titleText * {
+    -fx-font-size: 80 !important;
+    -fx-font-family: Roboto !important;
+    -fx-text-fill: #000000 !important;
+}
+
+.subtitleText, .subtitleText * {
+    -fx-font-size: 48;
+    -fx-font-family: Roboto;
+    -fx-text-fill: #000000;
+}
+
+.contentHeader, .contentHeader * {
+    -fx-font-size: 42;
+    -fx-font-family: Roboto;
+    -fx-text-fill: #000000;
+}
+
+.contentText, .contentText * {
+    -fx-font-size: 36;
+    -fx-font-family: "Roboto Condensed";
+}
+
+.infoText, .infoText * {
+    -fx-font-size: 30;
+    -fx-font-family: "Roboto Condensed";
+}
+
+.text {
+    -fx-font-size: 36;
+    -fx-font-family: "Roboto Condensed";
+    -fx-text-fill: #000000;
+}
+
+.header {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
+}

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Text?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.191"
+            fx:controller="com.attestorforensics.mobifume.controller.item.FilterItemController">
+    <children>
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="8.0" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../images/Filter.png"/>
+                            </image>
+                        </ImageView>
+                        <Text fx:id="filterId" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"/>
+                    </children>
+                </VBox>
+                <VBox>
+                    <children>
+                        <Text fx:id="date" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="infoText">
+                            <VBox.margin>
+                                <Insets bottom="8.0"/>
+                            </VBox.margin>
+                        </Text>
+                        <AnchorPane>
+                            <children>
+                                <Line fx:id="durabilityBackground" endX="220.0" stroke="#62757f" strokeLineCap="ROUND"
+                                      strokeWidth="5.0"/>
+                                <Line fx:id="durability" stroke="#32fa18" strokeLineCap="ROUND" strokeWidth="5.0"/>
+                            </children>
+                        </AnchorPane>
+                        <Text fx:id="usagesLeft" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="infoText"/>
+                    </children>
+                </VBox>
+                <AnchorPane>
+                    <children>
+                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onChange"
+                                AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <graphic>
+                                <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../../images/Change.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button contentDisplay="GRAPHIC_ONLY" layoutY="61.600006103515625" mnemonicParsing="false"
+                                onAction="#onAdd" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <graphic>
+                                <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../../images/Add.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </children>
+                </AnchorPane>
+            </children>
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
+            </padding>
+        </VBox>
+        <Button fx:id="errorButton" alignment="TOP_RIGHT" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                onAction="#onErrorInfo" prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: transparent;"
+                visible="false" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <graphic>
+                <ImageView fx:id="errorIcon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
+            </graphic>
+        </Button>
+    </children>
+    <stylesheets>
+        <URL value="@../style/DefaultApp.css"/>
+        <URL value="@../style/Controls.css"/>
+        <URL value="@../style/Item.css"/>
+    </stylesheets>
+    <styleClass>
+        <String fx:value="secondary"/>
+        <String fx:value="roundItem"/>
+    </styleClass>
+</AnchorPane>

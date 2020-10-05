@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="root" styleClass="primaryLight"
+            xmlns="http://javafx.com/javafx/8.0.191"
+            fx:controller="com.attestorforensics.mobifume.controller.GroupController">
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <children>
+                <Button ellipsisString="" mnemonicParsing="false" onAction="#onBack">
+                    <graphic>
+                        <ImageView fitHeight="80.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                            <viewport>
+                                <Rectangle2D/>
+                            </viewport>
+                            <image>
+                                <Image url="@../images/Back.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Label fx:id="groupName" styleClass="titleText"/>
+                <Pane prefHeight="80.0" HBox.hgrow="SOMETIMES"/>
+                <Button ellipsisString="" mnemonicParsing="false" onAction="#onSettings" prefHeight="80.0"
+                        prefWidth="80.0">
+                    <graphic>
+                        <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                            <viewport>
+                                <Rectangle2D/>
+                            </viewport>
+                            <image>
+                                <Image url="@../images/Settings.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </children>
+            <padding>
+                <Insets right="15.0"/>
+            </padding>
+            <styleClass>
+                <String fx:value="primary"/>
+                <String fx:value="header"/>
+            </styleClass>
+        </HBox>
+        <ScrollPane hbarPolicy="NEVER" layoutY="110.0" styleClass="primaryLight" AnchorPane.bottomAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
+            <content>
+                <VBox fx:id="vbox" prefWidth="${vbox.parent.width}" spacing="32.0">
+                    <children>
+                        <AnchorPane fx:id="action" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                    AnchorPane.topAnchor="0.0">
+                            <children>
+                                <AnchorPane fx:id="startupPane" visible="false" AnchorPane.leftAnchor="0.0"
+                                            AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subtitleText"
+                                              text="%group.setup" AnchorPane.leftAnchor="16.0"
+                                              AnchorPane.topAnchor="8.0"/>
+                                        <ImageView fitHeight="150.0" fitWidth="150.0" layoutX="10.0" layoutY="10.0"
+                                                   pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="16.0"
+                                                   AnchorPane.topAnchor="70.0">
+                                            <image>
+                                                <Image url="@../images/Setup.png"/>
+                                            </image>
+                                        </ImageView>
+                                        <Button mnemonicParsing="false" onAction="#onStart" prefHeight="70.0"
+                                                prefWidth="220.0" styleClass="textButton" text="%group.start"
+                                                AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="110.0">
+                                            <padding>
+                                                <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+                                            </padding>
+                                        </Button>
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane fx:id="humidifyPane" visible="false" AnchorPane.leftAnchor="0.0"
+                                            AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subtitleText"
+                                              text="%group.humidify" AnchorPane.leftAnchor="16.0"
+                                              AnchorPane.topAnchor="8.0"/>
+                                        <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true"
+                                                   preserveRatio="true" AnchorPane.leftAnchor="16.0"
+                                                   AnchorPane.topAnchor="70.0">
+                                            <image>
+                                                <Image url="@../images/Hum.png"/>
+                                            </image>
+                                        </ImageView>
+                                        <Button mnemonicParsing="false" onAction="#onHumidifyNextStep" prefHeight="70.0"
+                                                prefWidth="220.0" styleClass="textButton" text="%group.next"
+                                                AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="70.0"/>
+                                        <Button mnemonicParsing="false" onAction="#onHumidifyCancel" prefHeight="70.0"
+                                                prefWidth="220.0" styleClass="textButton" text="%group.cancel"
+                                                AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="150.0"/>
+                                        <Text fx:id="humidify" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE"
+                                              strokeWidth="0.0" styleClass="subtitleText" AnchorPane.leftAnchor="32.0"
+                                              AnchorPane.topAnchor="232.0"/>
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane fx:id="evaporatePane" visible="false" AnchorPane.leftAnchor="0.0"
+                                            AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <Text layoutX="10.0" layoutY="10.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                                              styleClass="subtitleText" text="%group.evaporate"
+                                              AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="8.0"/>
+                                        <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true"
+                                                   preserveRatio="true" AnchorPane.leftAnchor="16.0"
+                                                   AnchorPane.topAnchor="70.0">
+                                            <image>
+                                                <Image url="@../images/Base.png"/>
+                                            </image>
+                                        </ImageView>
+                                        <Button mnemonicParsing="false" onAction="#onEvaporateNextStep"
+                                                prefHeight="70.0" prefWidth="220.0" styleClass="textButton"
+                                                text="%group.next" AnchorPane.leftAnchor="220.0"
+                                                AnchorPane.topAnchor="70.0"/>
+                                        <Button mnemonicParsing="false" onAction="#onEvaporateCancel" prefHeight="70.0"
+                                                prefWidth="220.0" styleClass="textButton" text="%group.cancel"
+                                                AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="150.0"/>
+                                        <HBox alignment="CENTER_LEFT" spacing="16.0" AnchorPane.leftAnchor="32.0"
+                                              AnchorPane.topAnchor="232.0">
+                                            <children>
+                                                <Text fx:id="evaporateTimer" strokeType="OUTSIDE" strokeWidth="0.0"
+                                                      styleClass="subtitleText"/>
+                                                <Button mnemonicParsing="false" onAction="#onEvaporateTimerAdd"
+                                                        prefHeight="40.0" prefWidth="100.0" styleClass="textButton"
+                                                        text="%group.evaporate.timer_add"/>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane fx:id="purgePane" visible="false" AnchorPane.leftAnchor="0.0"
+                                            AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <Text layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                                              styleClass="subtitleText" text="%group.purge" AnchorPane.leftAnchor="16.0"
+                                              AnchorPane.topAnchor="8.0"/>
+                                        <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true"
+                                                   preserveRatio="true" AnchorPane.leftAnchor="16.0"
+                                                   AnchorPane.topAnchor="70.0">
+                                            <image>
+                                                <Image url="@../images/Purge.png"/>
+                                            </image>
+                                        </ImageView>
+                                        <Button mnemonicParsing="false" onAction="#onPurgeCancel" prefHeight="70.0"
+                                                prefWidth="220.0" styleClass="textButton" text="%group.cancel"
+                                                AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="150.0"/>
+                                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="16.0"
+                                              AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="232.0">
+                                            <children>
+                                                <Text fx:id="purgeTimer" strokeType="OUTSIDE" strokeWidth="0.0"
+                                                      styleClass="subtitleText"/>
+                                                <Button mnemonicParsing="false" onAction="#onPurgeTimerAdd"
+                                                        prefHeight="40.0" prefWidth="100.0" styleClass="textButton"
+                                                        text="%group.purge.timer_add"/>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane fx:id="finishedPane" visible="false" AnchorPane.leftAnchor="0.0"
+                                            AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <Text layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                                              styleClass="subtitleText" text="%group.finished"
+                                              AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="8.0"/>
+                                        <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true"
+                                                   preserveRatio="true" AnchorPane.leftAnchor="16.0"
+                                                   AnchorPane.topAnchor="70.0">
+                                            <image>
+                                                <Image url="@../images/Checked.png"/>
+                                            </image>
+                                        </ImageView>
+                                        <Button mnemonicParsing="false" onAction="#onPurgeAgain" prefHeight="70.0"
+                                                prefWidth="220.0" styleClass="textButton" text="%group.purgeAgain"
+                                                AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="110.0"/>
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane fx:id="canceledPane" layoutX="10.0" layoutY="10.0" visible="false">
+                                    <children>
+                                        <Text layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                                              styleClass="subtitleText" text="%group.canceled"
+                                              AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="8.0"/>
+                                        <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true"
+                                                   preserveRatio="true" AnchorPane.leftAnchor="16.0"
+                                                   AnchorPane.topAnchor="70.0">
+                                            <image>
+                                                <Image url="@../images/Cancel.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane fx:id="evaporantPane" visible="false" AnchorPane.rightAnchor="0.0"
+                                            AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <VBox spacing="8.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="66.0">
+                                            <children>
+                                                <GridPane>
+                                                    <columnConstraints>
+                                                        <ColumnConstraints hgrow="SOMETIMES"/>
+                                                    </columnConstraints>
+                                                    <rowConstraints>
+                                                        <RowConstraints vgrow="SOMETIMES"/>
+                                                        <RowConstraints vgrow="SOMETIMES"/>
+                                                    </rowConstraints>
+                                                    <children>
+                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                              styleClass="contentText" text="%group.evaporant"/>
+                                                        <Text fx:id="evaporant" strokeType="OUTSIDE" strokeWidth="0.0"
+                                                              styleClass="contentText" GridPane.rowIndex="1">
+                                                            <GridPane.margin>
+                                                                <Insets left="8.0"/>
+                                                            </GridPane.margin>
+                                                        </Text>
+                                                    </children>
+                                                </GridPane>
+                                                <GridPane>
+                                                    <columnConstraints>
+                                                        <ColumnConstraints hgrow="SOMETIMES"/>
+                                                        <ColumnConstraints hgrow="SOMETIMES"/>
+                                                    </columnConstraints>
+                                                    <rowConstraints>
+                                                        <RowConstraints vgrow="SOMETIMES"/>
+                                                        <RowConstraints vgrow="SOMETIMES"/>
+                                                        <RowConstraints vgrow="ALWAYS"/>
+                                                    </rowConstraints>
+                                                    <children>
+                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                                                              styleClass="contentText" text="%group.amount"/>
+                                                        <Text fx:id="evaporantAmount" strokeType="OUTSIDE"
+                                                              strokeWidth="0.0" styleClass="contentText"
+                                                              GridPane.rowIndex="1">
+                                                            <GridPane.margin>
+                                                                <Insets left="8.0"/>
+                                                            </GridPane.margin>
+                                                        </Text>
+                                                        <Button alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
+                                                                mnemonicParsing="false" onAction="#onCalculate"
+                                                                GridPane.columnIndex="1" GridPane.rowSpan="2147483647">
+                                                            <graphic>
+                                                                <ImageView fitHeight="100.0" fitWidth="100.0"
+                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/Calculator.png"/>
+                                                                    </image>
+                                                                </ImageView>
+                                                            </graphic>
+                                                        </Button>
+                                                    </children>
+                                                </GridPane>
+                                            </children>
+                                            <padding>
+                                                <Insets right="8.0"/>
+                                            </padding>
+                                        </VBox>
+                                    </children>
+                                </AnchorPane>
+                            </children>
+                        </AnchorPane>
+                        <VBox>
+                            <children>
+                                <HBox alignment="CENTER" spacing="64.0">
+                                    <children>
+                                        <Text fx:id="temperature" strokeType="OUTSIDE" strokeWidth="0.0"
+                                              style="-fx-font-size: 64;" styleClass="subtitleText"/>
+                                        <Text fx:id="humidity" strokeType="OUTSIDE" strokeWidth="0.0"
+                                              style="-fx-font-size: 64;" styleClass="subtitleText"/>
+                                    </children>
+                                    <padding>
+                                        <Insets left="8.0" right="8.0"/>
+                                    </padding>
+                                </HBox>
+                                <HBox fx:id="humiditySetpointPane" alignment="CENTER" spacing="8.0" visible="false">
+                                    <children>
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subtitleText"
+                                              text="%group.setpoint"/>
+                                        <Text fx:id="humiditySetpoint" strokeType="OUTSIDE" strokeWidth="0.0"
+                                              styleClass="subtitleText" text="\%rH"/>
+                                    </children>
+                                </HBox>
+                            </children>
+                            <VBox.margin>
+                                <Insets bottom="16.0"/>
+                            </VBox.margin>
+                        </VBox>
+                        <SplitPane dividerPositions="0.4, 0.6" prefHeight="160.0" styleClass="primaryLight"
+                                   AnchorPane.bottomAnchor="400" AnchorPane.leftAnchor="0.0"
+                                   AnchorPane.rightAnchor="0.0">
+                            <items>
+                                <AnchorPane>
+                                    <children>
+                                        <HBox fx:id="baseHeader" alignment="CENTER" spacing="5.0"
+                                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                              AnchorPane.topAnchor="0.0">
+                                            <children>
+                                                <Label styleClass="contentHeader" text="%group.bases">
+                                                    <HBox.margin>
+                                                        <Insets top="4.0"/>
+                                                    </HBox.margin>
+                                                </Label>
+                                            </children>
+                                            <opaqueInsets>
+                                                <Insets/>
+                                            </opaqueInsets>
+                                            <padding>
+                                                <Insets left="15.0" right="15.0"/>
+                                            </padding>
+                                        </HBox>
+                                        <ScrollPane hbarPolicy="NEVER" styleClass="primaryLight"
+                                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="53.6">
+                                            <content>
+                                                <VBox fx:id="bases" prefWidth="${bases.parent.width}" spacing="5.0">
+                                                    <padding>
+                                                        <Insets left="8.0"/>
+                                                    </padding>
+                                                </VBox>
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane>
+                                    <children>
+                                        <HBox fx:id="humHeader" alignment="CENTER" spacing="5.0"
+                                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                              AnchorPane.topAnchor="0.0">
+                                            <children>
+                                                <Label styleClass="contentHeader" text="%group.humidifiers">
+                                                    <HBox.margin>
+                                                        <Insets top="4.0"/>
+                                                    </HBox.margin>
+                                                </Label>
+                                            </children>
+                                            <opaqueInsets>
+                                                <Insets/>
+                                            </opaqueInsets>
+                                            <padding>
+                                                <Insets left="15.0" right="15.0"/>
+                                            </padding>
+                                        </HBox>
+                                        <ScrollPane hbarPolicy="NEVER" styleClass="primaryLight"
+                                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="53.6">
+                                            <content>
+                                                <VBox fx:id="humidifiers" prefWidth="${humidifiers.parent.width}"
+                                                      spacing="5.0">
+                                                    <padding>
+                                                        <Insets left="8.0"/>
+                                                    </padding>
+                                                </VBox>
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane prefHeight="180.0">
+                                    <children>
+                                        <HBox fx:id="filterHeader" alignment="CENTER" spacing="5.0"
+                                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                              AnchorPane.topAnchor="0.0">
+                                            <children>
+                                                <Label styleClass="contentHeader" text="%group.filters">
+                                                    <HBox.margin>
+                                                        <Insets top="4.0"/>
+                                                    </HBox.margin>
+                                                </Label>
+                                            </children>
+                                            <opaqueInsets>
+                                                <Insets/>
+                                            </opaqueInsets>
+                                            <padding>
+                                                <Insets left="15.0" right="15.0"/>
+                                            </padding>
+                                        </HBox>
+                                        <ScrollPane hbarPolicy="NEVER" styleClass="primaryLight"
+                                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="53.6">
+                                            <content>
+                                                <VBox fx:id="filters" prefWidth="${filters.parent.width}" spacing="5.0">
+                                                    <padding>
+                                                        <Insets left="8.0"/>
+                                                    </padding>
+                                                </VBox>
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
+                                </AnchorPane>
+                            </items>
+                            <VBox.margin>
+                                <Insets/>
+                            </VBox.margin>
+                        </SplitPane>
+                    </children>
+                    <padding>
+                        <Insets left="8.0" right="8.0"/>
+                    </padding>
+                </VBox>
+            </content>
+            <padding>
+                <Insets left="5.0" right="5.0" top="10.0"/>
+            </padding>
+        </ScrollPane>
+    </children>
+</AnchorPane>
