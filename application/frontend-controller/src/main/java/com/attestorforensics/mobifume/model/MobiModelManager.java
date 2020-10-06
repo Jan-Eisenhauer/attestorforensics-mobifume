@@ -16,7 +16,6 @@ import com.attestorforensics.mobifume.model.object.Group;
 import com.attestorforensics.mobifume.model.object.MobiFilter;
 import com.attestorforensics.mobifume.model.object.Room;
 import com.attestorforensics.mobifume.util.CustomLogger;
-import com.attestorforensics.mobifume.util.MobiRunnable;
 import com.attestorforensics.mobifume.util.setting.Settings;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,7 +88,7 @@ public class MobiModelManager implements ModelManager {
 
   @Override
   public void connectToBroker() {
-    new MobiRunnable(() -> connection.connect()).runTask();
+    Mobifume.getInstance().getScheduledExecutorService().execute(connection::connect);
   }
 
   @Override

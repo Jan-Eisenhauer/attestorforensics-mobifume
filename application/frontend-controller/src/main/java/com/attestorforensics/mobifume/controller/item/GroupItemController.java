@@ -6,12 +6,14 @@ import com.attestorforensics.mobifume.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifume.controller.util.SceneTransition;
 import com.attestorforensics.mobifume.controller.util.Sound;
 import com.attestorforensics.mobifume.model.object.Group;
-import com.attestorforensics.mobifume.util.MobiRunnable;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
 import com.attestorforensics.mobifume.view.MobiApplication;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,7 +37,7 @@ public class GroupItemController {
 
   private Parent groupRoot;
 
-  private MobiRunnable statusUpdateTask;
+  private ScheduledFuture<?> statusUpdateTask;
 
   public void setGroup(Group group, String color) {
     this.group = group;
@@ -46,13 +48,15 @@ public class GroupItemController {
       Node title = groupPane.lookup(".title");
       title.setStyle("-fx-background-color: " + color);
     });
+
     statusUpdate();
     createGroupRoot();
   }
 
   private void statusUpdate() {
-    statusUpdateTask = new MobiRunnable(this::updateStatus);
-    statusUpdateTask.runRepeatingTask(0, 1000);
+    statusUpdateTask = Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .scheduleWithFixedDelay(this::updateStatus, 0L, 1L, TimeUnit.SECONDS);
   }
 
   private void createGroupRoot() {
@@ -152,8 +156,9 @@ public class GroupItemController {
       if (!accepted) {
         return;
       }
-      if (statusUpdateTask != null && statusUpdateTask.getThread().isAlive()) {
-        statusUpdateTask.cancel();
+
+      if (Objects.nonNull(statusUpdateTask) && !statusUpdateTask.isDone()) {
+        statusUpdateTask.cancel(false);
       }
 
       Mobifume.getInstance().getModelManager().removeGroup(group);

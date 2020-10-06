@@ -1,5 +1,6 @@
 package com.attestorforensics.mobifume.controller;
 
+import com.attestorforensics.mobifume.Mobifume;
 import com.attestorforensics.mobifume.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifume.controller.item.GroupBaseItemController;
 import com.attestorforensics.mobifume.controller.item.GroupFilterItemController;
@@ -12,7 +13,10 @@ import com.attestorforensics.mobifume.util.localization.LocaleManager;
 import com.attestorforensics.mobifume.util.setting.Settings;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -94,9 +98,8 @@ public class GroupController {
   private int tempWrong;
   private int humWrong;
 
-  private Thread evaporateTimerThread;
-  private Thread purgeTimerThread;
-  private Thread statusUpdateThread;
+  private ScheduledFuture<?> timerTask;
+  private ScheduledFuture<?> statusUpdateTask;
 
   public void setGroup(Group group) {
     this.group = group;
@@ -104,10 +107,9 @@ public class GroupController {
     groupName.setText(group.getName() + " - " + group.getSettings().getCycleCount());
 
     initEvaporant();
-
     updateMaxHumidity();
-
     clearActionPane();
+
     switch (group.getStatus()) {
       case START:
         startupPane.setVisible(true);
@@ -166,37 +168,36 @@ public class GroupController {
   }
 
   public void setupEvaporateTimer() {
-    if (evaporateTimerThread != null && evaporateTimerThread.isAlive()) {
-      evaporateTimerThread.interrupt();
-    }
+    cancelTimerTaskIfScheduled();
     evaporateTimer();
-    evaporateTimerThread.start();
   }
 
   public void setupPurgeTimer() {
-    if (purgeTimerThread != null && purgeTimerThread.isAlive()) {
-      purgeTimerThread.interrupt();
-    }
+    cancelTimerTaskIfScheduled();
     purgeTimer();
-    purgeTimerThread.start();
+  }
+
+  private void cancelTimerTaskIfScheduled() {
+    if (Objects.nonNull(timerTask) && !timerTask.isDone()) {
+      timerTask.cancel(false);
+    }
   }
 
   private void statusUpdate() {
     initBases();
     initHumidifiers();
     initFilters();
-    statusUpdateThread = new Thread(() -> {
-      while (!Thread.interrupted()) {
-        updateStatus();
-        updateBases();
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          return;
-        }
-      }
-    });
-    statusUpdateThread.start();
+
+    statusUpdateTask = Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
+      updateStatus();
+      updateBases();
+    }, 0L, 1L, TimeUnit.SECONDS);
+  }
+
+  private void cancelStatusTaskIfScheduled() {
+    if (Objects.nonNull(statusUpdateTask) && !statusUpdateTask.isDone()) {
+      statusUpdateTask.cancel(false);
+    }
   }
 
   private void initCalculator() {
@@ -226,37 +227,13 @@ public class GroupController {
   }
 
   private void evaporateTimer() {
-    evaporateTimerThread = new Thread(() -> {
-      while (!Thread.interrupted()) {
-        long countdown = updateEvaporateTimer();
-        long sleep = countdown - (countdown / 1000) * 1000 + 1;
-        if (sleep <= 0) {
-          break;
-        }
-        try {
-          Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-          break;
-        }
-      }
-    });
+    timerTask = Mobifume.getInstance().getScheduledExecutorService().scheduleWithFixedDelay(this::updateEvaporateTimer, 0L, 1L,
+        TimeUnit.SECONDS);
   }
 
   private void purgeTimer() {
-    purgeTimerThread = new Thread(() -> {
-      while (!Thread.interrupted()) {
-        long countdown = updatePurgeTimer();
-        long sleep = countdown - (countdown / 1000) * 1000 + 1;
-        if (sleep <= 0) {
-          break;
-        }
-        try {
-          Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-          break;
-        }
-      }
-    });
+    timerTask = Mobifume.getInstance().getScheduledExecutorService().scheduleWithFixedDelay(this::updatePurgeTimer, 0L, 1L,
+        TimeUnit.SECONDS);
   }
 
   private void initBases() {
@@ -389,15 +366,8 @@ public class GroupController {
   }
 
   public void destroy() {
-    if (evaporateTimerThread != null && evaporateTimerThread.isAlive()) {
-      evaporateTimerThread.interrupt();
-    }
-    if (purgeTimerThread != null && purgeTimerThread.isAlive()) {
-      purgeTimerThread.interrupt();
-    }
-    if (statusUpdateThread != null && statusUpdateThread.isAlive()) {
-      statusUpdateThread.interrupt();
-    }
+    cancelTimerTaskIfScheduled();
+    cancelStatusTaskIfScheduled();
 
     if (root.getScene() != null) {
       SceneTransition.playBackward(root.getScene(), root);

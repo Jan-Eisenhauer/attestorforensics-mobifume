@@ -8,9 +8,11 @@ import com.attestorforensics.mobifume.model.event.PurgeEvent;
 import com.attestorforensics.mobifume.util.CustomLogger;
 import com.attestorforensics.mobifume.util.setting.Settings;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.log4j.Logger;
 
 public class Room implements Group {
@@ -28,7 +30,6 @@ public class Room implements Group {
   private Status status = Status.START;
 
   @Getter
-  @Setter
   private Settings settings;
 
   @Getter
@@ -39,20 +40,22 @@ public class Room implements Group {
   @Getter
   private boolean humidifying;
 
+  private ScheduledFuture<?> updateLatchTask;
+
   @Getter
   private long evaporateStartTime;
-  private Thread evaporateTimer;
+  private ScheduledFuture<?> evaporateTask;
 
   @Getter
   private long purgeStartTime;
-  private Thread purgeTimer;
+  private ScheduledFuture<?> purgeTask;
 
   public Room(String name, List<Device> devices, List<Filter> filters, Settings settings) {
     this.name = name;
     this.devices = devices;
     if (getBases().size() != filters.size()) {
       throw new IllegalArgumentException(
-          "The count of filters is not the same as the count of bases!");
+          "The count of filters is not the same as the count of " + "bases!");
     }
     this.filters = filters;
     this.settings = settings;
@@ -84,6 +87,17 @@ public class Room implements Group {
         .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
         .map(map -> (Humidifier) map)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public void setSettings(Settings settings) {
+    if (Objects.nonNull(evaporateTask) && !evaporateTask.isDone()) {
+      createOrUpdateEvaporateTask();
+    }
+
+    if (Objects.nonNull(purgeTask) && !purgeTask.isDone()) {
+      createOrUpdatePurgeTask();
+    }
   }
 
   @Override
@@ -131,25 +145,24 @@ public class Room implements Group {
     });
 
     // send every 5 min that bases should latch open for 30 min
-    new Thread(() -> {
-      while (true) {
-        try {
-          Thread.sleep(1000 * 60 * 5); // 5 min
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-        if (status != Status.HUMIDIFY) {
-          return;
-        }
-        getBases().forEach(base -> base.updateTime(30));
-      }
-    }).start();
+    updateLatchTask = Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .scheduleAtFixedRate(this::updateLatchOpened, 5, 5, TimeUnit.MINUTES);
 
     humidifying = false;
     setHumidifying(true);
     Mobifume.getInstance()
         .getEventManager()
         .call(new HumidifyEvent(this, HumidifyEvent.HumidifyStatus.STARTED));
+  }
+
+  private void updateLatchOpened() {
+    if (status != Status.HUMIDIFY) {
+      updateLatchTask.cancel(false);
+      return;
+    }
+
+    getBases().forEach(base -> base.updateTime(30));
   }
 
   private void setHumidifying(boolean humidifying) {
@@ -176,32 +189,36 @@ public class Room implements Group {
 
     humidifyMaxReached = true;
 
-    if (evaporateTimer != null && evaporateTimer.isAlive()) {
-      evaporateTimer.interrupt();
-    }
-
+    cancelPurgeTaskIfScheduled();
     evaporateStartTime = System.currentTimeMillis();
-    evaporateTimer = new Thread(() -> {
-      getBases().forEach(base -> base.updateTime(settings.getHeatTimer()));
-      updateHeaterSetpoint();
-      getBases().forEach(base -> base.updateLatch(false));
-      while (evaporateStartTime + settings.getHeatTimer() * 60 * 1000
-          > System.currentTimeMillis()) {
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          return;
-        }
-      }
+
+    getBases().forEach(base -> base.updateTime(settings.getHeatTimer()));
+    updateHeaterSetpoint();
+    getBases().forEach(base -> base.updateLatch(false));
+
+    createOrUpdateEvaporateTask();
+
+    Mobifume.getInstance()
+        .getEventManager()
+        .call(new EvaporateEvent(this, EvaporateEvent.EvaporateStatus.STARTED));
+  }
+
+  private void cancelEvaporateTaskIfScheduled() {
+    if (Objects.nonNull(evaporateTask) && !evaporateTask.isDone()) {
+      evaporateTask.cancel(false);
+    }
+  }
+
+  private void createOrUpdateEvaporateTask() {
+    cancelEvaporateTaskIfScheduled();
+    long timePassed = System.currentTimeMillis() - evaporateStartTime;
+    long timeLeft = settings.getHeatTimer() * 60 * 1000 - timePassed;
+    evaporateTask = Mobifume.getInstance().getScheduledExecutorService().schedule(() -> {
       Mobifume.getInstance()
           .getEventManager()
           .call(new EvaporateEvent(this, EvaporateEvent.EvaporateStatus.FINISHED));
       startPurge();
-    });
-    Mobifume.getInstance()
-        .getEventManager()
-        .call(new EvaporateEvent(this, EvaporateEvent.EvaporateStatus.STARTED));
-    evaporateTimer.start();
+    }, timeLeft, TimeUnit.MILLISECONDS);
   }
 
   @Override
@@ -210,28 +227,35 @@ public class Room implements Group {
     CustomLogger.info(this, "START_PURGE");
     CustomLogger.logGroupSettings(this);
 
-    if (purgeTimer != null && purgeTimer.isAlive()) {
-      purgeTimer.interrupt();
-    }
-
+    cancelPurgeTaskIfScheduled();
     purgeStartTime = System.currentTimeMillis();
-    getBases().forEach(base -> base.updateHeaterSetpoint(0));
-    purgeTimer = new Thread(() -> {
-      setHumidifying(false);
-      getBases().forEach(base -> base.updateLatch(true));
-      while (purgeStartTime + settings.getPurgeTimer() * 60 * 1000 > System.currentTimeMillis()) {
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          return;
-        }
-      }
-      finish();
+
+    setHumidifying(false);
+    getBases().forEach(base -> {
+      base.updateLatch(true);
+      base.updateHeaterSetpoint(0);
     });
+
+    createOrUpdatePurgeTask();
+
     Mobifume.getInstance()
         .getEventManager()
         .call(new PurgeEvent(this, PurgeEvent.PurgeStatus.STARTED));
-    purgeTimer.start();
+  }
+
+  private void cancelPurgeTaskIfScheduled() {
+    if (Objects.nonNull(purgeTask) && !purgeTask.isDone()) {
+      purgeTask.cancel(false);
+    }
+  }
+
+  private void createOrUpdatePurgeTask() {
+    cancelPurgeTaskIfScheduled();
+    long timePassed = System.currentTimeMillis() - purgeStartTime;
+    long timeLeft = settings.getPurgeTimer() * 60 * 1000 - timePassed;
+    purgeTask = Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .schedule(this::finish, timeLeft, TimeUnit.MILLISECONDS);
   }
 
   public void updateHumidify() {
@@ -398,12 +422,8 @@ public class Room implements Group {
 
   public void stop() {
     CustomLogger.info(this, "STOP");
-    if (evaporateTimer != null && evaporateTimer.isAlive()) {
-      evaporateTimer.interrupt();
-    }
-    if (purgeTimer != null && purgeTimer.isAlive()) {
-      purgeTimer.interrupt();
-    }
+    cancelEvaporateTaskIfScheduled();
+    cancelPurgeTaskIfScheduled();
     this.getDevices().forEach(Device::reset);
   }
 }

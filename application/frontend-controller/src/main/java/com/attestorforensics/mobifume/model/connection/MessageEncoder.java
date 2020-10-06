@@ -4,7 +4,6 @@ import com.attestorforensics.mobifume.Mobifume;
 import com.attestorforensics.mobifume.model.object.Base;
 import com.attestorforensics.mobifume.model.object.Device;
 import com.attestorforensics.mobifume.model.object.Humidifier;
-import com.attestorforensics.mobifume.util.MobiRunnable;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -71,7 +70,7 @@ public class MessageEncoder {
 
   private void send(String topic, String message) {
     System.out.println("SEND " + client.isConnected());
-    new MobiRunnable(() -> {
+    Mobifume.getInstance().getScheduledExecutorService().execute(() -> {
       if (!client.isConnected()) {
         return;
       }
@@ -83,7 +82,7 @@ public class MessageEncoder {
       } catch (MqttException e) {
         e.printStackTrace();
       }
-    }).runTask();
+    });
   }
 
   public void baseLatch(Device device, boolean circulate) {

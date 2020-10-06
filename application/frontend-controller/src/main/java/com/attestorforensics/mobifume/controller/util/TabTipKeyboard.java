@@ -1,12 +1,15 @@
 package com.attestorforensics.mobifume.controller.util;
 
-import com.attestorforensics.mobifume.util.MobiRunnable;
+import com.attestorforensics.mobifume.Mobifume;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import javafx.scene.control.TextField;
 
 public class TabTipKeyboard {
 
-  private static MobiRunnable closeTask;
+  private static ScheduledFuture<?> closeTask;
 
   public static void onFocus(TextField field) {
     field.focusedProperty().addListener((observable, oldValue, focus) -> {
@@ -19,8 +22,8 @@ public class TabTipKeyboard {
   }
 
   public static void open() {
-    if (closeTask != null) {
-      closeTask.cancel();
+    if (Objects.nonNull(closeTask)) {
+      closeTask.cancel(false);
     }
 
     Runtime rt = Runtime.getRuntime();
@@ -36,13 +39,12 @@ public class TabTipKeyboard {
   public static void close() {
     Runtime rt = Runtime.getRuntime();
     String[] commands = {"cmd", "/c", "taskkill", "/IM", "TabTip.exe"};
-    closeTask = new MobiRunnable(() -> {
+    closeTask = Mobifume.getInstance().getScheduledExecutorService().schedule(() -> {
       try {
         rt.exec(commands);
       } catch (IOException e) {
         e.printStackTrace();
       }
-    });
-    closeTask.runTaskLater(50);
+    }, 50L, TimeUnit.MILLISECONDS);
   }
 }

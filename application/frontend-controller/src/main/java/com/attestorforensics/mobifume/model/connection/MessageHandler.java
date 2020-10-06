@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifume.model.connection;
 
 import com.attestorforensics.mobifume.Mobifume;
+import com.attestorforensics.mobifume.util.CustomLogger;
 import com.attestorforensics.mobifume.model.MobiModelManager;
 import com.attestorforensics.mobifume.model.event.BaseErrorEvent;
 import com.attestorforensics.mobifume.model.event.BaseErrorResolvedEvent;
@@ -11,7 +12,6 @@ import com.attestorforensics.mobifume.model.object.DeviceType;
 import com.attestorforensics.mobifume.model.object.Group;
 import com.attestorforensics.mobifume.model.object.Humidifier;
 import com.attestorforensics.mobifume.model.object.Room;
-import com.attestorforensics.mobifume.util.CustomLogger;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,7 +32,7 @@ public class MessageHandler {
       return;
     }
     otherAppOnline = true;
-    mobiModelManager.getConnection().getWaitForOtherAppTask().interrupt();
+    mobiModelManager.getConnection().cancelWaitForOtherApp();
   }
 
   void otherAppRequest(String appId) {

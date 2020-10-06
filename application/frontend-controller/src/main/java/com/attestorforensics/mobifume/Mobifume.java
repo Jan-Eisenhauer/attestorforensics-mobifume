@@ -5,13 +5,14 @@ import com.attestorforensics.mobifume.model.ModelManager;
 import com.attestorforensics.mobifume.model.listener.EventManager;
 import com.attestorforensics.mobifume.util.CustomLogger;
 import com.attestorforensics.mobifume.util.FileManager;
-import com.attestorforensics.mobifume.util.MobiRunnable;
 import com.attestorforensics.mobifume.util.OtherAppChecker;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
 import com.attestorforensics.mobifume.view.MobiApplication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import lombok.Getter;
 import org.apache.log4j.Logger;
 
@@ -53,8 +54,14 @@ public class Mobifume {
   @Getter
   private ModelManager modelManager;
 
+  private ScheduledExecutorService scheduledExecutorService;
+
   private Mobifume() {
     instance = this;
+
+    ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(6);
+    scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
+    scheduledExecutorService = scheduledThreadPoolExecutor;
 
     projectProperties = new Properties();
     try (InputStream in = getClass().getClassLoader().getResourceAsStream("project.properties")) {
@@ -88,7 +95,11 @@ public class Mobifume {
    * @param args the program parameters
    */
   public static void main(String[] args) {
-    new Mobifume();
-    new MobiRunnable(() -> MobiApplication.main(args)).runTask();
+    Mobifume mobifume = new Mobifume();
+    mobifume.getScheduledExecutorService().execute(() -> MobiApplication.main(args));
+  }
+
+  public ScheduledExecutorService getScheduledExecutorService() {
+    return scheduledExecutorService;
   }
 }

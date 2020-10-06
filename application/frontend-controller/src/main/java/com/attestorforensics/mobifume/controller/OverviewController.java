@@ -13,13 +13,13 @@ import com.attestorforensics.mobifume.model.object.Device;
 import com.attestorforensics.mobifume.model.object.DeviceType;
 import com.attestorforensics.mobifume.model.object.Group;
 import com.attestorforensics.mobifume.util.Kernel32;
-import com.attestorforensics.mobifume.util.MobiRunnable;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
 import com.attestorforensics.mobifume.view.GroupColor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -53,11 +53,11 @@ public class OverviewController {
 
   @FXML
   public void initialize() {
-    new MobiRunnable(() -> {
+    Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
       Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
       Kernel32.instance.GetSystemPowerStatus(batteryStatus);
       battery.setText(batteryStatus.getBatteryLifePercent());
-    }).runRepeatingTask(0, 10000);
+    }, 0L, 10L, TimeUnit.SECONDS);
   }
 
   public void load() {

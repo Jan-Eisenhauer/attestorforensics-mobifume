@@ -5,10 +5,12 @@ import com.attestorforensics.mobifume.model.MobiModelManager;
 import com.attestorforensics.mobifume.model.event.ConnectionEvent;
 import com.attestorforensics.mobifume.util.CustomLogger;
 import com.attestorforensics.mobifume.util.FileManager;
-import com.attestorforensics.mobifume.util.MobiRunnable;
 import java.io.File;
 import java.util.Enumeration;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -30,7 +32,7 @@ public class ClientConnection {
   @Getter
   private boolean connected;
   private MobiModelManager mobiModelManager;
-  private MobiRunnable waitForOtherApp;
+  private ScheduledFuture<?> waitForOtherAppTask;
   private MessageHandler msgHandler;
   private MessageCallback msgCallback;
 
@@ -101,30 +103,33 @@ public class ClientConnection {
     waitForOtherApp();
   }
 
-  Thread getWaitForOtherAppTask() {
-    return waitForOtherApp.getThread();
+  private void waitForOtherApp() {
+    waitForOtherAppTask = Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .scheduleAtFixedRate(() -> {
+          encoder.requestAppOnline(id);
+          if (client.isConnected() && !msgHandler.isOtherAppOnline()) {
+            subscribeChannels();
+            encoder.online();
+            connected = true;
+            Mobifume.getInstance()
+                .getEventManager()
+                .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_CONNECTED));
+            cancelWaitForOtherApp();
+          } else {
+            Mobifume.getInstance().getLogger().error("Another application is already connected");
+            Mobifume.getInstance()
+                .getEventManager()
+                .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_OTHER_ONLINE));
+            msgHandler.setOtherAppOnline(false);
+          }
+        }, 0L, 1L, TimeUnit.SECONDS);
   }
 
-  private void waitForOtherApp() {
-    waitForOtherApp = new MobiRunnable(() -> {
-      encoder.requestAppOnline(id);
-      if (client.isConnected() && !msgHandler.isOtherAppOnline()) {
-        subscribeChannels();
-        encoder.online();
-        connected = true;
-        Mobifume.getInstance()
-            .getEventManager()
-            .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_CONNECTED));
-      } else {
-        Mobifume.getInstance().getLogger().error("Another application is already connected");
-        Mobifume.getInstance()
-            .getEventManager()
-            .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_OTHER_ONLINE));
-        msgHandler.setOtherAppOnline(false);
-        waitForOtherApp();
-      }
-    });
-    waitForOtherApp.runTaskLater(1000);
+  public void cancelWaitForOtherApp() {
+    if (Objects.nonNull(waitForOtherAppTask) && !waitForOtherAppTask.isDone()) {
+      waitForOtherAppTask.cancel(false);
+    }
   }
 
   private boolean clientConnect() {

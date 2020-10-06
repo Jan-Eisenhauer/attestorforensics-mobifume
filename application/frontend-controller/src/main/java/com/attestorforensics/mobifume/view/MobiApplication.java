@@ -11,10 +11,10 @@ import com.attestorforensics.mobifume.controller.listener.GroupListener;
 import com.attestorforensics.mobifume.controller.listener.HumidifyListener;
 import com.attestorforensics.mobifume.controller.listener.PurgeListener;
 import com.attestorforensics.mobifume.controller.listener.WaterErrorListener;
-import com.attestorforensics.mobifume.util.MobiRunnable;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
 import java.io.InputStream;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -96,8 +96,9 @@ public class MobiApplication extends Application {
     primaryStage.setX(0);
     primaryStage.setY(0);
 
-    new MobiRunnable(() -> Mobifume.getInstance().getModelManager().connectToBroker()).runTaskLater(
-        100);
+    Mobifume.getInstance().getScheduledExecutorService().schedule(() -> {
+      Mobifume.getInstance().getModelManager().connectToBroker();
+    }, 100L, TimeUnit.MILLISECONDS);
   }
 
   @Override
