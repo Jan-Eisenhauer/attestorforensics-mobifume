@@ -189,7 +189,7 @@ public class Room implements Group {
 
     humidifyMaxReached = true;
 
-    cancelPurgeTaskIfScheduled();
+    cancelEvaporateTaskIfScheduled();
     evaporateStartTime = System.currentTimeMillis();
 
     getBases().forEach(base -> base.updateTime(settings.getHeatTimer()));

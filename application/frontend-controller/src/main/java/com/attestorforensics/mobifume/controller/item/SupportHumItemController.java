@@ -41,17 +41,19 @@ public class SupportHumItemController implements SupportItemController {
     humidify.setText("-");
     led1.setText("-");
     led2.setText("-");
-    overTemperature.setText("-");
+    overTemperature.setText("");
   }
 
   @Override
   public void update() {
     version.setText(hum.getVersion() + "");
     rssi.setText(hum.getRssi() + "");
-    humidify.setText(hum.isHumidify() + "");
-    led1.setText(hum.getLed1() + "");
-    led2.setText(hum.getLed2() + "");
-    overTemperature.setText(hum.isOverTemperature() + "");
+    humidify.setText(LocaleManager.getInstance()
+        .getString("support.status.humidify.value", hum.isHumidify() ? 1 : 0));
+    led1.setText(LocaleManager.getInstance().getString("support.status.led.value", hum.getLed1()));
+    led2.setText(LocaleManager.getInstance().getString("support.status.led.value", hum.getLed2()));
+    overTemperature.setText(hum.isOverTemperature() ? LocaleManager.getInstance()
+        .getString("support.status.overtemperature") : "");
   }
 
   @Override
@@ -60,7 +62,7 @@ public class SupportHumItemController implements SupportItemController {
     humidify.setText("-");
     led1.setText("-");
     led2.setText("-");
-    overTemperature.setText("-");
+    overTemperature.setText("");
   }
 
   @FXML
