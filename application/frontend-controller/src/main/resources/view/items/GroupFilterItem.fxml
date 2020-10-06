@@ -15,7 +15,7 @@
                 <Image url="@../../images/Filter.png"/>
             </image>
         </ImageView>
-        <Text fx:id="filterId" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText">
+        <Text fx:id="filterId" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="infoText">
             <HBox.margin>
                 <Insets left="8.0"/>
             </HBox.margin>

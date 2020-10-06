@@ -16,6 +16,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import lombok.Getter;
 
 public class DeviceItemController {
@@ -31,7 +32,8 @@ public class DeviceItemController {
   private AnchorPane deviceItem;
   @FXML
   private ImageView deviceImage;
-
+  @FXML
+  private Text nodeId;
   @FXML
   private Button errorButton;
   @FXML
@@ -50,10 +52,12 @@ public class DeviceItemController {
     if (currentStrength != null && currentStrength.equals(strength)) {
       return;
     }
+
     currentStrength = strength;
     String deviceName = getDeviceName(device.getType());
     String resource = "images/" + deviceName + "_" + strength + ".png";
     deviceImage.setImage(ImageHolder.getInstance().getImage(resource));
+    nodeId.setText(device.getShortId());
   }
 
   private String getConnectionStrength(int rssi) {

@@ -6,24 +6,27 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="deviceItem" styleClass="roundItem"
-            xmlns="http://javafx.com/javafx/8.0.191"
+<?import javafx.scene.text.Text?>
+<AnchorPane fx:id="deviceItem" onMouseClicked="#onMouseClicked" styleClass="roundItem"
+            xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.191"
             fx:controller="com.attestorforensics.mobifume.controller.item.DeviceItemController">
     <children>
-        <ImageView fx:id="deviceImage" fitHeight="100.0" fitWidth="100.0" onMouseClicked="#onMouseClicked"
-                   pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ImageView fx:id="deviceImage" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true"
+                   AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                   AnchorPane.topAnchor="0.0">
             <image>
                 <Image url="@../../images/Base_Bad.png"/>
             </image>
         </ImageView>
         <Button fx:id="errorButton" alignment="BOTTOM_RIGHT" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
                 onAction="#onErrorInfo" style="-fx-background-color: transparent;" visible="false"
-                AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+                AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="0.0">
             <graphic>
                 <ImageView fx:id="errorIcon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
             </graphic>
         </Button>
+        <Text fx:id="nodeId" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="123FAC"
+              AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
     </children>
     <stylesheets>
         <URL value="@../style/DefaultApp.css"/>

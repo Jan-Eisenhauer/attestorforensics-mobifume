@@ -7,15 +7,25 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" xmlns="http://javafx.com/javafx/8.0.191"
+<HBox alignment="CENTER_LEFT" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.191"
       fx:controller="com.attestorforensics.mobifume.controller.item.GroupBaseItemController">
     <children>
-        <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../images/Base.png"/>
-            </image>
-        </ImageView>
+        <VBox alignment="TOP_CENTER">
+            <children>
+                <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../images/Base.png"/>
+                    </image>
+                </ImageView>
+                <Text fx:id="nodeId" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="infoText" text="123ABC">
+                    <VBox.margin>
+                        <Insets bottom="-4.0" top="-4.0"/>
+                    </VBox.margin>
+                </Text>
+            </children>
+        </VBox>
         <Text fx:id="temperature" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="0.0">
             <HBox.margin>

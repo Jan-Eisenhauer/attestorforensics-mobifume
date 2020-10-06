@@ -299,7 +299,7 @@
                                 <Insets bottom="16.0"/>
                             </VBox.margin>
                         </VBox>
-                        <SplitPane dividerPositions="0.4, 0.6" prefHeight="160.0" styleClass="primaryLight"
+                        <SplitPane dividerPositions="0.4, 0.6" styleClass="primaryLight"
                                    AnchorPane.bottomAnchor="400" AnchorPane.leftAnchor="0.0"
                                    AnchorPane.rightAnchor="0.0">
                             <items>

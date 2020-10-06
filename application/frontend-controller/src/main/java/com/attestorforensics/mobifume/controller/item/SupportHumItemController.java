@@ -30,7 +30,7 @@ public class SupportHumItemController implements SupportItemController {
   @Override
   public void setDevice(Device device) {
     hum = (Humidifier) device;
-    id.setText(device.getId());
+    id.setText(device.getShortId());
     version.setText(hum.getVersion() + "");
     rssi.setText("-");
     humidify.setText("-");

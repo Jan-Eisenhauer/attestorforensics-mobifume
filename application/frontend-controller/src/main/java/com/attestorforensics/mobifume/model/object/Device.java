@@ -43,4 +43,14 @@ public abstract class Device {
   protected MessageEncoder getEncoder() {
     return clientConnection.getEncoder();
   }
+
+  public String getShortId() {
+    String nodeNumber = id.replace("node-", "");
+    try {
+      int parsedValue = Integer.parseInt(nodeNumber);
+      return String.format("%1$06X", parsedValue);
+    } catch (NumberFormatException e) {
+      return nodeNumber;
+    }
+  }
 }

@@ -53,7 +53,7 @@ public class SupportBaseItemController implements SupportItemController {
   @Override
   public void setDevice(Device device) {
     base = (Base) device;
-    id.setText(device.getId());
+    id.setText(device.getShortId());
     version.setText(base.getVersion() + "");
     rssi.setText("-");
     temperature.setText("-");

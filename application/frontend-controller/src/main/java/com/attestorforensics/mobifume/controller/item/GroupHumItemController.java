@@ -12,9 +12,12 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 
 public class GroupHumItemController {
 
+  @FXML
+  private Text nodeId;
   @FXML
   private Button errorButton;
   @FXML
@@ -23,6 +26,7 @@ public class GroupHumItemController {
   private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
 
   public void setHumidifier(Humidifier hum) {
+    nodeId.setText(hum.getShortId());
     GroupItemControllerHolder.getInstance().addHumController(hum, this);
   }
 

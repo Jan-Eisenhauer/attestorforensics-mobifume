@@ -23,8 +23,9 @@ public class GroupBaseItemController {
   private Base base;
 
   @FXML
+  private Text nodeId;
+  @FXML
   private Text temperature;
-
   @FXML
   private Button errorButton;
   @FXML
@@ -35,6 +36,7 @@ public class GroupBaseItemController {
   public void setBase(Group group, Base base) {
     this.group = group;
     this.base = base;
+    nodeId.setText(base.getShortId());
     updateHeaterTemperature();
     GroupItemControllerHolder.getInstance().addBaseController(base, this);
   }
