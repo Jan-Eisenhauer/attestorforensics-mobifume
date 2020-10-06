@@ -51,6 +51,11 @@ public class SupportBaseItemController implements SupportItemController {
   private TextField temperatureGradientField;
 
   @Override
+  public Device getDevice() {
+    return base;
+  }
+
+  @Override
   public void setDevice(Device device) {
     base = (Base) device;
     id.setText(device.getShortId());

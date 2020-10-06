@@ -1,35 +1,38 @@
 package com.attestorforensics.mobifume.controller;
 
 import com.attestorforensics.mobifume.model.object.Group;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import java.util.List;
 
 public class GroupControllerHolder {
 
   private static GroupControllerHolder instance;
 
-  private Map<Group, GroupController> controllers;
+  private final List<GroupController> controllers = Lists.newArrayList();
 
   private GroupControllerHolder() {
-    controllers = new HashMap<>();
   }
 
   public static GroupControllerHolder getInstance() {
     if (instance == null) {
       instance = new GroupControllerHolder();
     }
+
     return instance;
   }
 
   public GroupController getController(Group group) {
-    return controllers.get(group);
+    return controllers.stream()
+        .filter(controller -> controller.getGroup() == group)
+        .findFirst()
+        .orElse(null);
   }
 
-  void addController(Group group, GroupController controller) {
-    controllers.put(group, controller);
+  void addController(GroupController controller) {
+    controllers.add(controller);
   }
 
   public void removeController(Group group) {
-    controllers.remove(group);
+    controllers.removeIf(controller -> controller.getGroup() == group);
   }
 }

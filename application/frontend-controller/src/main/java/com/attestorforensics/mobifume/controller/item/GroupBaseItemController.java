@@ -33,12 +33,16 @@ public class GroupBaseItemController {
 
   private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
 
+  public Base getBase() {
+    return base;
+  }
+
   public void setBase(Group group, Base base) {
     this.group = group;
     this.base = base;
     nodeId.setText(base.getShortId());
     updateHeaterTemperature();
-    GroupItemControllerHolder.getInstance().addBaseController(base, this);
+    GroupItemControllerHolder.getInstance().addBaseController(this);
   }
 
   public void updateHeaterTemperature() {

@@ -9,9 +9,10 @@ import com.attestorforensics.mobifume.controller.util.Sound;
 import com.attestorforensics.mobifume.model.object.Device;
 import com.attestorforensics.mobifume.model.object.DeviceType;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
+import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -30,23 +31,26 @@ public class SupportController {
   @FXML
   private Pane devices;
 
-  private Map<String, SupportItemController> itemController;
+  private List<SupportItemController> supportItemControllers = Lists.newArrayList();
 
   private SupportListener supportListener;
 
   @FXML
   public void initialize() {
-    itemController = new HashMap<>();
     supportListener = new SupportListener(this);
     Mobifume.getInstance().getEventManager().registerListener(supportListener);
     Mobifume.getInstance().getModelManager().getDevices().forEach(this::addDevice);
   }
 
   public void addDevice(Device device) {
-    if (itemController.containsKey(device.getId())) {
-      itemController.get(device.getId()).setDevice(device);
+    Optional<SupportItemController> optionalSupportItemController = supportItemControllers.stream()
+        .filter(controller -> controller.getDevice() == device)
+        .findFirst();
+    if (optionalSupportItemController.isPresent()) {
+      optionalSupportItemController.get().setDevice(device);
       return;
     }
+
     Platform.runLater(() -> {
       try {
         ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
@@ -58,7 +62,7 @@ public class SupportController {
         SupportItemController controller = loader.getController();
         controller.setDevice(device);
         root.getProperties().put("controller", controller);
-        itemController.put(device.getId(), controller);
+        supportItemControllers.add(controller);
         devices.getChildren().add(root);
       } catch (IOException e) {
         e.printStackTrace();
@@ -84,7 +88,7 @@ public class SupportController {
     new ConfirmDialog(root.getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.exit.title"),
         LocaleManager.getInstance().getString("dialog.exit.content"), true, accepted -> {
-      if (!accepted) {
+      if (Boolean.FALSE.equals(accepted)) {
         return;
       }
 
@@ -93,10 +97,16 @@ public class SupportController {
   }
 
   public void updateDevice(Device device) {
-    itemController.get(device.getId()).update();
+    getSupportItemController(device).ifPresent(SupportItemController::update);
   }
 
   public void removeDevice(Device device) {
-    itemController.get(device.getId()).remove();
+    getSupportItemController(device).ifPresent(SupportItemController::remove);
+  }
+
+  private Optional<SupportItemController> getSupportItemController(Device device) {
+    return supportItemControllers.stream()
+        .filter(controller -> controller.getDevice() == device)
+        .findFirst();
   }
 }

@@ -1,35 +1,38 @@
 package com.attestorforensics.mobifume.controller.item;
 
 import com.attestorforensics.mobifume.model.object.Device;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import java.util.List;
 
 public class DeviceItemControllerHolder {
 
   private static DeviceItemControllerHolder instance;
 
-  private Map<Device, DeviceItemController> controllers;
+  private final List<DeviceItemController> controllers = Lists.newArrayList();
 
   private DeviceItemControllerHolder() {
-    controllers = new HashMap<>();
   }
 
   public static DeviceItemControllerHolder getInstance() {
     if (instance == null) {
       instance = new DeviceItemControllerHolder();
     }
+
     return instance;
   }
 
   public DeviceItemController getController(Device device) {
-    return controllers.get(device);
+    return controllers.stream()
+        .filter(controller -> controller.getDevice() == device)
+        .findFirst()
+        .orElse(null);
   }
 
-  void addController(Device device, DeviceItemController controller) {
-    controllers.put(device, controller);
+  void addController(DeviceItemController controller) {
+    controllers.add(controller);
   }
 
   public void removeController(Device device) {
-    controllers.remove(device);
+    controllers.removeIf(controller -> controller.getDevice() == device);
   }
 }

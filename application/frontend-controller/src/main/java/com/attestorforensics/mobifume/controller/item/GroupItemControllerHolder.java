@@ -2,42 +2,47 @@ package com.attestorforensics.mobifume.controller.item;
 
 import com.attestorforensics.mobifume.model.object.Device;
 import com.attestorforensics.mobifume.model.object.Group;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import java.util.List;
 
 public class GroupItemControllerHolder {
 
   private static GroupItemControllerHolder instance;
 
-  private Map<Device, GroupBaseItemController> baseController;
-  private Map<Device, GroupHumItemController> humController;
+  private List<GroupBaseItemController> baseControllers = Lists.newArrayList();
+  private List<GroupHumItemController> humControllers = Lists.newArrayList();
 
   private GroupItemControllerHolder() {
-    baseController = new HashMap<>();
-    humController = new HashMap<>();
   }
 
   public static GroupItemControllerHolder getInstance() {
     if (instance == null) {
       instance = new GroupItemControllerHolder();
     }
+
     return instance;
   }
 
   public GroupBaseItemController getBaseController(Device base) {
-    return baseController.get(base);
+    return baseControllers.stream()
+        .filter(controller -> controller.getBase() == base)
+        .findFirst()
+        .orElse(null);
   }
 
-  void addBaseController(Device base, GroupBaseItemController controller) {
-    baseController.put(base, controller);
+  void addBaseController(GroupBaseItemController controller) {
+    baseControllers.add(controller);
   }
 
   public GroupHumItemController getHumController(Device hum) {
-    return humController.get(hum);
+    return humControllers.stream()
+        .filter(controller -> controller.getHumidifier() == hum)
+        .findFirst()
+        .orElse(null);
   }
 
-  void addHumController(Device hum, GroupHumItemController controller) {
-    humController.put(hum, controller);
+  void addHumController(GroupHumItemController controller) {
+    humControllers.add(controller);
   }
 
   public void removeGroupItems(Group group) {
@@ -46,10 +51,10 @@ public class GroupItemControllerHolder {
   }
 
   private void removeBaseController(Device base) {
-    baseController.remove(base);
+    baseControllers.removeIf(controller -> controller.getBase() == base);
   }
 
   private void removeHumController(Device hum) {
-    humController.remove(hum);
+    humControllers.removeIf(controller -> controller.getHumidifier() == hum);
   }
 }

@@ -16,6 +16,8 @@ import javafx.scene.text.Text;
 
 public class GroupHumItemController {
 
+  private Humidifier hum;
+
   @FXML
   private Text nodeId;
   @FXML
@@ -25,9 +27,14 @@ public class GroupHumItemController {
 
   private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
 
+  public Humidifier getHumidifier() {
+    return hum;
+  }
+
   public void setHumidifier(Humidifier hum) {
+    this.hum = hum;
     nodeId.setText(hum.getShortId());
-    GroupItemControllerHolder.getInstance().addHumController(hum, this);
+    GroupItemControllerHolder.getInstance().addHumController(this);
   }
 
   @FXML

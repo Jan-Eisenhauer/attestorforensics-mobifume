@@ -345,6 +345,7 @@ public class Room implements Group {
     long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
     int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
     getBases().forEach(base -> base.updateTime(settings.getHeatTimer() - passedTimeInMinutes));
+    createOrUpdateEvaporateTask();
   }
 
   @Override
@@ -366,6 +367,7 @@ public class Room implements Group {
 
     CustomLogger.info(this, "UPDATE_HEATTIMER", purgeStartTime, settings.getPurgeTimer());
     CustomLogger.logGroupSettings(this);
+    createOrUpdatePurgeTask();
   }
 
   @Override

@@ -103,7 +103,7 @@ public class GroupController {
 
   public void setGroup(Group group) {
     this.group = group;
-    GroupControllerHolder.getInstance().addController(group, this);
+    GroupControllerHolder.getInstance().addController(this);
     groupName.setText(group.getName() + " - " + group.getSettings().getCycleCount());
 
     initEvaporant();
@@ -188,10 +188,12 @@ public class GroupController {
     initHumidifiers();
     initFilters();
 
-    statusUpdateTask = Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
-      updateStatus();
-      updateBases();
-    }, 0L, 1L, TimeUnit.SECONDS);
+    statusUpdateTask = Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .scheduleAtFixedRate(() -> {
+          updateStatus();
+          updateBases();
+        }, 0L, 1L, TimeUnit.SECONDS);
   }
 
   private void cancelStatusTaskIfScheduled() {
@@ -227,13 +229,15 @@ public class GroupController {
   }
 
   private void evaporateTimer() {
-    timerTask = Mobifume.getInstance().getScheduledExecutorService().scheduleWithFixedDelay(this::updateEvaporateTimer, 0L, 1L,
-        TimeUnit.SECONDS);
+    timerTask = Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .scheduleWithFixedDelay(this::updateEvaporateTimer, 0L, 1L, TimeUnit.SECONDS);
   }
 
   private void purgeTimer() {
-    timerTask = Mobifume.getInstance().getScheduledExecutorService().scheduleWithFixedDelay(this::updatePurgeTimer, 0L, 1L,
-        TimeUnit.SECONDS);
+    timerTask = Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .scheduleWithFixedDelay(this::updatePurgeTimer, 0L, 1L, TimeUnit.SECONDS);
   }
 
   private void initBases() {

@@ -28,6 +28,11 @@ public class SupportHumItemController implements SupportItemController {
   private Text overTemperature;
 
   @Override
+  public Device getDevice() {
+    return hum;
+  }
+
+  @Override
   public void setDevice(Device device) {
     hum = (Humidifier) device;
     id.setText(device.getShortId());
