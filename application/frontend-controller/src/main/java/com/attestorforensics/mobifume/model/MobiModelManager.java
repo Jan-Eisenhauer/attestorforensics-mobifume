@@ -61,9 +61,12 @@ public class MobiModelManager implements ModelManager {
 
   @Override
   public void connectWifi() {
+    String ssid = Mobifume.getInstance().getSettings().getProperty("wifi.ssid");
+    String name = Mobifume.getInstance().getSettings().getProperty("wifi.name");
+    String command = String.format("cmd /c netsh wlan connect ssid=%s name=%s interface=WLAN", ssid,
+        name);
     try {
-      Runtime.getRuntime()
-          .exec("cmd /c netsh wlan connect ssid=MOBIfume name=MOBIfume interface=WLAN");
+      Runtime.getRuntime().exec(command);
       wifiConnected = true;
       Mobifume.getInstance()
           .getEventManager()
