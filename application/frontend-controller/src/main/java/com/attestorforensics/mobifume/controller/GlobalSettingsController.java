@@ -261,7 +261,7 @@ public class GlobalSettingsController {
 
   @FXML
   public void onBack(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     applySettings();
 
@@ -280,7 +280,7 @@ public class GlobalSettingsController {
 
   @FXML
   public void onInfo(ActionEvent event) throws IOException {
-    Sound.play("Click");
+    Sound.click();
 
     Node button = (Button) event.getSource();
 
@@ -297,7 +297,7 @@ public class GlobalSettingsController {
 
   @FXML
   public void onRestore(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.settings.restore.title"),

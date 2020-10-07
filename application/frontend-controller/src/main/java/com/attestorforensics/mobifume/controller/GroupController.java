@@ -395,7 +395,7 @@ public class GroupController {
 
   @FXML
   public void onBack(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     Node button = (Node) event.getSource();
     Scene scene = button.getScene();
@@ -404,7 +404,7 @@ public class GroupController {
 
   @FXML
   public void onSettings(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     Node button = (Button) event.getSource();
 
@@ -433,14 +433,14 @@ public class GroupController {
 
   @FXML
   public void onStart() {
-    Sound.play("Click");
+    Sound.click();
 
     group.startHumidify();
   }
 
   @FXML
   public void onHumidifyNextStep(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.next.humidity.title"),
@@ -458,7 +458,7 @@ public class GroupController {
 
   @FXML
   public void onHumidifyCancel(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.cancel.humidity.title"),
@@ -474,7 +474,7 @@ public class GroupController {
 
   @FXML
   public void onEvaporateNextStep(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.next.evaporate.title"),
@@ -489,7 +489,7 @@ public class GroupController {
 
   @FXML
   public void onEvaporateCancel(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.cancel.evaporate.title"),
@@ -505,7 +505,7 @@ public class GroupController {
 
   @FXML
   public void onPurgeCancel(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.cancel.purge.title"),
@@ -520,7 +520,7 @@ public class GroupController {
 
   @FXML
   public void onPurgeAgain(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.again.purge.title"),
@@ -535,7 +535,7 @@ public class GroupController {
 
   @FXML
   public void onCalculate(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     GroupCalculatorController calcController =
         (GroupCalculatorController) calculator.getProperties()
@@ -550,7 +550,7 @@ public class GroupController {
 
   @FXML
   public void onEvaporateTimerAdd() {
-    Sound.play("Click");
+    Sound.click();
 
     group.getSettings().setHeatTimer(group.getSettings().getHeatTimer() + 5);
     group.updateHeatTimer();
@@ -559,7 +559,7 @@ public class GroupController {
 
   @FXML
   public void onPurgeTimerAdd() {
-    Sound.play("Click");
+    Sound.click();
 
     group.getSettings().setPurgeTimer(group.getSettings().getPurgeTimer() + 5);
     group.updatePurgeTimer();

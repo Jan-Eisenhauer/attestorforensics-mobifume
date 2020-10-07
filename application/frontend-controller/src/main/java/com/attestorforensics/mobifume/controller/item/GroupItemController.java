@@ -128,7 +128,7 @@ public class GroupItemController {
   @FXML
   public void onMouseClicked(MouseEvent event) {
     if (event.getClickCount() == 2) {
-      Sound.play("Click");
+      Sound.click();
       openGroupScene();
     }
   }
@@ -140,13 +140,13 @@ public class GroupItemController {
 
   @FXML
   public void onForward() {
-    Sound.play("Click");
+    Sound.click();
     openGroupScene();
   }
 
   @FXML
   public void onRemove(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.group.remove.title", group.getName()),

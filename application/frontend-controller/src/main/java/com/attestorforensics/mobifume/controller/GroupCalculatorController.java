@@ -211,7 +211,7 @@ public class GroupCalculatorController {
 
   @FXML
   public void onBack(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     applySettings();
 
@@ -225,7 +225,7 @@ public class GroupCalculatorController {
 
   @FXML
   public void onSelect(MouseEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     TextField field = (TextField) event.getSource();
     Platform.runLater(field::selectAll);
@@ -233,7 +233,7 @@ public class GroupCalculatorController {
 
   @FXML
   public void onClear() {
-    Sound.play("Click");
+    Sound.click();
 
     if (focusedField == null) {
       return;
@@ -244,7 +244,7 @@ public class GroupCalculatorController {
 
   @FXML
   public void onErase() {
-    Sound.play("Click");
+    Sound.click();
 
     if (focusedField == null) {
       return;
@@ -263,7 +263,7 @@ public class GroupCalculatorController {
 
   @FXML
   public void onMultiply() {
-    Sound.play("Click");
+    Sound.click();
 
     if (focusedField == null) {
       return;
@@ -285,7 +285,7 @@ public class GroupCalculatorController {
 
   @FXML
   public void onCharacter(MouseEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     if (focusedField == null) {
       return;

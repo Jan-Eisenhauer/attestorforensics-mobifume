@@ -85,7 +85,7 @@ public class CalibrateController {
 
   @FXML
   public void onOk() {
-    Sound.play("Click");
+    Sound.click();
 
     double firstReferenceValue = Double.parseDouble(firstMeasurementReference.getText());
     double secondReferenceValue = Double.parseDouble(secondMeasurementReference.getText());
@@ -104,13 +104,13 @@ public class CalibrateController {
 
   @FXML
   public void onCancel() {
-    Sound.play("Click");
+    Sound.click();
     dialog.close(null);
   }
 
   @FXML
   public void onReset() {
-    Sound.play("Click");
+    Sound.click();
     dialog.close(Calibration.createDefault());
   }
 }

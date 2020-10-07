@@ -28,13 +28,13 @@ public class ConfirmController {
 
   @FXML
   public void onOk() {
-    Sound.play("Click");
+    Sound.click();
     dialog.close(true);
   }
 
   @FXML
   public void onCancel() {
-    Sound.play("Click");
+    Sound.click();
     dialog.close(false);
   }
 

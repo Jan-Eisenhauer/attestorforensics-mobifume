@@ -230,7 +230,7 @@ public class CreateGroupController {
 
   @FXML
   public void onOk() {
-    Sound.play("Click");
+    Sound.click();
 
     if (groupName.getText() == null || groupName.getText().isEmpty()) {
       groupNameError.setManaged(true);
@@ -281,7 +281,7 @@ public class CreateGroupController {
 
   @FXML
   public void onCancel() {
-    Sound.play("Click");
+    Sound.click();
     dialog.close(null);
   }
 }
