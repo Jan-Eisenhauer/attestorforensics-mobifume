@@ -237,7 +237,7 @@ public class GroupSettingsController {
 
   @FXML
   public void onBack(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     applySettings();
 
@@ -273,7 +273,7 @@ public class GroupSettingsController {
 
   @FXML
   public void onRestore(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.settings.restore.title"),

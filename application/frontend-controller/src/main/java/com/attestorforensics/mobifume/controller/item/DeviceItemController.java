@@ -96,7 +96,7 @@ public class DeviceItemController {
 
   @FXML
   public void onMouseClicked() {
-    Sound.play("Click");
+    Sound.click();
 
     if (group != null) {
       return;

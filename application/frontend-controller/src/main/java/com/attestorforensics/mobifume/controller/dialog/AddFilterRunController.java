@@ -92,7 +92,7 @@ public class AddFilterRunController {
 
   @FXML
   public void onOk() {
-    Sound.play("Click");
+    Sound.click();
 
     filter.addRun(Integer.parseInt(cycle.getText()),
         Evaporant.valueOf(evaporant.getSelectionModel().getSelectedItem().toUpperCase()),
@@ -102,7 +102,7 @@ public class AddFilterRunController {
 
   @FXML
   public void onCancel() {
-    Sound.play("Click");
+    Sound.click();
     dialog.close();
   }
 }

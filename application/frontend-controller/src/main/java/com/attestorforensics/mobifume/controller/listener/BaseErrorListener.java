@@ -103,7 +103,7 @@ public class BaseErrorListener implements Listener {
       return;
     }
     deviceErrors.remove(event.getResolved());
-    if (deviceErrors.size() == 0) {
+    if (deviceErrors.isEmpty()) {
       errors.remove(event.getBase());
     }
     updateErrors(event.getBase());

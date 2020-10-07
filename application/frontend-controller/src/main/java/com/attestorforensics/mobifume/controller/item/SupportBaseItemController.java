@@ -140,13 +140,13 @@ public class SupportBaseItemController implements SupportItemController {
 
   @FXML
   public void onReset() {
-    Sound.play("Click");
+    Sound.click();
     base.reset();
   }
 
   @FXML
   public void onSetpoint() {
-    Sound.play("Click");
+    Sound.click();
     if (setpointField.getText().isEmpty() || timeField.getText().isEmpty()) {
       return;
     }
@@ -163,28 +163,28 @@ public class SupportBaseItemController implements SupportItemController {
 
   @FXML
   public void onSetpoint120() {
-    Sound.play("Click");
+    Sound.click();
     base.updateTime(60);
     base.updateHeaterSetpoint(120);
   }
 
   @FXML
   public void onSetpoint230() {
-    Sound.play("Click");
+    Sound.click();
     base.updateTime(60);
     base.updateHeaterSetpoint(230);
   }
 
   @FXML
   public void onLatch() {
-    Sound.play("Click");
+    Sound.click();
     base.updateTime(60);
     base.updateLatch(base.getLatch() == 0);
   }
 
   @FXML
   public void onTemperatureCalibrate(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), calibration -> {
       if (Objects.isNull(calibration)) {
@@ -201,7 +201,7 @@ public class SupportBaseItemController implements SupportItemController {
 
   @FXML
   public void onHumidityCalibrate(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), calibration -> {
       if (Objects.isNull(calibration)) {

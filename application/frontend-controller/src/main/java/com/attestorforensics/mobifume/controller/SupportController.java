@@ -68,7 +68,7 @@ public class SupportController {
 
   @FXML
   public void onBack(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     Mobifume.getInstance().getEventManager().unregisterListener(supportListener);
 
@@ -79,7 +79,7 @@ public class SupportController {
 
   @FXML
   public void onExit(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(root.getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.exit.title"),

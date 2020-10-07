@@ -67,13 +67,13 @@ public class SupportHumItemController implements SupportItemController {
 
   @FXML
   public void onReset() {
-    Sound.play("Click");
+    Sound.click();
     hum.reset();
   }
 
   @FXML
   public void onHumidify() {
-    Sound.play("Click");
+    Sound.click();
     hum.updateHumidify(!hum.isHumidify());
   }
 }

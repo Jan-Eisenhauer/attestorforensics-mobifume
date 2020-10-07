@@ -231,7 +231,7 @@ public class OverviewController {
 
   @FXML
   public void onSettings(ActionEvent event) throws IOException {
-    Sound.play("Click");
+    Sound.click();
 
     Node button = (Button) event.getSource();
 
@@ -248,7 +248,7 @@ public class OverviewController {
 
   @FXML
   public void onFilters(ActionEvent event) throws IOException {
-    Sound.play("Click");
+    Sound.click();
 
     Node button = (Button) event.getSource();
 
@@ -265,7 +265,7 @@ public class OverviewController {
 
   @FXML
   public void onWifi() {
-    Sound.play("Click");
+    Sound.click();
     if (Mobifume.getInstance().getModelManager().isWifiEnabled()) {
       Mobifume.getInstance().getModelManager().disconnectWifi();
     } else {
@@ -275,7 +275,7 @@ public class OverviewController {
 
   @FXML
   public void onShutdown(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.shutdown.title"),
@@ -294,7 +294,7 @@ public class OverviewController {
 
   @FXML
   public void onGroupAdd() {
-    Sound.play("Click");
+    Sound.click();
 
     ObservableList<Node> devicesChildren = devices.getChildren();
     List<DeviceItemController> selectedDevices = devicesChildren.stream()

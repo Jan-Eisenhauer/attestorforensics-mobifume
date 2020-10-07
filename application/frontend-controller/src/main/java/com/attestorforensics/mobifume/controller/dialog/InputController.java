@@ -57,7 +57,7 @@ public class InputController {
 
   @FXML
   public void onOk() {
-    Sound.play("Click");
+    Sound.click();
     if (validator.isValid(input.getText())) {
       dialog.close(input.getText());
     } else {
@@ -68,7 +68,7 @@ public class InputController {
 
   @FXML
   public void onCancel() {
-    Sound.play("Click");
+    Sound.click();
     dialog.close(null);
   }
 }

@@ -60,7 +60,7 @@ public class FiltersController {
 
   @FXML
   public void onBack(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     Node button = (Node) event.getSource();
     Scene scene = button.getScene();
@@ -69,7 +69,7 @@ public class FiltersController {
 
   @FXML
   public void onFilterAdd() {
-    Sound.play("Click");
+    Sound.click();
 
     new InputDialog(root.getScene().getWindow(), true,
         LocaleManager.getInstance().getString("dialog.filter.add.title"),

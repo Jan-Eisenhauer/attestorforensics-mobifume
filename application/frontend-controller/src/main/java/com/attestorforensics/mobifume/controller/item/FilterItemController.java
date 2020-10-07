@@ -116,7 +116,7 @@ public class FilterItemController {
 
   @FXML
   public void onChange(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.filter.change.title", filter.getId()),
@@ -132,7 +132,7 @@ public class FilterItemController {
 
   @FXML
   public void onAdd(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new AddFilterRunDialog(((Node) event.getSource()).getScene().getWindow(), filter,
         avoid -> loadFilter());

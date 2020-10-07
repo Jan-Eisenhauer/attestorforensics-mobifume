@@ -44,7 +44,7 @@ public class InfoController {
 
   @FXML
   public void onBack(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     Node button = (Node) event.getSource();
     Scene scene = button.getScene();
@@ -53,7 +53,7 @@ public class InfoController {
 
   @FXML
   public void onSupport(ActionEvent event) {
-    Sound.play("Click");
+    Sound.click();
 
     new ConfirmDialog(root.getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.support.title"),
