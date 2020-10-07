@@ -104,7 +104,7 @@ public class SupportController {
     getSupportItemController(device).ifPresent(SupportItemController::remove);
   }
 
-  private Optional<SupportItemController> getSupportItemController(Device device) {
+  public Optional<SupportItemController> getSupportItemController(Device device) {
     return supportItemControllers.stream()
         .filter(controller -> controller.getDevice() == device)
         .findFirst();

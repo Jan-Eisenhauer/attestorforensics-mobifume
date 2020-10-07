@@ -1,14 +1,11 @@
 package com.attestorforensics.mobifume.model.object;
 
 import com.attestorforensics.mobifume.model.connection.ClientConnection;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 
 public class Base extends Device {
-
-  private final BaseFileHandler baseFileHandler;
 
   @Getter
   @Setter
@@ -24,22 +21,11 @@ public class Base extends Device {
   @Getter
   @Setter
   private int latch;
-  private Float humidityOffset;
-  private Float humidityGradient;
-  private Float temperatureOffset;
-  private Float temperatureGradient;
+  private Calibration humidityCalibration;
+  private Calibration temperatureCalibration;
 
-  public Base(ClientConnection clientConnection, final String id, final int version,
-      BaseFileHandler baseFileHandler) {
+  public Base(ClientConnection clientConnection, final String id, final int version) {
     super(clientConnection, DeviceType.BASE, id, version);
-    this.baseFileHandler = baseFileHandler;
-    BaseFileHandler.BaseContent baseContent = baseFileHandler.loadBase(id);
-    if (Objects.nonNull(baseContent)) {
-      humidityOffset = baseContent.getHumidityOffset();
-      humidityGradient = baseContent.getHumidityGradient();
-      temperatureOffset = baseContent.getTemperatureOffset();
-      temperatureGradient = baseContent.getTemperatureGradient();
-    }
   }
 
   public void updateHeaterSetpoint(int heaterTemperature) {
@@ -73,43 +59,38 @@ public class Base extends Device {
     return humidity;
   }
 
-  public Optional<Float> getHumidityOffset() {
-    return Optional.ofNullable(humidityOffset);
+  public Optional<Calibration> getHumidityCalibration() {
+    return Optional.ofNullable(humidityCalibration);
   }
 
-  public void setHumidityOffset(float offset) {
-    this.humidityOffset = offset;
-    baseFileHandler.saveBase(this);
-    clientConnection.getEncoder().baseHumOffset(this, humidityOffset);
+  public Optional<Calibration> getTemperatureCalibration() {
+    return Optional.ofNullable(temperatureCalibration);
   }
 
-  public Optional<Float> getHumidityGradient() {
-    return Optional.ofNullable(humidityGradient);
+  public void requestCalibrationData() {
+    getEncoder().baseRequestCalibrationData(this);
   }
 
-  public void setHumidityGradient(float gradient) {
-    this.humidityGradient = gradient;
-    baseFileHandler.saveBase(this);
-    clientConnection.getEncoder().baseHumGradient(this, humidityGradient);
+  public void setCalibration(float humidityGradient, float humidityOffset,
+      float temperatureGradient, float temperatureOffset) {
+    humidityCalibration = Calibration.create(humidityGradient, humidityOffset);
+    temperatureCalibration = Calibration.create(temperatureGradient, temperatureOffset);
   }
 
-  public Optional<Float> getTemperatureOffset() {
-    return Optional.ofNullable(temperatureOffset);
+  public void resetCalibration() {
+    updateHumidityCalibration(Calibration.createDefault());
+    updateTemperatureCalibration(Calibration.createDefault());
   }
 
-  public void setTemperatureOffset(float offset) {
-    this.temperatureOffset = offset;
-    baseFileHandler.saveBase(this);
-    clientConnection.getEncoder().baseTempOffset(this, temperatureOffset);
+  public void updateHumidityCalibration(Calibration calibration) {
+    humidityCalibration = calibration;
+    getEncoder().baseHumGradient(this, calibration.getGradient());
+    getEncoder().baseHumOffset(this, calibration.getOffset());
   }
 
-  public Optional<Float> getTemperatureGradient() {
-    return Optional.ofNullable(temperatureGradient);
-  }
-
-  public void setTemperatureGradient(float gradient) {
-    this.temperatureGradient = gradient;
-    baseFileHandler.saveBase(this);
-    clientConnection.getEncoder().baseTempGradient(this, temperatureGradient);
+  public void updateTemperatureCalibration(Calibration calibration) {
+    temperatureCalibration = calibration;
+    getEncoder().baseTempGradient(this, calibration.getGradient());
+    getEncoder().baseTempOffset(this, calibration.getOffset());
   }
 }

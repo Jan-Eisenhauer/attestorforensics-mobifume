@@ -1,7 +1,6 @@
 package com.attestorforensics.mobifume.model.connection;
 
 import com.attestorforensics.mobifume.Mobifume;
-import com.attestorforensics.mobifume.util.CustomLogger;
 import com.attestorforensics.mobifume.model.MobiModelManager;
 import com.attestorforensics.mobifume.model.event.BaseErrorEvent;
 import com.attestorforensics.mobifume.model.event.BaseErrorResolvedEvent;
@@ -12,6 +11,7 @@ import com.attestorforensics.mobifume.model.object.DeviceType;
 import com.attestorforensics.mobifume.model.object.Group;
 import com.attestorforensics.mobifume.model.object.Humidifier;
 import com.attestorforensics.mobifume.model.object.Room;
+import com.attestorforensics.mobifume.util.CustomLogger;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,10 +49,13 @@ public class MessageHandler {
       Device device = mobiModelManager.getDevice(deviceId);
       device.setVersion(version);
       updateDeviceState(device);
+      ((Base) device).requestCalibrationData();
       return;
     }
-    deviceOnline(new Base(mobiModelManager.getConnection(), deviceId, version,
-        mobiModelManager.getBaseFileHandler()));
+
+    Base base = new Base(mobiModelManager.getConnection(), deviceId, version);
+    deviceOnline(base);
+    base.requestCalibrationData();
   }
 
   private boolean existsDevice(String deviceId) {
@@ -225,5 +228,24 @@ public class MessageHandler {
       return;
     }
     CustomLogger.logGroupHum(group, hum);
+  }
+
+  public void receiveCalibrateData(String deviceId, float humidityGradient, float humidityOffset,
+      float temperatureGradient, float temperatureOffset) {
+    Device device = mobiModelManager.getDevice(deviceId);
+    if (device == null) {
+      return;
+    }
+
+    if (device.getType() != DeviceType.BASE) {
+      return;
+    }
+
+    Base base = (Base) device;
+    base.setCalibration(humidityGradient, humidityOffset, temperatureGradient, temperatureOffset);
+    Mobifume.getInstance()
+        .getEventManager()
+        .call(new DeviceConnectionEvent(device,
+            DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
   }
 }

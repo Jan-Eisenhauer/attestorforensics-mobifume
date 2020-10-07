@@ -17,6 +17,7 @@ public class DeviceConnectionEvent implements Event {
     DISCONNECTED,
     LOST,
     STATUS_UPDATED,
+    CALIBRATION_DATA_UPDATED,
     RECONNECT
   }
 }

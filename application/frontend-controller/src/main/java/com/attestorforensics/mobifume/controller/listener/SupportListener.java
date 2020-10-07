@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifume.controller.listener;
 
 import com.attestorforensics.mobifume.controller.SupportController;
+import com.attestorforensics.mobifume.controller.item.SupportBaseItemController;
 import com.attestorforensics.mobifume.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifume.model.listener.EventHandler;
 import com.attestorforensics.mobifume.model.listener.Listener;
@@ -25,6 +26,11 @@ public class SupportListener implements Listener {
         break;
       case STATUS_UPDATED:
         supportController.updateDevice(event.getDevice());
+        break;
+      case CALIBRATION_DATA_UPDATED:
+        supportController.getSupportItemController(event.getDevice())
+            .ifPresent(
+                supportItemController -> ((SupportBaseItemController) supportItemController).updateCalibration());
         break;
       default:
         break;

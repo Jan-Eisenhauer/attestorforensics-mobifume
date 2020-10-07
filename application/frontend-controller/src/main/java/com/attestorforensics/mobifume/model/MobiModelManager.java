@@ -7,7 +7,6 @@ import com.attestorforensics.mobifume.model.event.ConnectionEvent;
 import com.attestorforensics.mobifume.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifume.model.event.FilterEvent;
 import com.attestorforensics.mobifume.model.event.GroupEvent;
-import com.attestorforensics.mobifume.model.object.BaseFileHandler;
 import com.attestorforensics.mobifume.model.object.Device;
 import com.attestorforensics.mobifume.model.object.DeviceType;
 import com.attestorforensics.mobifume.model.object.Filter;
@@ -38,8 +37,6 @@ public class MobiModelManager implements ModelManager {
   private List<Filter> filters;
 
   private FilterFileHandler filterFileHandler;
-  @Getter
-  private BaseFileHandler baseFileHandler;
 
   public MobiModelManager() {
     Settings.loadDefaultSettings();
@@ -48,7 +45,6 @@ public class MobiModelManager implements ModelManager {
         .stream()
         .filter(f -> !f.isRemoved())
         .collect(Collectors.toList());
-    baseFileHandler = new BaseFileHandler();
     MessageHandler msgHandler = new MessageHandler(this);
 
     connection = new ClientConnection(this, msgHandler);

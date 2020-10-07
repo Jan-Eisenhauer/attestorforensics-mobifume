@@ -42,6 +42,10 @@ public class MessageDecoder {
             Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]),
             Double.parseDouble(args[5]), Integer.parseInt(args[6]));
       }
+      if (args.length >= 4 && args[0].equals("CALIB_DATA")) {
+        msgHandler.receiveCalibrateData(getDeviceId(topic), Float.parseFloat(args[1]),
+            Float.parseFloat(args[2]), Float.parseFloat(args[3]), Float.parseFloat(args[4]));
+      }
     }
 
     if (topic.startsWith(

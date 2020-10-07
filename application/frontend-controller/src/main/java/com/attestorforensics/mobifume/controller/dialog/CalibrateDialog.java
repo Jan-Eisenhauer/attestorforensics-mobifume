@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifume.controller.dialog;
 
-import com.attestorforensics.mobifume.model.object.Filter;
+import com.attestorforensics.mobifume.model.object.Base;
+import com.attestorforensics.mobifume.model.object.Calibration;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -15,20 +16,21 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class AddFilterRunDialog {
+public class CalibrateDialog {
 
   private Stage stage;
   private Window window;
-  private AddFilterRunController controller;
-  private Consumer<Void> callback;
+  private CalibrateController controller;
+  private Consumer<Calibration> callback;
 
-  public AddFilterRunDialog(Window window, Filter filter, Consumer<Void> callback) {
+  public CalibrateDialog(Window window, Base base, Consumer<Calibration> callback,
+      String calibrationName) {
     this.window = window;
     this.callback = callback;
     Platform.runLater(() -> {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
       FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/dialog/AddFilterRunDialog.fxml"),
+          getClass().getClassLoader().getResource("view/dialog/CalibrateDialog.fxml"),
           resourceBundle);
 
       stage = new Stage();
@@ -39,7 +41,7 @@ public class AddFilterRunDialog {
           return;
         }
 
-        close();
+        close(null);
       });
       try {
         Parent root = loader.load();
@@ -51,7 +53,7 @@ public class AddFilterRunDialog {
         if (loader.getController() != null) {
           controller = loader.getController();
           controller.setDialog(this);
-          controller.setFilter(filter);
+          controller.setBase(base, calibrationName);
         }
         stage.centerOnScreen();
         stage.show();
@@ -63,12 +65,12 @@ public class AddFilterRunDialog {
     });
   }
 
-  public void close() {
+  public void close(Calibration calibration) {
     Platform.runLater(() -> {
       stage.close();
       window.getScene().getRoot().setEffect(null);
       if (callback != null) {
-        callback.accept(null);
+        callback.accept(calibration);
       }
     });
   }

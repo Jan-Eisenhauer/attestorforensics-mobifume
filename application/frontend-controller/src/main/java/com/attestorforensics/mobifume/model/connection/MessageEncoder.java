@@ -106,6 +106,14 @@ public class MessageEncoder {
     sendBase(device, "R;1");
   }
 
+  public void baseRequestCalibrationData(Device device) {
+    if (!(device instanceof Base)) {
+      return;
+    }
+
+    sendBase(device, "G");
+  }
+
   public void baseHumOffset(Device device, float humidityOffset) {
     if (!(device instanceof Base)) {
       return;

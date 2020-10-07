@@ -28,8 +28,8 @@
                   AnchorPane.topAnchor="100.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES"/>
+                <ColumnConstraints />
                 <ColumnConstraints hgrow="SOMETIMES"/>
-                <ColumnConstraints/>
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints vgrow="SOMETIMES"/>

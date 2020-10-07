@@ -1,13 +1,20 @@
 package com.attestorforensics.mobifume.controller.item;
 
+import com.attestorforensics.mobifume.Mobifume;
+import com.attestorforensics.mobifume.controller.dialog.CalibrateDialog;
 import com.attestorforensics.mobifume.controller.util.SignedIntTextFormatter;
 import com.attestorforensics.mobifume.controller.util.Sound;
 import com.attestorforensics.mobifume.controller.util.TabTipKeyboard;
+import com.attestorforensics.mobifume.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifume.model.object.Base;
+import com.attestorforensics.mobifume.model.object.Calibration;
 import com.attestorforensics.mobifume.model.object.Device;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
+import java.util.Objects;
+import java.util.Optional;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
@@ -25,7 +32,15 @@ public class SupportBaseItemController implements SupportItemController {
   @FXML
   private Text temperature;
   @FXML
+  private Text temperatureCalibrationGradient;
+  @FXML
+  private Text temperatureCalibrationOffset;
+  @FXML
   private Text humidity;
+  @FXML
+  private Text humidityCalibrationGradient;
+  @FXML
+  private Text humidityCalibrationOffset;
   @FXML
   private Text setpoint;
   @FXML
@@ -50,7 +65,11 @@ public class SupportBaseItemController implements SupportItemController {
     version.setText(base.getVersion() + "");
     rssi.setText("-");
     temperature.setText("-");
+    temperatureCalibrationGradient.setText("-");
+    temperatureCalibrationOffset.setText("");
     humidity.setText("-");
+    humidityCalibrationGradient.setText("-");
+    humidityCalibrationOffset.setText("");
     setpoint.setText("-");
     heater.setText("-");
     latch.setText("-");
@@ -72,10 +91,39 @@ public class SupportBaseItemController implements SupportItemController {
   public void remove() {
     rssi.setText(LocaleManager.getInstance().getString("support.status.rssi.disconnected"));
     temperature.setText("-");
+    temperatureCalibrationGradient.setText("-");
+    temperatureCalibrationOffset.setText("");
     humidity.setText("-");
+    humidityCalibrationGradient.setText("-");
+    humidityCalibrationOffset.setText("");
     setpoint.setText("-");
     heater.setText("-");
     latch.setText("-");
+  }
+
+  public void updateCalibration() {
+    Optional<Calibration> optionalTemperatureCalibration = base.getTemperatureCalibration();
+    if (optionalTemperatureCalibration.isPresent()) {
+      setCalibrationText(optionalTemperatureCalibration.get(), temperatureCalibrationGradient,
+          temperatureCalibrationOffset);
+    } else {
+      temperatureCalibrationGradient.setText("-");
+      temperatureCalibrationOffset.setText("");
+    }
+
+    Optional<Calibration> optionalHumidityCalibration = base.getHumidityCalibration();
+    if (optionalHumidityCalibration.isPresent()) {
+      setCalibrationText(optionalHumidityCalibration.get(), humidityCalibrationGradient,
+          humidityCalibrationOffset);
+    } else {
+      humidityCalibrationGradient.setText("-");
+      humidityCalibrationOffset.setText("");
+    }
+  }
+
+  private void setCalibrationText(Calibration calibration, Text gradientText, Text offsetText) {
+    gradientText.setText(String.format("%.4f", calibration.getGradient()));
+    offsetText.setText(String.format("%.2f", calibration.getOffset()));
   }
 
   @FXML
@@ -94,26 +142,17 @@ public class SupportBaseItemController implements SupportItemController {
   }
 
   @FXML
-  public void onTime() {
-    Sound.play("Click");
-    if (timeField.getText().isEmpty()) {
-      return;
-    }
-    try {
-      base.updateTime(Integer.parseInt(timeField.getText()));
-    } catch (NumberFormatException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @FXML
   public void onSetpoint() {
     Sound.play("Click");
-    if (setpointField.getText().isEmpty()) {
+    if (setpointField.getText().isEmpty() || timeField.getText().isEmpty()) {
       return;
     }
+
     try {
-      base.updateHeaterSetpoint(Integer.parseInt(setpointField.getText()));
+      int time = Integer.parseInt(timeField.getText());
+      int setpoint = Integer.parseInt(setpointField.getText());
+      base.updateTime(time);
+      base.updateHeaterSetpoint(setpoint);
     } catch (NumberFormatException e) {
       e.printStackTrace();
     }
@@ -143,125 +182,33 @@ public class SupportBaseItemController implements SupportItemController {
   public void onTemperatureCalibrate(ActionEvent event) {
     Sound.play("Click");
 
-    // TODO - open dialog to calibrate temperature
-    System.out.println("Temperature calibrate");
+    new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), base, calibration -> {
+      if (Objects.isNull(calibration)) {
+        return;
+      }
+
+      base.updateTemperatureCalibration(calibration);
+      Mobifume.getInstance()
+          .getEventManager()
+          .call(new DeviceConnectionEvent(base,
+              DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
+    }, "temperature");
   }
 
   @FXML
   public void onHumidityCalibrate(ActionEvent event) {
     Sound.play("Click");
 
-    // TODO - open dialog to calibrate humidity
-    System.out.println("Humidity calibrate");
-  }
+    new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), base, calibration -> {
+      if (Objects.isNull(calibration)) {
+        return;
+      }
 
-  //  @FXML
-  //  public void onHumidityOffset(ActionEvent event) {
-  //    Sound.play("Click");
-  //
-  //    float humidityOffset;
-  //    try {
-  //      humidityOffset = Float.parseFloat(humidityOffsetField.getText());
-  //    } catch (NumberFormatException ignored) {
-  //      displayCurrentHumidityOffset();
-  //      return;
-  //    }
-  //
-  //    Button sendButton = ((Button) event.getSource());
-  //    new ConfirmDialog(sendButton.getScene().getWindow(),
-  //        LocaleManager.getInstance().getString("dialog.support.humidity.offset.title"),
-  //        LocaleManager
-  //        .getInstance()
-  //        .getString("dialog.support.humidity.offset.content", humidityOffset), true, accepted
-  //        -> {
-  //      if (!accepted) {
-  //        displayCurrentHumidityOffset();
-  //        return;
-  //      }
-  //
-  //      base.setHumidityOffset(humidityOffset);
-  //    });
-  //  }
-  //
-  //  @FXML
-  //  public void onHumidityGradient(ActionEvent event) {
-  //    Sound.play("Click");
-  //
-  //    float humidityGradient;
-  //    try {
-  //      humidityGradient = Float.parseFloat(humidityGradientField.getText());
-  //    } catch (NumberFormatException ignored) {
-  //      displayCurrentHumidityGradient();
-  //      return;
-  //    }
-  //
-  //    Button sendButton = ((Button) event.getSource());
-  //    new ConfirmDialog(sendButton.getScene().getWindow(),
-  //        LocaleManager.getInstance().getString("dialog.support.humidity.gradient.title"),
-  //        LocaleManager.getInstance()
-  //            .getString("dialog.support.humidity.gradient.content", humidityGradient), true,
-  //        accepted -> {
-  //          if (!accepted) {
-  //            displayCurrentHumidityGradient();
-  //            return;
-  //          }
-  //
-  //          base.setHumidityGradient(humidityGradient);
-  //        });
-  //  }
-  //
-  //  @FXML
-  //  public void onTemperatureOffset(ActionEvent event) {
-  //    Sound.play("Click");
-  //
-  //    float temperatureOffset;
-  //    try {
-  //      temperatureOffset = Float.parseFloat(temperatureOffsetField.getText());
-  //    } catch (NumberFormatException ignored) {
-  //      displayCurrentTemperatureOffset();
-  //      return;
-  //    }
-  //
-  //    Button sendButton = ((Button) event.getSource());
-  //    new ConfirmDialog(sendButton.getScene().getWindow(),
-  //        LocaleManager.getInstance().getString("dialog.support.temperature.offset.title"),
-  //        LocaleManager.getInstance()
-  //            .getString("dialog.support.temperature.offset.content", temperatureOffset), true,
-  //        accepted -> {
-  //          if (!accepted) {
-  //            displayCurrentTemperatureOffset();
-  //            return;
-  //          }
-  //
-  //          base.setTemperatureOffset(temperatureOffset);
-  //        });
-  //  }
-  //
-  //  @FXML
-  //  public void onTemperatureGradient(ActionEvent event) {
-  //    Sound.play("Click");
-  //
-  //    float temperatureGradient;
-  //    try {
-  //      temperatureGradient = Float.parseFloat(temperatureGradientField.getText());
-  //    } catch (NumberFormatException ignored) {
-  //      displayCurrentTemperatureGradient();
-  //      return;
-  //    }
-  //
-  //    Button sendButton = ((Button) event.getSource());
-  //    new ConfirmDialog(sendButton.getScene().getWindow(),
-  //        LocaleManager.getInstance().getString("dialog.support.temperature.gradient.title"),
-  //        LocaleManager.getInstance()
-  //            .getString("dialog.support.temperature.gradient.content", temperatureGradient),
-  //            true,
-  //        accepted -> {
-  //          if (!accepted) {
-  //            displayCurrentTemperatureGradient();
-  //            return;
-  //          }
-  //
-  //          base.setTemperatureGradient(temperatureGradient);
-  //        });
-  //  }
+      base.updateHumidityCalibration(calibration);
+      Mobifume.getInstance()
+          .getEventManager()
+          .call(new DeviceConnectionEvent(base,
+              DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
+    }, "humidity");
+  }
 }
