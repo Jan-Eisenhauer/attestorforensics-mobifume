@@ -23,7 +23,7 @@ public class CalibrateDialog {
   private CalibrateController controller;
   private Consumer<Calibration> callback;
 
-  public CalibrateDialog(Window window, Base base, Consumer<Calibration> callback,
+  public CalibrateDialog(Window window, Consumer<Calibration> callback,
       String calibrationName) {
     this.window = window;
     this.callback = callback;
@@ -53,7 +53,7 @@ public class CalibrateDialog {
         if (loader.getController() != null) {
           controller = loader.getController();
           controller.setDialog(this);
-          controller.setBase(base, calibrationName);
+          controller.setCalibrationName(calibrationName);
         }
         stage.centerOnScreen();
         stage.show();

@@ -10,6 +10,7 @@ import com.attestorforensics.mobifume.model.object.Base;
 import com.attestorforensics.mobifume.model.object.Calibration;
 import com.attestorforensics.mobifume.model.object.Device;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
+import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.Optional;
 import javafx.event.ActionEvent;
@@ -20,6 +21,8 @@ import javafx.scene.text.Text;
 
 public class SupportBaseItemController implements SupportItemController {
 
+  private final DecimalFormat gradientFormat = new DecimalFormat("#.####");
+  private final DecimalFormat offsetFormat = new DecimalFormat("#.##");
   private Base base;
 
   @FXML
@@ -122,8 +125,8 @@ public class SupportBaseItemController implements SupportItemController {
   }
 
   private void setCalibrationText(Calibration calibration, Text gradientText, Text offsetText) {
-    gradientText.setText(String.format("%.4f", calibration.getGradient()));
-    offsetText.setText(String.format("%.2f", calibration.getOffset()));
+    gradientText.setText(gradientFormat.format(calibration.getGradient()));
+    offsetText.setText(offsetFormat.format(calibration.getOffset()));
   }
 
   @FXML
@@ -182,7 +185,7 @@ public class SupportBaseItemController implements SupportItemController {
   public void onTemperatureCalibrate(ActionEvent event) {
     Sound.play("Click");
 
-    new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), base, calibration -> {
+    new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), calibration -> {
       if (Objects.isNull(calibration)) {
         return;
       }
@@ -199,7 +202,7 @@ public class SupportBaseItemController implements SupportItemController {
   public void onHumidityCalibrate(ActionEvent event) {
     Sound.play("Click");
 
-    new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), base, calibration -> {
+    new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), calibration -> {
       if (Objects.isNull(calibration)) {
         return;
       }

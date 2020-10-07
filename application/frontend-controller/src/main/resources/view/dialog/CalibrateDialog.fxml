@@ -45,8 +45,11 @@
                            GridPane.columnIndex="2" GridPane.rowIndex="2"/>
             </children>
         </GridPane>
-        <AnchorPane>
+        <AnchorPane minWidth="550">
             <children>
+                <Button cancelButton="true" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReset"
+                        prefHeight="48.0" prefWidth="200.0" text="%dialog.button.reset" AnchorPane.bottomAnchor="0.0"
+                        AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                 <Button cancelButton="true" mnemonicParsing="false" onAction="#onCancel" prefHeight="48.0"
                         prefWidth="128.0" text="%dialog.button.cancel" AnchorPane.bottomAnchor="0.0"
                         AnchorPane.rightAnchor="168.0" AnchorPane.topAnchor="0.0"/>

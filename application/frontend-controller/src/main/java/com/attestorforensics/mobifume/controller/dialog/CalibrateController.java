@@ -3,7 +3,6 @@ package com.attestorforensics.mobifume.controller.dialog;
 import com.attestorforensics.mobifume.controller.util.SignedDoubleTextFormatter;
 import com.attestorforensics.mobifume.controller.util.Sound;
 import com.attestorforensics.mobifume.controller.util.TabTipKeyboard;
-import com.attestorforensics.mobifume.model.object.Base;
 import com.attestorforensics.mobifume.model.object.Calibration;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
 import javafx.fxml.FXML;
@@ -16,8 +15,6 @@ public class CalibrateController {
 
   @Setter
   private CalibrateDialog dialog;
-  private Base base;
-  //  private Filter filter;
 
   @FXML
   private Text title;
@@ -34,8 +31,7 @@ public class CalibrateController {
   @FXML
   private Button ok;
 
-  public void setBase(Base base, String calibrationName) {
-    this.base = base;
+  public void setCalibrationName(String calibrationName) {
     String translatedCalibrationName = LocaleManager.getInstance()
         .getString("dialog.support.calibrate.title." + calibrationName);
     title.setText(LocaleManager.getInstance()
@@ -80,6 +76,10 @@ public class CalibrateController {
       return;
     }
 
+    if (firstMeasurementReference.getText().equals(secondMeasurementReference.getText())) {
+      return;
+    }
+
     ok.disableProperty().setValue(false);
   }
 
@@ -106,5 +106,11 @@ public class CalibrateController {
   public void onCancel() {
     Sound.play("Click");
     dialog.close(null);
+  }
+
+  @FXML
+  public void onReset() {
+    Sound.play("Click");
+    dialog.close(Calibration.createDefault());
   }
 }

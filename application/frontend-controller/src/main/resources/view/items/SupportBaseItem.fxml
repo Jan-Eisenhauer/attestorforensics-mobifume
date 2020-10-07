@@ -12,103 +12,139 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
-
-<AnchorPane styleClass="roundItem" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.attestorforensics.mobifume.controller.item.SupportBaseItemController">
+<AnchorPane styleClass="roundItem" xmlns="http://javafx.com/javafx/8.0.191" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.attestorforensics.mobifume.controller.item.SupportBaseItemController">
     <children>
         <HBox alignment="CENTER_LEFT" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../../images/Base.png" />
+                        <Image url="@../../images/Base.png"/>
                     </image>
                 </ImageView>
-                <Text fx:id="id" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subtitleText" />
+                <Text fx:id="id" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subtitleText"/>
             </children>
         </HBox>
-        <GridPane alignment="CENTER_LEFT" hgap="2.0" vgap="2.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="100.0">
+        <GridPane alignment="CENTER_LEFT" hgap="2.0" vgap="2.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0"
+                  AnchorPane.topAnchor="100.0">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" />
-                <ColumnConstraints />
-                <ColumnConstraints hgrow="SOMETIMES" />
+                <ColumnConstraints hgrow="SOMETIMES"/>
+                <ColumnConstraints/>
+                <ColumnConstraints hgrow="SOMETIMES"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints vgrow="SOMETIMES" />
-                <RowConstraints vgrow="SOMETIMES" />
-                <RowConstraints />
-                <RowConstraints />
-                <RowConstraints />
-                <RowConstraints />
-                <RowConstraints />
-                <RowConstraints />
-                <RowConstraints />
-                <RowConstraints />
-            <RowConstraints />
-            <RowConstraints />
+                <RowConstraints vgrow="SOMETIMES"/>
+                <RowConstraints vgrow="SOMETIMES"/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
             </rowConstraints>
             <children>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.version" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                <Text fx:id="version" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.rssi" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                <Text fx:id="rssi" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.temperature" GridPane.rowIndex="2" />
-                <Text fx:id="temperature" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.temperature.calibrate" GridPane.rowIndex="3" />
-            <HBox alignment="CENTER_LEFT" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-               <children>
-                  <Text fx:id="temperatureCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" />
-                  <Text fx:id="temperatureCalibrationOffset" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" />
-               </children>
-            </HBox>
-            <Text fx:id="temperatureCalibration" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <Button mnemonicParsing="false" onAction="#onTemperatureCalibrate" styleClass="textButton" text="%support.action.temperature.calibrate" GridPane.columnIndex="2" GridPane.rowIndex="3">
-                    <GridPane.margin>
-                        <Insets left="16.0" />
-                    </GridPane.margin>
-                </Button>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.humidity" GridPane.rowIndex="4" />
-                <Text fx:id="humidity" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.humidity.calibrate" GridPane.rowIndex="5" />
-            <HBox alignment="CENTER_LEFT" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
-               <children>
-                  <Text fx:id="humidityCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" />
-                  <Text fx:id="humidityCalibrationOffset" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" />
-               </children>
-            </HBox>
-                <Button mnemonicParsing="false" onAction="#onHumidityCalibrate" styleClass="textButton" text="%support.action.humidity.calibrate" GridPane.columnIndex="2" GridPane.rowIndex="5">
-                    <GridPane.margin>
-                        <Insets left="16.0" />
-                    </GridPane.margin>
-                </Button>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.heater" GridPane.rowIndex="6" />
-                <Text fx:id="heater" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.setpoint" GridPane.rowIndex="7" />
-                <Text fx:id="setpoint" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.latch" GridPane.rowIndex="8" />
-                <Text fx:id="latch" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                <Button mnemonicParsing="false" onAction="#onReset" styleClass="textButton" text="%support.action.reset" GridPane.columnIndex="2">
-                    <GridPane.margin>
-                        <Insets left="16.0" />
-                    </GridPane.margin>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#onLatch" styleClass="textButton" text="%support.action.latch" GridPane.columnIndex="2" GridPane.rowIndex="8">
-                    <GridPane.margin>
-                        <Insets left="16.0" />
-                    </GridPane.margin>
-                </Button>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.action.time.description" GridPane.rowIndex="9" />
-                <TextField fx:id="timeField" prefWidth="96.0" styleClass="contentText" text="60" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.action.setpoint.description" GridPane.rowIndex="10" />
-                <TextField fx:id="setpointField" prefWidth="96.0" styleClass="contentText" text="120" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-                <Button mnemonicParsing="false" onAction="#onSetpoint" styleClass="textButton" text="%support.action.setpoint" GridPane.columnIndex="2" GridPane.rowIndex="9" GridPane.rowSpan="2">
-                    <GridPane.margin>
-                        <Insets left="16.0" />
-                    </GridPane.margin>
-                </Button>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.action.setpoint.set" GridPane.rowIndex="11" />
-                <HBox alignment="CENTER_LEFT" spacing="16.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="11">
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.version"
+                      GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Text fx:id="version" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.rssi"
+                      GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Text fx:id="rssi" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.temperature"
+                      GridPane.rowIndex="2"/>
+                <Text fx:id="temperature" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      text="%support.status.temperature.calibrate" GridPane.rowIndex="3"/>
+                <HBox alignment="CENTER_LEFT" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                     <children>
-                        <Button minWidth="100.0" mnemonicParsing="false" onAction="#onSetpoint120" styleClass="textButton" text="%support.action.setpoint.set120" />
-                        <Button minWidth="100.0" mnemonicParsing="false" onAction="#onSetpoint230" styleClass="textButton" text="%support.action.setpoint.set230" />
+                        <Text fx:id="temperatureCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0"
+                              styleClass="contentText"/>
+                        <Text fx:id="temperatureCalibrationOffset" strokeType="OUTSIDE" strokeWidth="0.0"
+                              styleClass="contentText"/>
+                    </children>
+                </HBox>
+                <Text fx:id="temperatureCalibration" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Button mnemonicParsing="false" onAction="#onTemperatureCalibrate" styleClass="textButton"
+                        text="%support.action.temperature.calibrate" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                    <GridPane.margin>
+                        <Insets left="16.0"/>
+                    </GridPane.margin>
+                </Button>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.humidity"
+                      GridPane.rowIndex="4"/>
+                <Text fx:id="humidity" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      text="%support.status.humidity.calibrate" GridPane.rowIndex="5"/>
+                <HBox alignment="CENTER_LEFT" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                    <children>
+                        <Text fx:id="humidityCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0"
+                              styleClass="contentText"/>
+                        <Text fx:id="humidityCalibrationOffset" strokeType="OUTSIDE" strokeWidth="0.0"
+                              styleClass="contentText"/>
+                    </children>
+                </HBox>
+                <Button mnemonicParsing="false" onAction="#onHumidityCalibrate" styleClass="textButton"
+                        text="%support.action.humidity.calibrate" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                    <GridPane.margin>
+                        <Insets left="16.0"/>
+                    </GridPane.margin>
+                </Button>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.heater"
+                      GridPane.rowIndex="6"/>
+                <Text fx:id="heater" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.setpoint"
+                      GridPane.rowIndex="7"/>
+                <Text fx:id="setpoint" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.latch"
+                      GridPane.rowIndex="8"/>
+                <Text fx:id="latch" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                <Button mnemonicParsing="false" onAction="#onReset" styleClass="textButton" text="%support.action.reset"
+                        GridPane.columnIndex="2">
+                    <GridPane.margin>
+                        <Insets left="16.0"/>
+                    </GridPane.margin>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#onLatch" styleClass="textButton" text="%support.action.latch"
+                        GridPane.columnIndex="2" GridPane.rowIndex="8">
+                    <GridPane.margin>
+                        <Insets left="16.0"/>
+                    </GridPane.margin>
+                </Button>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      text="%support.action.time.description" GridPane.rowIndex="9"/>
+                <TextField fx:id="timeField" prefWidth="96.0" styleClass="contentText" text="60"
+                           GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      text="%support.action.setpoint.description" GridPane.rowIndex="10"/>
+                <TextField fx:id="setpointField" prefWidth="96.0" styleClass="contentText" text="120"
+                           GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                <Button mnemonicParsing="false" onAction="#onSetpoint" styleClass="textButton"
+                        text="%support.action.setpoint" GridPane.columnIndex="2" GridPane.rowIndex="9"
+                        GridPane.rowSpan="2">
+                    <GridPane.margin>
+                        <Insets left="16.0"/>
+                    </GridPane.margin>
+                </Button>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      text="%support.action.setpoint.set" GridPane.rowIndex="11"/>
+                <HBox alignment="CENTER_LEFT" spacing="16.0" GridPane.columnIndex="1" GridPane.columnSpan="2"
+                      GridPane.rowIndex="11">
+                    <children>
+                        <Button minWidth="100.0" mnemonicParsing="false" onAction="#onSetpoint120"
+                                styleClass="textButton" text="%support.action.setpoint.set120"/>
+                        <Button minWidth="100.0" mnemonicParsing="false" onAction="#onSetpoint230"
+                                styleClass="textButton" text="%support.action.setpoint.set230"/>
                     </children>
                 </HBox>
 
@@ -116,11 +152,11 @@
         </GridPane>
     </children>
     <stylesheets>
-        <URL value="@../style/DefaultApp.css" />
-        <URL value="@../style/Controls.css" />
-        <URL value="@../style/Item.css" />
+        <URL value="@../style/DefaultApp.css"/>
+        <URL value="@../style/Controls.css"/>
+        <URL value="@../style/Item.css"/>
     </stylesheets>
     <padding>
-        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
     </padding>
 </AnchorPane>
