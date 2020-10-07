@@ -34,7 +34,7 @@ public class GroupHumItemController {
   public void setHumidifier(Humidifier hum) {
     this.hum = hum;
     nodeId.setText(hum.getShortId());
-    GroupItemControllerHolder.getInstance().addHumController(this);
+    GroupItemControllerHolder.getInstance().addHumController(hum, this);
   }
 
   @FXML

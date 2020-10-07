@@ -9,10 +9,9 @@ import com.attestorforensics.mobifume.controller.util.Sound;
 import com.attestorforensics.mobifume.model.object.Device;
 import com.attestorforensics.mobifume.model.object.DeviceType;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -31,7 +30,7 @@ public class SupportController {
   @FXML
   private Pane devices;
 
-  private List<SupportItemController> supportItemControllers = Lists.newArrayList();
+  private Map<String, SupportItemController> supportItemControllers = Maps.newHashMap();
 
   private SupportListener supportListener;
 
@@ -43,15 +42,12 @@ public class SupportController {
   }
 
   public void addDevice(Device device) {
-    Optional<SupportItemController> optionalSupportItemController = supportItemControllers.stream()
-        .filter(controller -> controller.getDevice() == device)
-        .findFirst();
-    if (optionalSupportItemController.isPresent()) {
-      optionalSupportItemController.get().setDevice(device);
-      return;
-    }
-
     Platform.runLater(() -> {
+      if (supportItemControllers.containsKey(device.getId())) {
+        supportItemControllers.get(device.getId()).setDevice(device);
+        return;
+      }
+
       try {
         ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
@@ -62,7 +58,7 @@ public class SupportController {
         SupportItemController controller = loader.getController();
         controller.setDevice(device);
         root.getProperties().put("controller", controller);
-        supportItemControllers.add(controller);
+        supportItemControllers.put(device.getId(), controller);
         devices.getChildren().add(root);
       } catch (IOException e) {
         e.printStackTrace();
@@ -97,16 +93,14 @@ public class SupportController {
   }
 
   public void updateDevice(Device device) {
-    getSupportItemController(device).ifPresent(SupportItemController::update);
+    supportItemControllers.get(device.getId()).update();
   }
 
   public void removeDevice(Device device) {
-    getSupportItemController(device).ifPresent(SupportItemController::remove);
+    supportItemControllers.get(device.getId()).remove();
   }
 
-  public Optional<SupportItemController> getSupportItemController(Device device) {
-    return supportItemControllers.stream()
-        .filter(controller -> controller.getDevice() == device)
-        .findFirst();
+  public SupportItemController getSupportItemController(Device device) {
+    return supportItemControllers.get(device.getId());
   }
 }

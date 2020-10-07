@@ -30,9 +30,8 @@ public class SupportListener implements Listener {
           supportController.updateDevice(event.getDevice());
           break;
         case CALIBRATION_DATA_UPDATED:
-          supportController.getSupportItemController(event.getDevice())
-              .ifPresent(
-                  supportItemController -> ((SupportBaseItemController) supportItemController).updateCalibration());
+          ((SupportBaseItemController) supportController.getSupportItemController(
+              event.getDevice())).updateCalibration();
           break;
         default:
           break;

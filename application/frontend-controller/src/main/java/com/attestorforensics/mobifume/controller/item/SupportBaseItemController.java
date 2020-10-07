@@ -178,6 +178,7 @@ public class SupportBaseItemController implements SupportItemController {
   @FXML
   public void onLatch() {
     Sound.play("Click");
+    base.updateTime(60);
     base.updateLatch(base.getLatch() == 0);
   }
 

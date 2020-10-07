@@ -55,35 +55,14 @@
                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                 <Text fx:id="rssi" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
                       GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.temperature"
+
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.humidity"
                       GridPane.rowIndex="2"/>
-                <Text fx:id="temperature" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                <Text fx:id="humidity" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
                       GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
-                      text="%support.status.temperature.calibrate" GridPane.rowIndex="3"/>
+                      text="%support.status.humidity.calibrate" GridPane.rowIndex="3"/>
                 <HBox alignment="CENTER_LEFT" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                    <children>
-                        <Text fx:id="temperatureCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0"
-                              styleClass="contentText"/>
-                        <Text fx:id="temperatureCalibrationOffset" strokeType="OUTSIDE" strokeWidth="0.0"
-                              styleClass="contentText"/>
-                    </children>
-                </HBox>
-                <Text fx:id="temperatureCalibration" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
-                      GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                <Button mnemonicParsing="false" onAction="#onTemperatureCalibrate" styleClass="textButton"
-                        text="%support.action.temperature.calibrate" GridPane.columnIndex="2" GridPane.rowIndex="3">
-                    <GridPane.margin>
-                        <Insets left="16.0"/>
-                    </GridPane.margin>
-                </Button>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.humidity"
-                      GridPane.rowIndex="4"/>
-                <Text fx:id="humidity" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
-                      GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
-                      text="%support.status.humidity.calibrate" GridPane.rowIndex="5"/>
-                <HBox alignment="CENTER_LEFT" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                     <children>
                         <Text fx:id="humidityCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0"
                               styleClass="contentText"/>
@@ -92,7 +71,29 @@
                     </children>
                 </HBox>
                 <Button mnemonicParsing="false" onAction="#onHumidityCalibrate" styleClass="textButton"
-                        text="%support.action.humidity.calibrate" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                        text="%support.action.humidity.calibrate" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                    <GridPane.margin>
+                        <Insets left="16.0"/>
+                    </GridPane.margin>
+                </Button>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.temperature"
+                      GridPane.rowIndex="4"/>
+                <Text fx:id="temperature" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      text="%support.status.temperature.calibrate" GridPane.rowIndex="5"/>
+                <HBox alignment="CENTER_LEFT" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                    <children>
+                        <Text fx:id="temperatureCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0"
+                              styleClass="contentText"/>
+                        <Text fx:id="temperatureCalibrationOffset" strokeType="OUTSIDE" strokeWidth="0.0"
+                              styleClass="contentText"/>
+                    </children>
+                </HBox>
+                <Text fx:id="temperatureCalibration" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <Button mnemonicParsing="false" onAction="#onTemperatureCalibrate" styleClass="textButton"
+                        text="%support.action.temperature.calibrate" GridPane.columnIndex="2" GridPane.rowIndex="5">
                     <GridPane.margin>
                         <Insets left="16.0"/>
                     </GridPane.margin>

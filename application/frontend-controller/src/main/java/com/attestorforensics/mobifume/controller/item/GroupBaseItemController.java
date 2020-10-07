@@ -42,7 +42,7 @@ public class GroupBaseItemController {
     this.base = base;
     nodeId.setText(base.getShortId());
     updateHeaterTemperature();
-    GroupItemControllerHolder.getInstance().addBaseController(this);
+    GroupItemControllerHolder.getInstance().addBaseController(base, this);
   }
 
   public void updateHeaterTemperature() {

@@ -103,7 +103,7 @@ public class GroupController {
 
   public void setGroup(Group group) {
     this.group = group;
-    GroupControllerHolder.getInstance().addController(this);
+    GroupControllerHolder.getInstance().addController(group, this);
     groupName.setText(group.getName() + " - " + group.getSettings().getCycleCount());
 
     initEvaporant();

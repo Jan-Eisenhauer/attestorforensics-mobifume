@@ -44,7 +44,7 @@ public class DeviceItemController {
   public void setDevice(Device device) {
     this.device = device;
     updateConnection();
-    DeviceItemControllerHolder.getInstance().addController(this);
+    DeviceItemControllerHolder.getInstance().addController(device, this);
   }
 
   public void updateConnection() {
