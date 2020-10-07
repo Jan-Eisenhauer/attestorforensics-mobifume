@@ -6,6 +6,7 @@ import com.attestorforensics.mobifume.model.event.ConnectionEvent;
 import com.attestorforensics.mobifume.model.listener.EventHandler;
 import com.attestorforensics.mobifume.model.listener.Listener;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
+import javafx.application.Platform;
 import javafx.stage.Window;
 
 public class ConnectionListener implements Listener {
@@ -22,34 +23,36 @@ public class ConnectionListener implements Listener {
 
   @EventHandler
   public void onConnection(ConnectionEvent event) {
-    switch (event.getStatus()) {
-      case BROKER_CONNECTED:
-        if (connectionLostDialog != null) {
-          connectionLostDialog.close(false);
-          connectionLostDialog = null;
-        }
-        break;
-      case BROKER_LOST:
-        if (connectionLostDialog != null) {
+    Platform.runLater(() -> {
+      switch (event.getStatus()) {
+        case BROKER_CONNECTED:
+          if (connectionLostDialog != null) {
+            connectionLostDialog.close(false);
+            connectionLostDialog = null;
+          }
           break;
-        }
-        connectionLostDialog = new ConfirmDialog(window,
-            LocaleManager.getInstance().getString("dialog.connectionlost.title"),
-            LocaleManager.getInstance().getString("dialog.connectionlost.content"), false, null);
-        break;
-      case BROKER_OTHER_ONLINE:
-        if (otheronline != null) {
+        case BROKER_LOST:
+          if (connectionLostDialog != null) {
+            break;
+          }
+          connectionLostDialog = new ConfirmDialog(window,
+              LocaleManager.getInstance().getString("dialog.connectionlost.title"),
+              LocaleManager.getInstance().getString("dialog.connectionlost.content"), false, null);
           break;
-        }
-        otheronline = new ConfirmDialog(window,
-            LocaleManager.getInstance().getString("dialog.otheronline.title"),
-            LocaleManager.getInstance().getString("dialog.otheronline.content"), false,
-            accepted -> otheronline = null);
-        break;
-      default:
-        break;
-    }
+        case BROKER_OTHER_ONLINE:
+          if (otheronline != null) {
+            break;
+          }
+          otheronline = new ConfirmDialog(window,
+              LocaleManager.getInstance().getString("dialog.otheronline.title"),
+              LocaleManager.getInstance().getString("dialog.otheronline.content"), false,
+              accepted -> otheronline = null);
+          break;
+        default:
+          break;
+      }
 
-    overviewController.updateConnection();
+      overviewController.updateConnection();
+    });
   }
 }
