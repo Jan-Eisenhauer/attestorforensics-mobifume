@@ -353,10 +353,11 @@ public class Room implements Group {
     if (status != Status.EVAPORATE) {
       return;
     }
+
     evaporateStartTime = System.currentTimeMillis();
     CustomLogger.info(this, "RESET_HEATTIMER", evaporateStartTime, settings.getHeatTimer());
     CustomLogger.logGroupSettings(this);
-    getBases().forEach(base -> base.updateTime(settings.getHeatTimer()));
+    updateHeatTimer();
   }
 
   @Override
@@ -375,9 +376,11 @@ public class Room implements Group {
     if (status != Status.PURGE) {
       return;
     }
+
     purgeStartTime = System.currentTimeMillis();
     CustomLogger.info(this, "RESET_HEATTIMER", purgeStartTime, settings.getPurgeTimer());
     CustomLogger.logGroupSettings(this);
+    updatePurgeTimer();
   }
 
   private void checkHumidify() {
