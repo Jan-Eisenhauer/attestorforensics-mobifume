@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -190,10 +191,10 @@ public class GroupController {
 
     statusUpdateTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .scheduleAtFixedRate(() -> {
+        .scheduleAtFixedRate(() -> Platform.runLater(() -> {
           updateStatus();
           updateBases();
-        }, 0L, 1L, TimeUnit.SECONDS);
+        }), 0L, 1L, TimeUnit.SECONDS);
   }
 
   private void cancelStatusTaskIfScheduled() {
@@ -231,13 +232,15 @@ public class GroupController {
   private void evaporateTimer() {
     timerTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .scheduleWithFixedDelay(this::updateEvaporateTimer, 0L, 1L, TimeUnit.SECONDS);
+        .scheduleWithFixedDelay(() -> Platform.runLater(this::updateEvaporateTimer), 0L, 1L,
+            TimeUnit.SECONDS);
   }
 
   private void purgeTimer() {
     timerTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .scheduleWithFixedDelay(this::updatePurgeTimer, 0L, 1L, TimeUnit.SECONDS);
+        .scheduleWithFixedDelay(() -> Platform.runLater(this::updatePurgeTimer), 0L, 1L,
+            TimeUnit.SECONDS);
   }
 
   private void initBases() {

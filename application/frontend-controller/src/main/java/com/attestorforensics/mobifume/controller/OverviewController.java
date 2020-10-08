@@ -53,11 +53,13 @@ public class OverviewController {
 
   @FXML
   public void initialize() {
-    Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
-      Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
-      Kernel32.instance.GetSystemPowerStatus(batteryStatus);
-      battery.setText(batteryStatus.getBatteryLifePercent());
-    }, 0L, 10L, TimeUnit.SECONDS);
+    Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .scheduleAtFixedRate(() -> Platform.runLater(() -> {
+          Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
+          Kernel32.instance.GetSystemPowerStatus(batteryStatus);
+          battery.setText(batteryStatus.getBatteryLifePercent());
+        }), 0L, 10L, TimeUnit.SECONDS);
   }
 
   public void load() {

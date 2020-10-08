@@ -56,7 +56,7 @@ public class GroupItemController {
   private void statusUpdate() {
     statusUpdateTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .scheduleWithFixedDelay(this::updateStatus, 0L, 1L, TimeUnit.SECONDS);
+        .scheduleWithFixedDelay(() -> Platform.runLater(this::updateStatus), 0L, 1L, TimeUnit.SECONDS);
   }
 
   private void createGroupRoot() {
