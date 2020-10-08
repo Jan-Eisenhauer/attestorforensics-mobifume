@@ -227,6 +227,7 @@ public class Room implements Group {
     CustomLogger.info(this, "START_PURGE");
     CustomLogger.logGroupSettings(this);
 
+    cancelEvaporateTaskIfScheduled();
     cancelPurgeTaskIfScheduled();
     purgeStartTime = System.currentTimeMillis();
 
