@@ -27,6 +27,6 @@ public class Sound {
   }
 
   public static void click() {
-    play("click");
+    play("Click");
   }
 }
