@@ -12,6 +12,7 @@ import com.attestorforensics.mobifume.model.object.Status;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;
 import com.attestorforensics.mobifume.util.setting.Settings;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -24,11 +25,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.ValueAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.StringConverter;
 import lombok.Getter;
 
 public class GroupController {
@@ -94,6 +99,9 @@ public class GroupController {
   @FXML
   private VBox filters;
 
+  @FXML
+  private LineChart<Double, Double> chart;
+
   private Parent calculator;
 
   private int tempWrong;
@@ -101,6 +109,9 @@ public class GroupController {
 
   private ScheduledFuture<?> timerTask;
   private ScheduledFuture<?> statusUpdateTask;
+
+  private XYChart.Series<Double, Double> dataSeries;
+  private long latestDataTimestamp;
 
   public void setGroup(Group group) {
     this.group = group;
@@ -188,12 +199,14 @@ public class GroupController {
     initBases();
     initHumidifiers();
     initFilters();
+    initChart();
 
     statusUpdateTask = Mobifume.getInstance()
         .getScheduledExecutorService()
         .scheduleAtFixedRate(() -> Platform.runLater(() -> {
           updateStatus();
           updateBases();
+          updateChart();
         }), 0L, 1L, TimeUnit.SECONDS);
   }
 
@@ -295,6 +308,41 @@ public class GroupController {
         e.printStackTrace();
       }
     });
+  }
+
+  private void initChart() {
+    dataSeries = new XYChart.Series<>();
+    chart.getData().add(dataSeries);
+
+    long firstTimestamp = System.currentTimeMillis();
+    latestDataTimestamp = firstTimestamp;
+
+    SimpleDateFormat formatSeconds = new SimpleDateFormat(("HH:mm:ss "));
+    SimpleDateFormat formatMinute = new SimpleDateFormat("HH:mm ");
+    ((ValueAxis<Double>) chart.getXAxis()).setTickLabelFormatter(new StringConverter<Double>() {
+      @Override
+      public String toString(Double value) {
+        // hide seconds after 10 min
+        final int millisToTenMinutesMultiplier = 1000 * 60 * 10;
+        if (latestDataTimestamp < firstTimestamp + millisToTenMinutesMultiplier) {
+          return formatSeconds.format(new Date(value.longValue()));
+        }
+
+        return formatMinute.format(new Date(value.longValue()));
+      }
+
+      @Override
+      public Double fromString(String s) {
+        return 0d;
+      }
+    });
+  }
+
+  private void updateChart() {
+    latestDataTimestamp = System.currentTimeMillis();
+    XYChart.Data<Double, Double> data = new XYChart.Data<>((double) latestDataTimestamp,
+        group.getHumidity());
+    dataSeries.getData().add(data);
   }
 
   public void updateStatus() {
