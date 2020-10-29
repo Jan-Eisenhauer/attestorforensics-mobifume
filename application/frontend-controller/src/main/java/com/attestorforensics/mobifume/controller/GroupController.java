@@ -38,6 +38,8 @@ import lombok.Getter;
 
 public class GroupController {
 
+  private static final long CHART_UPDATE_DELAY = 1000L * 60;
+
   @Getter
   private Group group;
 
@@ -314,20 +316,13 @@ public class GroupController {
     dataSeries = new XYChart.Series<>();
     chart.getData().add(dataSeries);
 
-    long firstTimestamp = System.currentTimeMillis();
-    latestDataTimestamp = firstTimestamp;
+    latestDataTimestamp = System.currentTimeMillis() - 60000;
+    addCurrentHumidityToChart();
 
-    SimpleDateFormat formatSeconds = new SimpleDateFormat(("HH:mm:ss "));
     SimpleDateFormat formatMinute = new SimpleDateFormat("HH:mm ");
     ((ValueAxis<Double>) chart.getXAxis()).setTickLabelFormatter(new StringConverter<Double>() {
       @Override
       public String toString(Double value) {
-        // hide seconds after 10 min
-        final int millisToTenMinutesMultiplier = 1000 * 60 * 10;
-        if (latestDataTimestamp < firstTimestamp + millisToTenMinutesMultiplier) {
-          return formatSeconds.format(new Date(value.longValue()));
-        }
-
         return formatMinute.format(new Date(value.longValue()));
       }
 
@@ -339,7 +334,16 @@ public class GroupController {
   }
 
   private void updateChart() {
-    latestDataTimestamp = System.currentTimeMillis();
+    long currentTimestamp = System.currentTimeMillis();
+    if (currentTimestamp < latestDataTimestamp + CHART_UPDATE_DELAY) {
+      return;
+    }
+
+    latestDataTimestamp = currentTimestamp;
+    addCurrentHumidityToChart();
+  }
+
+  private void addCurrentHumidityToChart() {
     XYChart.Data<Double, Double> data = new XYChart.Data<>((double) latestDataTimestamp,
         group.getHumidity());
     dataSeries.getData().add(data);
