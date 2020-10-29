@@ -9,20 +9,24 @@ import javafx.scene.media.MediaPlayer;
 
 public class Sound {
 
-  private static Map<String, MediaPlayer> mediaPlayerCache = Maps.newConcurrentMap();
+  private final static Map<String, Media> mediaCache = Maps.newConcurrentMap();
 
   public static void play(String audio) {
-    MediaPlayer cachedMediaPlayer = mediaPlayerCache.get(audio);
-    if (Objects.nonNull(cachedMediaPlayer)) {
-      cachedMediaPlayer.play();
+    Media cachedSound = mediaCache.get(audio);
+    if (Objects.nonNull(cachedSound)) {
+      playSound(cachedSound);
       return;
     }
 
     URL resource = Sound.class.getClassLoader().getResource("sounds/" + audio + ".mp3");
     String externalResource = Objects.requireNonNull(resource).toExternalForm();
     Media sound = new Media(externalResource);
+    mediaCache.put(audio, sound);
+    playSound(sound);
+  }
+
+  private static void playSound(Media sound) {
     MediaPlayer mediaPlayer = new MediaPlayer(sound);
-    mediaPlayerCache.put(audio, mediaPlayer);
     mediaPlayer.play();
   }
 

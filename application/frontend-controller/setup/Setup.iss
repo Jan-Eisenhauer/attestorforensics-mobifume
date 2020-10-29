@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define name "MOBIfume"
-#define version "2.3.5"
+#define version "2.3.6"
 #define verName name + "-" + version
 #define jarName name + ".jar"
 #define iconName name + ".ico"
