@@ -5,7 +5,7 @@ import com.attestorforensics.mobifume.model.event.EvaporateEvent;
 import com.attestorforensics.mobifume.model.event.GroupEvent;
 import com.attestorforensics.mobifume.model.event.HumidifyEvent;
 import com.attestorforensics.mobifume.model.event.PurgeEvent;
-import com.attestorforensics.mobifume.util.CustomLogger;
+import com.attestorforensics.mobifume.util.log.CustomLogger;
 import com.attestorforensics.mobifume.util.setting.Settings;
 import java.util.List;
 import java.util.Objects;

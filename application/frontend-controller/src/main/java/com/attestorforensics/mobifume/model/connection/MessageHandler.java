@@ -11,7 +11,7 @@ import com.attestorforensics.mobifume.model.object.DeviceType;
 import com.attestorforensics.mobifume.model.object.Group;
 import com.attestorforensics.mobifume.model.object.Humidifier;
 import com.attestorforensics.mobifume.model.object.Room;
-import com.attestorforensics.mobifume.util.CustomLogger;
+import com.attestorforensics.mobifume.util.log.CustomLogger;
 import lombok.Getter;
 import lombok.Setter;
 

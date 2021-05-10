@@ -3,7 +3,7 @@ package com.attestorforensics.mobifume.model.connection;
 import com.attestorforensics.mobifume.Mobifume;
 import com.attestorforensics.mobifume.model.MobiModelManager;
 import com.attestorforensics.mobifume.model.event.ConnectionEvent;
-import com.attestorforensics.mobifume.util.CustomLogger;
+import com.attestorforensics.mobifume.util.log.CustomLogger;
 import com.attestorforensics.mobifume.util.FileManager;
 import java.io.File;
 import java.util.Enumeration;

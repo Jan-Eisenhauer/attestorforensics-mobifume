@@ -14,7 +14,8 @@ import com.attestorforensics.mobifume.model.object.FilterFileHandler;
 import com.attestorforensics.mobifume.model.object.Group;
 import com.attestorforensics.mobifume.model.object.MobiFilter;
 import com.attestorforensics.mobifume.model.object.Room;
-import com.attestorforensics.mobifume.util.CustomLogger;
+import com.attestorforensics.mobifume.util.log.CustomLogger;
+import com.attestorforensics.mobifume.util.log.LogMover;
 import com.attestorforensics.mobifume.util.setting.Settings;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,6 +40,9 @@ public class MobiModelManager implements ModelManager {
   private FilterFileHandler filterFileHandler;
 
   public MobiModelManager() {
+    LogMover logMover = LogMover.create(Mobifume.getInstance().getScheduledExecutorService());
+    logMover.startMovingToUsb();
+
     Settings.loadDefaultSettings();
     filterFileHandler = new FilterFileHandler();
     filters = filterFileHandler.loadFilters()

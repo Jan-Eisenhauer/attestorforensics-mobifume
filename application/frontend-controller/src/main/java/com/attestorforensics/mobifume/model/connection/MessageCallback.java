@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifume.model.connection;
 
-import com.attestorforensics.mobifume.util.CustomLogger;
+import com.attestorforensics.mobifume.util.log.CustomLogger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;

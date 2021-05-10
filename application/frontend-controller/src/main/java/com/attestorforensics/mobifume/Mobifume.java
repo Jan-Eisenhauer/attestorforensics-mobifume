@@ -3,7 +3,7 @@ package com.attestorforensics.mobifume;
 import com.attestorforensics.mobifume.model.MobiModelManager;
 import com.attestorforensics.mobifume.model.ModelManager;
 import com.attestorforensics.mobifume.model.listener.EventManager;
-import com.attestorforensics.mobifume.util.CustomLogger;
+import com.attestorforensics.mobifume.util.log.CustomLogger;
 import com.attestorforensics.mobifume.util.FileManager;
 import com.attestorforensics.mobifume.util.OtherAppChecker;
 import com.attestorforensics.mobifume.util.localization.LocaleManager;

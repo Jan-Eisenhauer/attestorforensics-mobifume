@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifume.util;
+package com.attestorforensics.mobifume.util.log;
 
 import com.attestorforensics.mobifume.Mobifume;
 import com.attestorforensics.mobifume.model.object.Base;
@@ -18,9 +18,9 @@ import org.apache.log4j.PatternLayout;
 
 public class CustomLogger {
 
-  private static final String LOG_DIR =
+  public static final File LOG_DIRECTORY = new File(
       System.getenv("userprofile") + File.separator + "documents" + File.separator + "MOBIfume"
-          + File.separator + "logs" + File.separator;
+          + File.separator + "logs");
   private static final String SPLIT = ";";
 
   public static Logger createLogger(Class<?> clazz) {
@@ -29,7 +29,8 @@ public class CustomLogger {
       PatternLayout layout = new PatternLayout("[%d{yyyy-MM-dd HH:mm:ss}] %-5p - %m%n");
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
       String dateTime = formatter.format(new Date(System.currentTimeMillis()));
-      FileAppender appender = new FileAppender(layout, LOG_DIR + dateTime + ".log", false);
+      FileAppender appender = new FileAppender(layout,
+          LOG_DIRECTORY.getAbsolutePath() + File.separator + dateTime + ".log", false);
       logger.addAppender(appender);
     } catch (IOException e) {
       e.printStackTrace();
@@ -47,8 +48,8 @@ public class CustomLogger {
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
       String dateTime = formatter.format(new Date(System.currentTimeMillis()));
       String cycle = String.format("%03d", group.getSettings().getCycleCount());
-      FileAppender appender = new FileAppender(layout, LOG_DIR + dateTime + "." + cycle + ".run",
-          false);
+      FileAppender appender = new FileAppender(layout,
+          LOG_DIRECTORY + File.separator + dateTime + "." + cycle + ".run", false);
       logger.addAppender(appender);
     } catch (IOException e) {
       e.printStackTrace();
