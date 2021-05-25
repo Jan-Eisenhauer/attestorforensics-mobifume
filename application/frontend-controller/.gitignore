@@ -6,6 +6,3 @@ out/
 
 # Maven
 target/
-
-# Inno Setup
-Output/

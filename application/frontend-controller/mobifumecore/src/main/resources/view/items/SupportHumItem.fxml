@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Text?>
+<AnchorPane styleClass="roundItem" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.191"
+            fx:controller="com.attestorforensics.mobifumecore.controller.item.SupportHumItemController">
+    <children>
+        <HBox alignment="CENTER_LEFT" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../images/Hum.png"/>
+                    </image>
+                </ImageView>
+                <Text fx:id="id" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subtitleText"/>
+            </children>
+        </HBox>
+        <GridPane hgap="2.0" vgap="2.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0"
+                  AnchorPane.topAnchor="100.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES"/>
+                <ColumnConstraints />
+                <ColumnConstraints hgrow="SOMETIMES"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES"/>
+                <RowConstraints vgrow="SOMETIMES"/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+            </rowConstraints>
+            <children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.version"
+                      GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Text fx:id="version" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.rssi"
+                      GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Text fx:id="rssi" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.humidify"
+                      GridPane.rowIndex="2"/>
+                <Text fx:id="humidify" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.led1"
+                      GridPane.rowIndex="3"/>
+                <Text fx:id="led1" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText" text="%support.status.led2"
+                      GridPane.rowIndex="4"/>
+                <Text fx:id="led2" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Text fx:id="overTemperature" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+                      GridPane.columnSpan="3" GridPane.rowIndex="5"/>
+                <Button mnemonicParsing="false" onAction="#onReset" styleClass="textButton" text="%support.action.reset"
+                        GridPane.columnIndex="2">
+                    <GridPane.margin>
+                        <Insets left="16.0"/>
+                    </GridPane.margin>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#onHumidify" styleClass="textButton"
+                        text="%support.action.humidify" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                    <GridPane.margin>
+                        <Insets left="16.0"/>
+                    </GridPane.margin>
+                </Button>
+            </children>
+        </GridPane>
+    </children>
+    <stylesheets>
+        <URL value="@../style/DefaultApp.css"/>
+        <URL value="@../style/Controls.css"/>
+        <URL value="@../style/Item.css"/>
+    </stylesheets>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</AnchorPane>
