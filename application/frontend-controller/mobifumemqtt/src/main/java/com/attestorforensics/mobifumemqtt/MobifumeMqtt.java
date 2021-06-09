@@ -41,7 +41,7 @@ public class MobifumeMqtt {
     clientConnection.connectClient();
     subscribeChannels();
 
-    Console console = Console.create(messageSender);
+    Console console = Console.create(messageSender, messageRouter);
     console.read();
   }
 

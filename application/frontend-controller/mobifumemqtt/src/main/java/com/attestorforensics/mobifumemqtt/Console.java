@@ -1,5 +1,6 @@
 package com.attestorforensics.mobifumemqtt;
 
+import com.attestorforensics.mobifumemqtt.route.AppRoute;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,13 +10,15 @@ import java.util.Locale;
 public class Console {
 
   private final MessageSender messageSender;
+  private final MessageRouter messageRouter;
 
-  private Console(MessageSender messageSender) {
+  private Console(MessageSender messageSender, MessageRouter messageRouter) {
     this.messageSender = messageSender;
+    this.messageRouter = messageRouter;
   }
 
-  public static Console create(MessageSender messageSender) {
-    return new Console(messageSender);
+  public static Console create(MessageSender messageSender, MessageRouter messageRouter) {
+    return new Console(messageSender, messageRouter);
   }
 
   public void read() {
@@ -45,6 +48,9 @@ public class Console {
         break;
       case "hum":
         onHum(arguments);
+        break;
+      case "sim":
+        onSim(arguments);
         break;
       default:
         System.out.println("Unknown command");
@@ -80,5 +86,15 @@ public class Console {
 
     String deviceId = arguments[0];
     messageSender.sendHumOnline(deviceId);
+  }
+
+  private void onSim(String[] arguments) {
+    String baseId = "node-1000";
+    String humId = "node-2000";
+    AppRoute appRoute = AppRoute.create(appId -> {
+      messageSender.sendBaseOnline(baseId);
+      messageSender.sendHumOnline(humId);
+    });
+    messageRouter.registerRoute(appRoute);
   }
 }
