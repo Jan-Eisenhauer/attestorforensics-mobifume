@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.controller.util.SignedDoubleTextFormat
 import com.attestorforensics.mobifumecore.controller.util.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.setting.Settings;
 import java.io.IOException;
 import java.util.HashMap;

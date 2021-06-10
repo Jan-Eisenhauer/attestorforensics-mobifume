@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection
 import com.attestorforensics.mobifumecore.model.listener.EventManager;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.attestorforensics.mobifumecore.util.OtherAppChecker;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.log.CustomLogger;
 import com.attestorforensics.mobifumecore.util.setting.Settings;
 import com.attestorforensics.mobifumecore.view.MobiApplication;

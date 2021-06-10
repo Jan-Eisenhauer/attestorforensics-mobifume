@@ -9,7 +9,7 @@ import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.object.Base;
 import com.attestorforensics.mobifumecore.model.object.Calibration;
 import com.attestorforensics.mobifumecore.model.object.Device;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.Optional;

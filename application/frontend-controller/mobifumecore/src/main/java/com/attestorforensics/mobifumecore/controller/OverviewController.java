@@ -14,7 +14,7 @@ import com.attestorforensics.mobifumecore.model.object.DeviceType;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.util.Kernel32;
 import com.attestorforensics.mobifumecore.util.Kernel32.SystemPowerStatus;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.view.GroupColor;
 import java.io.IOException;
 import java.util.ArrayList;

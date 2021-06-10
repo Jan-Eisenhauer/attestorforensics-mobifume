@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.util.localization;
+package com.attestorforensics.mobifumecore.util.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.model.update.UpdatingState;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.util.Locale;
 import java.util.Optional;
 import javafx.fxml.FXML;
