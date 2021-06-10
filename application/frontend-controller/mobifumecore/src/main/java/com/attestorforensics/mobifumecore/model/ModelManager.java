@@ -1,5 +1,6 @@
 package com.attestorforensics.mobifumecore.model;
 
+import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
 import com.attestorforensics.mobifumecore.model.object.Device;
 import com.attestorforensics.mobifumecore.model.object.Filter;
 import com.attestorforensics.mobifumecore.model.object.Group;
@@ -12,22 +13,7 @@ import java.util.List;
  */
 public interface ModelManager {
 
-  /**
-   * Checks if wifi is enabled.
-   *
-   * @return if wifi is enabled
-   */
-  boolean isWifiEnabled();
-
-  /**
-   * Connects with wifi.
-   */
-  void connectWifi();
-
-  /**
-   * Disconnects with wifi.
-   */
-  void disconnectWifi();
+  WifiConnection getWifiConnection();
 
   /**
    * Connects to broker.

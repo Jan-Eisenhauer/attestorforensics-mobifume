@@ -70,8 +70,9 @@ public class OverviewController {
   public void addNode(Device device) {
     try {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/items/DeviceItem.fxml"), resourceBundle);
+      FXMLLoader loader =
+          new FXMLLoader(getClass().getClassLoader().getResource("view/items/DeviceItem.fxml"),
+              resourceBundle);
       Parent root = loader.load();
       DeviceItemController controller = loader.getController();
       controller.setDevice(device);
@@ -86,8 +87,9 @@ public class OverviewController {
   public void addGroup(Group group) {
     try {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/items/GroupItem.fxml"), resourceBundle);
+      FXMLLoader loader =
+          new FXMLLoader(getClass().getClassLoader().getResource("view/items/GroupItem.fxml"),
+              resourceBundle);
       Parent root = loader.load();
       String groupColor = GroupColor.getNextColor();
       GroupItemController controller = loader.getController();
@@ -109,12 +111,12 @@ public class OverviewController {
   private void updateDeviceOrder() {
     List<Node> deviceElements = new ArrayList<>(devices.getChildren());
     deviceElements.sort((n1, n2) -> {
-      DeviceItemController deviceController1 = ((DeviceItemController) n1.getProperties()
-          .get("controller"));
+      DeviceItemController deviceController1 =
+          ((DeviceItemController) n1.getProperties().get("controller"));
       Device device1 = deviceController1.getDevice();
       Group group1 = Mobifume.getInstance().getModelManager().getGroup(device1);
-      DeviceItemController deviceController2 = ((DeviceItemController) n2.getProperties()
-          .get("controller"));
+      DeviceItemController deviceController2 =
+          ((DeviceItemController) n2.getProperties().get("controller"));
       Device device2 = deviceController2.getDevice();
       Group group2 = Mobifume.getInstance().getModelManager().getGroup(device2);
       if (group1 != null && group2 != null) {
@@ -157,10 +159,10 @@ public class OverviewController {
   private void updateGroupOrder() {
     List<TitledPane> groupListElements = new ArrayList<>(groups.getPanes());
     groupListElements.sort((n1, n2) -> {
-      String name1 = ((GroupItemController) n1.getProperties().get("controller")).getGroup()
-          .getName();
-      String name2 = ((GroupItemController) n2.getProperties().get("controller")).getGroup()
-          .getName();
+      String name1 =
+          ((GroupItemController) n1.getProperties().get("controller")).getGroup().getName();
+      String name2 =
+          ((GroupItemController) n2.getProperties().get("controller")).getGroup().getName();
       if (name1.length() > name2.length()) {
         return 1;
       }
@@ -175,7 +177,7 @@ public class OverviewController {
   }
 
   public void updateConnection() {
-    if (Mobifume.getInstance().getModelManager().isWifiEnabled()) {
+    if (Mobifume.getInstance().getModelManager().getWifiConnection().isEnabled()) {
       setWifiImage(
           Mobifume.getInstance().getModelManager().isBrokerConnected() ? "Wifi" : "Wifi_Error");
     } else {
@@ -207,8 +209,8 @@ public class OverviewController {
     Platform.runLater(() -> {
       ObservableList<Node> children = devices.getChildren();
       children.forEach(node -> {
-        DeviceItemController controller = (DeviceItemController) node.getProperties()
-            .get("controller");
+        DeviceItemController controller =
+            (DeviceItemController) node.getProperties().get("controller");
         if (controller == null || controller.getDevice() != device) {
           return;
         }
@@ -241,8 +243,9 @@ public class OverviewController {
 
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
 
-    FXMLLoader loader = new FXMLLoader(
-        getClass().getClassLoader().getResource("view/GlobalSettings.fxml"), resourceBundle);
+    FXMLLoader loader =
+        new FXMLLoader(getClass().getClassLoader().getResource("view/GlobalSettings.fxml"),
+            resourceBundle);
     Parent root = loader.load();
 
     SceneTransition.playForward(scene, root);
@@ -268,10 +271,10 @@ public class OverviewController {
   @FXML
   public void onWifi() {
     Sound.click();
-    if (Mobifume.getInstance().getModelManager().isWifiEnabled()) {
-      Mobifume.getInstance().getModelManager().disconnectWifi();
+    if (Mobifume.getInstance().getModelManager().getWifiConnection().isEnabled()) {
+      Mobifume.getInstance().getModelManager().getWifiConnection().disconnect();
     } else {
-      Mobifume.getInstance().getModelManager().connectWifi();
+      Mobifume.getInstance().getModelManager().getWifiConnection().connect();
     }
   }
 
@@ -324,9 +327,8 @@ public class OverviewController {
       return;
     }
 
-    List<Device> devices = selectedDevices.stream()
-        .map(DeviceItemController::getDevice)
-        .collect(Collectors.toList());
+    List<Device> devices =
+        selectedDevices.stream().map(DeviceItemController::getDevice).collect(Collectors.toList());
 
     createGroupDialog = new CreateGroupDialog(groups.getScene().getWindow(), devices, groupData -> {
       createGroupDialog = null;

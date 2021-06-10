@@ -60,7 +60,7 @@ public class Room implements Group {
     this.filters = filters;
     this.settings = settings;
 
-    logger = CustomLogger.createLogger(Room.class, this);
+    logger = CustomLogger.createGroupLogger(this);
   }
 
   @Override

@@ -35,27 +35,29 @@ public class CustomLogger {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
     logger.setLevel(Level.ALL);
 
     return logger;
   }
 
-  public static Logger createLogger(Class<?> clazz, Room group) {
-    Logger logger = Logger.getLogger(clazz);
+  public static Logger createGroupLogger(Room group) {
+    Logger logger = Logger.getLogger(group.getSettings().getCycleCount() + "-" + group.getName());
 
     try {
       PatternLayout layout = new PatternLayout("[%d{yyyy-MM-dd HH:mm:ss}];%p;%m%n");
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
       String dateTime = formatter.format(new Date(System.currentTimeMillis()));
       String cycle = String.format("%03d", group.getSettings().getCycleCount());
-      FileAppender appender = new FileAppender(layout,
-          LOG_DIRECTORY + File.separator + dateTime + "." + cycle + ".run", false);
+      FileAppender appender =
+          new FileAppender(layout, LOG_DIRECTORY + File.separator + dateTime + "." + cycle + ".run",
+              false);
       logger.addAppender(appender);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    logger.setLevel(Level.ALL);
 
+    logger.setLevel(Level.ALL);
     return logger;
   }
 
