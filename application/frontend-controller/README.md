@@ -165,6 +165,5 @@ The project is divided in three modules: core, installer, updater
     - `settings` stores the global settings.
     - `filter/` stores all filters for filter management. Files are manually editable (json format).
     - `paho/` contains files related to eclipse paho for the mqtt client connection
-    - `updater.jar` tries to replace the old version with the new version
 - All files except log files are deleted when the program is reinstalled or uninstalled.
 - Log files are stored in `%userprofile%/documents/MOBIfume`. These files will never be deleted.

@@ -15,7 +15,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import lombok.Getter;
 import org.apache.log4j.Logger;
 
 /**
@@ -26,42 +25,37 @@ public class Mobifume {
   /**
    * Gets the singleton instance of this class.
    */
-  @Getter
   private static Mobifume instance;
 
   /**
    * Gets the custom logger for mobifume.
    */
-  @Getter
   private final Logger logger = CustomLogger.createLogger(Mobifume.class);
   /**
    * Gets the project properties.
    */
-  @Getter
   private final Properties projectProperties;
   /**
    * Gets the settings properties.
    */
-  @Getter
   private final Properties settings;
 
   /**
    * Gets the event manager.
    */
-  @Getter
   private EventManager eventManager;
   /**
    * Gets the model manager which establish connections and holds devices, filters and groups.
    */
-  @Getter
   private ModelManager modelManager;
 
-  private ScheduledExecutorService scheduledExecutorService;
+  private final ScheduledExecutorService scheduledExecutorService;
 
   private Mobifume() {
     instance = this;
 
-    ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(6);
+    ScheduledThreadPoolExecutor scheduledThreadPoolExecutor =
+        new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
     scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
     scheduledExecutorService = scheduledThreadPoolExecutor;
 
@@ -74,8 +68,7 @@ public class Mobifume {
     CustomLogger.info(CustomLogger.version());
 
     settings = new Properties();
-    try (InputStream in = getClass().getClassLoader()
-        .getResourceAsStream("settings.properties")) {
+    try (InputStream in = getClass().getClassLoader().getResourceAsStream("settings.properties")) {
       settings.load(in);
     } catch (IOException e) {
       e.printStackTrace();
@@ -113,7 +106,31 @@ public class Mobifume {
     mobifume.getScheduledExecutorService().execute(() -> MobiApplication.main(args));
   }
 
+  public static Mobifume getInstance() {
+    return instance;
+  }
+
   public ScheduledExecutorService getScheduledExecutorService() {
     return scheduledExecutorService;
+  }
+
+  public Logger getLogger() {
+    return logger;
+  }
+
+  public Properties getProjectProperties() {
+    return projectProperties;
+  }
+
+  public Properties getSettings() {
+    return settings;
+  }
+
+  public EventManager getEventManager() {
+    return eventManager;
+  }
+
+  public ModelManager getModelManager() {
+    return modelManager;
   }
 }
