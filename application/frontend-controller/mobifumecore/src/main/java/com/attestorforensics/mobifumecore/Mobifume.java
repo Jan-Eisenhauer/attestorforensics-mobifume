@@ -49,12 +49,13 @@ public class Mobifume {
    */
   private ModelManager modelManager;
 
-  private ScheduledExecutorService scheduledExecutorService;
+  private final ScheduledExecutorService scheduledExecutorService;
 
   private Mobifume() {
     instance = this;
 
-    ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(6);
+    ScheduledThreadPoolExecutor scheduledThreadPoolExecutor =
+        new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
     scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
     scheduledExecutorService = scheduledThreadPoolExecutor;
 
