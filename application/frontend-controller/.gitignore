@@ -6,3 +6,6 @@ out/
 
 # Maven
 target/
+
+# Eclipse Paho
+paho/
