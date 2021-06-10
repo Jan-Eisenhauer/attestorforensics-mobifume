@@ -58,7 +58,7 @@ public class OverviewController {
         .getScheduledExecutorService()
         .scheduleAtFixedRate(() -> Platform.runLater(() -> {
           SystemPowerStatus batteryStatus = new SystemPowerStatus();
-          Kernel32.instance.GetSystemPowerStatus(batteryStatus);
+          Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
           battery.setText(batteryStatus.getBatteryLifePercent());
         }), 0L, 10L, TimeUnit.SECONDS);
   }
