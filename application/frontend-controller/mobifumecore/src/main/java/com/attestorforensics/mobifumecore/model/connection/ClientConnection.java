@@ -8,11 +8,14 @@ import com.attestorforensics.mobifumecore.util.log.CustomLogger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -76,8 +79,14 @@ public class ClientConnection {
     CustomLogger.info("Trying to connect to broker " + broker);
     File pahoDirectory = new File(FileManager.getInstance().getDataFolder(), "paho");
     if (pahoDirectory.exists()) {
-      try {
-        Files.delete(pahoDirectory.toPath());
+      try (Stream<Path> files = Files.walk(pahoDirectory.toPath())) {
+        files.sorted(Comparator.reverseOrder()).forEach(path -> {
+          try {
+            Files.delete(path);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        });
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -106,9 +115,8 @@ public class ClientConnection {
   }
 
   private void waitForOtherApp() {
-    waitForOtherAppTask = Mobifume.getInstance()
-        .getScheduledExecutorService()
-        .scheduleAtFixedRate(() -> {
+    waitForOtherAppTask =
+        Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
           encoder.requestAppOnline(id);
           if (client.isConnected() && !msgHandler.isOtherAppOnline()) {
             subscribeChannels();

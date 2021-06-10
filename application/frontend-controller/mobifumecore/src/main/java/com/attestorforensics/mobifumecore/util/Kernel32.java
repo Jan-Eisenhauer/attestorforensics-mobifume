@@ -17,29 +17,29 @@ public interface Kernel32 extends StdCallLibrary {
   /**
    * Fill the structure.
    */
-  int GetSystemPowerStatus(SYSTEM_POWER_STATUS result);
+  int GetSystemPowerStatus(SystemPowerStatus result);
 
   /**
    * @see http://msdn2.microsoft.com/en-us/library/aa373232.aspx
    */
-  class SYSTEM_POWER_STATUS extends Structure {
+  class SystemPowerStatus extends Structure {
 
-    public byte ACLineStatus;
-    public byte BatteryFlag;
-    public byte BatteryLifePercent;
-    public byte Reserved1;
-    public int BatteryLifeTime;
-    public int BatteryFullLifeTime;
+    public byte acLineStatus;
+    public byte batteryFlag;
+    public byte batteryLifePercent;
+    public byte reserved1;
+    public int batteryLifeTime;
+    public int batteryFullLifeTime;
 
     @Override
     protected List<String> getFieldOrder() {
       ArrayList<String> fields = new ArrayList<String>();
-      fields.add("ACLineStatus");
-      fields.add("BatteryFlag");
-      fields.add("BatteryLifePercent");
-      fields.add("Reserved1");
-      fields.add("BatteryLifeTime");
-      fields.add("BatteryFullLifeTime");
+      fields.add("acLineStatus");
+      fields.add("batteryFlag");
+      fields.add("batteryLifePercent");
+      fields.add("reserved1");
+      fields.add("batteryLifeTime");
+      fields.add("batteryFullLifeTime");
       return fields;
     }
 
@@ -58,7 +58,7 @@ public interface Kernel32 extends StdCallLibrary {
      * The AC power status
      */
     public String getACLineStatusString() {
-      switch (ACLineStatus) {
+      switch (acLineStatus) {
         case (0):
           return "Offline";
         case (1):
@@ -72,7 +72,7 @@ public interface Kernel32 extends StdCallLibrary {
      * The battery charge status
      */
     public String getBatteryFlagString() {
-      switch (BatteryFlag) {
+      switch (batteryFlag) {
         case (1):
           return "High, more than 66 percent";
         case (2):
@@ -92,21 +92,21 @@ public interface Kernel32 extends StdCallLibrary {
      * The percentage of full battery charge remaining
      */
     public String getBatteryLifePercent() {
-      return (BatteryLifePercent == (byte) 255) ? "Unknown" : BatteryLifePercent + "%";
+      return (batteryLifePercent == (byte) 255) ? "Unknown" : batteryLifePercent + "%";
     }
 
     /**
      * The number of seconds of battery life remaining
      */
     public String getBatteryLifeTime() {
-      return (BatteryLifeTime == -1) ? "Unknown" : BatteryLifeTime + " seconds";
+      return (batteryLifeTime == -1) ? "Unknown" : batteryLifeTime + " seconds";
     }
 
     /**
      * The number of seconds of battery life when at full charge
      */
     public String getBatteryFullLifeTime() {
-      return (BatteryFullLifeTime == -1) ? "Unknown" : BatteryFullLifeTime + " seconds";
+      return (batteryFullLifeTime == -1) ? "Unknown" : batteryFullLifeTime + " seconds";
     }
   }
 }

@@ -30,7 +30,12 @@ public class OtherAppChecker {
       if (lock == null) {
         return true;
       }
+
       Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        if (!channel.isOpen()) {
+          return;
+        }
+
         try {
           lock.release();
           channel.close();
@@ -41,6 +46,7 @@ public class OtherAppChecker {
     } catch (Exception e) {
       return false;
     }
+
     return false;
   }
 }

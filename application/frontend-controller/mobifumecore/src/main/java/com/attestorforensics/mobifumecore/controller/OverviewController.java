@@ -13,6 +13,7 @@ import com.attestorforensics.mobifumecore.model.object.Device;
 import com.attestorforensics.mobifumecore.model.object.DeviceType;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.util.Kernel32;
+import com.attestorforensics.mobifumecore.util.Kernel32.SystemPowerStatus;
 import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
 import com.attestorforensics.mobifumecore.view.GroupColor;
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class OverviewController {
     Mobifume.getInstance()
         .getScheduledExecutorService()
         .scheduleAtFixedRate(() -> Platform.runLater(() -> {
-          Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
+          SystemPowerStatus batteryStatus = new SystemPowerStatus();
           Kernel32.instance.GetSystemPowerStatus(batteryStatus);
           battery.setText(batteryStatus.getBatteryLifePercent());
         }), 0L, 10L, TimeUnit.SECONDS);
