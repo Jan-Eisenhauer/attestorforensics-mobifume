@@ -70,7 +70,7 @@ public class MobiModelManager implements ModelManager {
   public void connectWifi() {
     String ssid = Mobifume.getInstance().getSettings().getProperty("wifi.ssid");
     String name = Mobifume.getInstance().getSettings().getProperty("wifi.name");
-    String command = String.format("cmd /c netsh wlan connect ssid=%s name=%s interface=WLAN", ssid,
+    String command = String.format("cmd /c netsh wlan connect ssid=%s name=%s", ssid,
         name);
     try {
       Runtime.getRuntime().exec(command);
