@@ -17,14 +17,11 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
-import lombok.Getter;
 
 public class DeviceItemController {
 
-  @Getter
   private Device device;
   private String currentStrength;
-  @Getter
   private boolean selected;
   private Group group;
 
@@ -40,6 +37,10 @@ public class DeviceItemController {
   private ImageView errorIcon;
 
   private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+
+  public Device getDevice() {
+    return device;
+  }
 
   public void setDevice(Device device) {
     this.device = device;
@@ -85,15 +86,6 @@ public class DeviceItemController {
     setSelected(true);
   }
 
-  private void setSelected(boolean selected) {
-    this.selected = selected;
-    if (selected) {
-      deviceItem.getStyleClass().add("selected");
-    } else {
-      deviceItem.getStyleClass().remove("selected");
-    }
-  }
-
   @FXML
   public void onMouseClicked() {
     Sound.click();
@@ -102,6 +94,19 @@ public class DeviceItemController {
       return;
     }
     toggleSelected();
+  }
+
+  public boolean isSelected() {
+    return selected;
+  }
+
+  private void setSelected(boolean selected) {
+    this.selected = selected;
+    if (selected) {
+      deviceItem.getStyleClass().add("selected");
+    } else {
+      deviceItem.getStyleClass().remove("selected");
+    }
   }
 
   private void toggleSelected() {

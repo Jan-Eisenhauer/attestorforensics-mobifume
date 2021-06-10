@@ -7,13 +7,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import lombok.Setter;
 
 public class InputController {
 
-  @Setter
   private InputDialog dialog;
-  @Setter
   private InputValidator validator;
 
   @FXML
@@ -70,5 +67,13 @@ public class InputController {
   public void onCancel() {
     Sound.click();
     dialog.close(null);
+  }
+
+  public void setDialog(InputDialog dialog) {
+    this.dialog = dialog;
+  }
+
+  public void setValidator(InputValidator validator) {
+    this.validator = validator;
   }
 }

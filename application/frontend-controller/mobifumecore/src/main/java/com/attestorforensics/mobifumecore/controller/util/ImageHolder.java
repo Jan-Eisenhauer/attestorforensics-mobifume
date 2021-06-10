@@ -4,14 +4,16 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.image.Image;
-import lombok.Getter;
 
 public class ImageHolder {
 
-  @Getter
   private static final ImageHolder instance = new ImageHolder();
 
   private Map<String, Image> images = new HashMap<>();
+
+  public static ImageHolder getInstance() {
+    return instance;
+  }
 
   public Image getImage(String resource) {
     if (images.containsKey(resource)) {

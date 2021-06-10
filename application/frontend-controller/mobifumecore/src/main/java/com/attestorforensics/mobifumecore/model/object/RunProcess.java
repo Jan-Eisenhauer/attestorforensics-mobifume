@@ -1,12 +1,5 @@
 package com.attestorforensics.mobifumecore.model.object;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class RunProcess implements Run {
 
   private int cycle;
@@ -24,6 +17,9 @@ public class RunProcess implements Run {
     this.evaporantAmount = evaporantAmount;
     this.totalFilterCount = totalFilterCount;
     this.manually = manually;
+  }
+
+  public RunProcess() {
   }
 
   @Override
@@ -49,5 +45,29 @@ public class RunProcess implements Run {
   @Override
   public boolean isManuallyAdded() {
     return manually;
+  }
+
+  public void setCycle(int cycle) {
+    this.cycle = cycle;
+  }
+
+  public void setDate(long date) {
+    this.date = date;
+  }
+
+  public void setEvaporant(String evaporant) {
+    this.evaporant = evaporant;
+  }
+
+  public void setEvaporantAmount(double evaporantAmount) {
+    this.evaporantAmount = evaporantAmount;
+  }
+
+  public void setTotalFilterCount(int totalFilterCount) {
+    this.totalFilterCount = totalFilterCount;
+  }
+
+  public void setManually(boolean manually) {
+    this.manually = manually;
   }
 }

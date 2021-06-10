@@ -12,15 +12,11 @@ import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.model.object.Humidifier;
 import com.attestorforensics.mobifumecore.model.object.Room;
 import com.attestorforensics.mobifumecore.util.log.CustomLogger;
-import lombok.Getter;
-import lombok.Setter;
 
 public class MessageHandler {
 
-  private MobiModelManager mobiModelManager;
+  private final MobiModelManager mobiModelManager;
 
-  @Getter
-  @Setter
   private boolean otherAppOnline;
 
   public MessageHandler(MobiModelManager mobiModelManager) {
@@ -247,5 +243,13 @@ public class MessageHandler {
         .getEventManager()
         .call(new DeviceConnectionEvent(device,
             DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
+  }
+
+  public boolean isOtherAppOnline() {
+    return otherAppOnline;
+  }
+
+  public void setOtherAppOnline(boolean otherAppOnline) {
+    this.otherAppOnline = otherAppOnline;
   }
 }

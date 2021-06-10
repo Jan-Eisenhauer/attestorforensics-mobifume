@@ -4,11 +4,9 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
-import lombok.Setter;
 
 public class ConfirmController {
 
-  @Setter
   private ConfirmDialog dialog;
 
   @FXML
@@ -40,5 +38,9 @@ public class ConfirmController {
 
   void displayCancel() {
     cancel.setVisible(true);
+  }
+
+  public void setDialog(ConfirmDialog dialog) {
+    this.dialog = dialog;
   }
 }

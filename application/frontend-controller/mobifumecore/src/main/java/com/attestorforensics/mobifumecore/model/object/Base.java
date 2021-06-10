@@ -2,24 +2,13 @@ package com.attestorforensics.mobifumecore.model.object;
 
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import java.util.Optional;
-import lombok.Getter;
-import lombok.Setter;
 
 public class Base extends Device {
 
-  @Getter
-  @Setter
   private double temperature = -128;
-  @Setter
   private double humidity = -128;
-  @Getter
-  @Setter
   private double heaterSetpoint = -128;
-  @Getter
-  @Setter
   private double heaterTemperature = -128;
-  @Getter
-  @Setter
   private int latch;
   private Calibration humidityCalibration;
   private Calibration temperatureCalibration;
@@ -55,10 +44,6 @@ public class Base extends Device {
     getEncoder().baseTime(this, time);
   }
 
-  public double getHumidity() {
-    return humidity;
-  }
-
   public Optional<Calibration> getHumidityCalibration() {
     return Optional.ofNullable(humidityCalibration);
   }
@@ -92,5 +77,45 @@ public class Base extends Device {
     temperatureCalibration = calibration;
     getEncoder().baseTempGradient(this, calibration.getGradient());
     getEncoder().baseTempOffset(this, calibration.getOffset());
+  }
+
+  public double getTemperature() {
+    return temperature;
+  }
+
+  public void setTemperature(double temperature) {
+    this.temperature = temperature;
+  }
+
+  public double getHumidity() {
+    return humidity;
+  }
+
+  public void setHumidity(double humidity) {
+    this.humidity = humidity;
+  }
+
+  public double getHeaterSetpoint() {
+    return heaterSetpoint;
+  }
+
+  public void setHeaterSetpoint(double heaterSetpoint) {
+    this.heaterSetpoint = heaterSetpoint;
+  }
+
+  public double getHeaterTemperature() {
+    return heaterTemperature;
+  }
+
+  public void setHeaterTemperature(double heaterTemperature) {
+    this.heaterTemperature = heaterTemperature;
+  }
+
+  public int getLatch() {
+    return latch;
+  }
+
+  public void setLatch(int latch) {
+    this.latch = latch;
   }
 }

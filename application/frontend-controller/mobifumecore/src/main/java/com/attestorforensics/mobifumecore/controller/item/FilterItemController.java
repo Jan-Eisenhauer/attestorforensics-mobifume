@@ -21,11 +21,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
-import lombok.Getter;
 
 public class FilterItemController {
 
-  @Getter
   private Filter filter;
 
   @FXML
@@ -162,5 +160,9 @@ public class FilterItemController {
     }
 
     errorButton.setVisible(false);
+  }
+
+  public Filter getFilter() {
+    return filter;
   }
 }

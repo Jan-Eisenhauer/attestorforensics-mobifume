@@ -16,11 +16,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import lombok.Setter;
 
 public class AddFilterRunController {
 
-  @Setter
   private AddFilterRunDialog dialog;
   private Filter filter;
 
@@ -104,5 +102,9 @@ public class AddFilterRunController {
   public void onCancel() {
     Sound.click();
     dialog.close();
+  }
+
+  public void setDialog(AddFilterRunDialog dialog) {
+    this.dialog = dialog;
   }
 }

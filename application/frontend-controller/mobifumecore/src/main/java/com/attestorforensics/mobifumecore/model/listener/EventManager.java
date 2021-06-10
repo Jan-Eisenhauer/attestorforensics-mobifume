@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 public class EventManager implements ListenerRegistry, EventCaller {
 
@@ -52,12 +50,28 @@ public class EventManager implements ListenerRegistry, EventCaller {
         });
   }
 
-  @AllArgsConstructor
-  @Getter
   private static class ListenerMethod {
 
     private final Listener listener;
     private final Class<?> eventType;
     private final Method method;
+
+    ListenerMethod(Listener listener, Class<?> eventType, Method method) {
+      this.listener = listener;
+      this.eventType = eventType;
+      this.method = method;
+    }
+
+    Listener getListener() {
+      return listener;
+    }
+
+    Class<?> getEventType() {
+      return eventType;
+    }
+
+    Method getMethod() {
+      return method;
+    }
   }
 }

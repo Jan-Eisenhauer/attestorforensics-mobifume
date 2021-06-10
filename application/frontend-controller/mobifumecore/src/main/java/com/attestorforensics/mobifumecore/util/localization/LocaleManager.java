@@ -7,17 +7,15 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import lombok.Getter;
 
 public class LocaleManager {
 
   private static final List<Locale> SUPPORTED_LOCALES = ImmutableList.of(Locale.GERMANY, Locale.US);
   private static LocaleManager instance;
-  private String bundleName = "i18n/MOBIfume";
-  @Getter
+  private static final String BUNDLE_NAME = "i18n/MOBIfume";
+
   private ResourceBundle resourceBundle;
 
-  @Getter
   private Locale locale;
 
   private LocaleManager() {
@@ -32,7 +30,7 @@ public class LocaleManager {
 
   public void load(Locale locale) {
     this.locale = locale;
-    resourceBundle = ResourceBundle.getBundle(bundleName, locale, getClass().getClassLoader(),
+    resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, locale, getClass().getClassLoader(),
         new Utf8Control());
     Mobifume.getInstance().getEventManager().call(new LocaleChangeEvent(locale));
   }
@@ -47,5 +45,13 @@ public class LocaleManager {
 
   public List<Locale> getLanguages() {
     return SUPPORTED_LOCALES;
+  }
+
+  public ResourceBundle getResourceBundle() {
+    return resourceBundle;
+  }
+
+  public Locale getLocale() {
+    return locale;
   }
 }

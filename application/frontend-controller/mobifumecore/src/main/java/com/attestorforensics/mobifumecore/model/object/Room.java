@@ -12,41 +12,31 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import lombok.Getter;
 import org.apache.log4j.Logger;
 
 public class Room implements Group {
 
   private final Logger logger;
-  @Getter
-  private String name;
-  @Getter
-  private List<Device> devices;
+  private final String name;
+  private final List<Device> devices;
 
-  @Getter
-  private List<Filter> filters;
+  private final List<Filter> filters;
 
-  @Getter
   private Status status = Status.START;
 
-  @Getter
-  private Settings settings;
+  private final Settings settings;
 
-  @Getter
   private boolean humidifyMaxReached;
 
   private int humidifyMaxTimes;
 
-  @Getter
   private boolean humidifying;
 
   private ScheduledFuture<?> updateLatchTask;
 
-  @Getter
   private long evaporateStartTime;
   private ScheduledFuture<?> evaporateTask;
 
-  @Getter
   private long purgeStartTime;
   private ScheduledFuture<?> purgeTask;
 
@@ -431,5 +421,41 @@ public class Room implements Group {
     cancelEvaporateTaskIfScheduled();
     cancelPurgeTaskIfScheduled();
     this.getDevices().forEach(Device::reset);
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public List<Device> getDevices() {
+    return devices;
+  }
+
+  public List<Filter> getFilters() {
+    return filters;
+  }
+
+  public Status getStatus() {
+    return status;
+  }
+
+  public Settings getSettings() {
+    return settings;
+  }
+
+  public boolean isHumidifyMaxReached() {
+    return humidifyMaxReached;
+  }
+
+  public boolean isHumidifying() {
+    return humidifying;
+  }
+
+  public long getEvaporateStartTime() {
+    return evaporateStartTime;
+  }
+
+  public long getPurgeStartTime() {
+    return purgeStartTime;
   }
 }

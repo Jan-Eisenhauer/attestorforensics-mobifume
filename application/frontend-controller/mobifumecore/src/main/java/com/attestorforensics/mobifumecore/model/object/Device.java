@@ -2,28 +2,18 @@ package com.attestorforensics.mobifumecore.model.object;
 
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import com.attestorforensics.mobifumecore.model.connection.MessageEncoder;
-import lombok.Getter;
-import lombok.Setter;
 
 public abstract class Device {
 
   protected final ClientConnection clientConnection;
-  @Getter
   private final DeviceType type;
-  @Getter
   private final String id;
-  @Getter
-  @Setter
   private int version;
-  @Getter
-  @Setter
   private int rssi = -100;
 
-  @Getter
-  @Setter
   private boolean isOffline;
 
-  public Device(ClientConnection clientConnection, final DeviceType type, final String id,
+  protected Device(ClientConnection clientConnection, final DeviceType type, final String id,
       final int version) {
     this.clientConnection = clientConnection;
     this.type = type;
@@ -52,5 +42,37 @@ public abstract class Device {
     } catch (NumberFormatException e) {
       return nodeNumber;
     }
+  }
+
+  public DeviceType getType() {
+    return type;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public int getVersion() {
+    return version;
+  }
+
+  public void setVersion(int version) {
+    this.version = version;
+  }
+
+  public int getRssi() {
+    return rssi;
+  }
+
+  public void setRssi(int rssi) {
+    this.rssi = rssi;
+  }
+
+  public boolean isOffline() {
+    return isOffline;
+  }
+
+  public void setOffline(boolean isOffline) {
+    this.isOffline = isOffline;
   }
 }

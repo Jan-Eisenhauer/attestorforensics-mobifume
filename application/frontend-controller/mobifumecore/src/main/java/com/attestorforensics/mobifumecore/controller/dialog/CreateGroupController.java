@@ -25,14 +25,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import lombok.Getter;
-import lombok.Setter;
 
 public class CreateGroupController {
 
   private static int lastGroupId = 0;
 
-  @Setter
   private CreateGroupDialog dialog;
   private List<Device> devices;
 
@@ -55,7 +52,6 @@ public class CreateGroupController {
   @FXML
   private Button ok;
 
-  @Getter
   private Map<String, Filter> filterMap;
   private List<Node> filterNodes;
   private boolean updatingFilters;
@@ -283,5 +279,13 @@ public class CreateGroupController {
   public void onCancel() {
     Sound.click();
     dialog.close(null);
+  }
+
+  public Map<String, Filter> getFilterMap() {
+    return filterMap;
+  }
+
+  public void setDialog(CreateGroupDialog dialog) {
+    this.dialog = dialog;
   }
 }

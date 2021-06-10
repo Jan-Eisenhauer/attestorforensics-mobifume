@@ -16,19 +16,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
 public class CreateGroupDialog {
 
-  @Getter
   private Stage stage;
   private Window window;
   private CreateGroupController controller;
   private Consumer<GroupData> callback;
 
-  @Setter
   private boolean lockClosing;
 
   public CreateGroupDialog(Window window, List<Device> devices, Consumer<GroupData> callback) {
@@ -91,12 +86,36 @@ public class CreateGroupDialog {
     controller.removeDevice(device);
   }
 
-  @AllArgsConstructor
-  @Getter
+  public Stage getStage() {
+    return stage;
+  }
+
+  public void setLockClosing(boolean lockClosing) {
+    this.lockClosing = lockClosing;
+  }
+
   public static class GroupData {
 
-    private String name;
-    private List<Device> devices;
-    private List<Filter> filters;
+    private final String name;
+    private final List<Device> devices;
+    private final List<Filter> filters;
+
+    public GroupData(String name, List<Device> devices, List<Filter> filters) {
+      this.name = name;
+      this.devices = devices;
+      this.filters = filters;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public List<Device> getDevices() {
+      return devices;
+    }
+
+    public List<Filter> getFilters() {
+      return filters;
+    }
   }
 }

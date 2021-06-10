@@ -34,13 +34,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
-import lombok.Getter;
 
 public class GroupController {
 
   private static final long CHART_UPDATE_DELAY = 1000L * 60;
 
-  @Getter
   private Group group;
 
   @FXML
@@ -49,23 +47,17 @@ public class GroupController {
   @FXML
   private Label groupName;
 
-  @Getter
   @FXML
   private Pane startupPane;
-  @Getter
   @FXML
   private Pane humidifyPane;
-  @Getter
   @FXML
   private Pane evaporatePane;
-  @Getter
   @FXML
   private Pane purgePane;
-  @Getter
   @FXML
   private Pane finishedPane;
 
-  @Getter
   @FXML
   private Pane canceledPane;
 
@@ -77,7 +69,6 @@ public class GroupController {
   @FXML
   private Text humidify;
 
-  @Getter
   @FXML
   private Pane evaporantPane;
   @FXML
@@ -619,5 +610,37 @@ public class GroupController {
     group.getSettings().setPurgeTimer(group.getSettings().getPurgeTimer() + 5);
     group.updatePurgeTimer();
     updatePurgeTimer();
+  }
+
+  public Group getGroup() {
+    return group;
+  }
+
+  public Pane getStartupPane() {
+    return startupPane;
+  }
+
+  public Pane getHumidifyPane() {
+    return humidifyPane;
+  }
+
+  public Pane getEvaporatePane() {
+    return evaporatePane;
+  }
+
+  public Pane getPurgePane() {
+    return purgePane;
+  }
+
+  public Pane getFinishedPane() {
+    return finishedPane;
+  }
+
+  public Pane getCanceledPane() {
+    return canceledPane;
+  }
+
+  public Pane getEvaporantPane() {
+    return evaporantPane;
   }
 }

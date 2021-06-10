@@ -9,11 +9,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import lombok.Setter;
 
 public class CalibrateController {
 
-  @Setter
   private CalibrateDialog dialog;
 
   @FXML
@@ -112,5 +110,9 @@ public class CalibrateController {
   public void onReset() {
     Sound.click();
     dialog.close(Calibration.createDefault());
+  }
+
+  public void setDialog(CalibrateDialog dialog) {
+    this.dialog = dialog;
   }
 }

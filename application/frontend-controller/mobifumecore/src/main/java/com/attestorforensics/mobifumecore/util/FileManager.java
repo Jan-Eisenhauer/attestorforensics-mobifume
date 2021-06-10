@@ -1,14 +1,12 @@
 package com.attestorforensics.mobifumecore.util;
 
 import java.io.File;
-import lombok.Getter;
 
 public class FileManager {
 
   private static FileManager instance;
 
-  @Getter
-  private File dataFolder;
+  private final File dataFolder;
 
   private FileManager() {
     dataFolder = new File(System.getenv("LOCALAPPDATA"), "MOBIfume");
@@ -19,5 +17,9 @@ public class FileManager {
       instance = new FileManager();
     }
     return instance;
+  }
+
+  public File getDataFolder() {
+    return dataFolder;
   }
 }

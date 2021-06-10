@@ -4,11 +4,9 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
-import lombok.Getter;
 
 public class InfoBoxController {
 
-  @Getter
   @FXML
   private Pane fullPane;
 
@@ -16,7 +14,6 @@ public class InfoBoxController {
   private Pane pane;
   @FXML
   private Polygon paneArrow;
-  @Getter
   @FXML
   private Text content;
 
@@ -27,5 +24,13 @@ public class InfoBoxController {
   void setErrorType(boolean errorType) {
     pane.getStyleClass().add(errorType ? "errorBox" : "warningBox");
     paneArrow.getStyleClass().add(errorType ? "errorBox" : "warningBox");
+  }
+
+  public Pane getFullPane() {
+    return fullPane;
+  }
+
+  public Text getContent() {
+    return content;
   }
 }

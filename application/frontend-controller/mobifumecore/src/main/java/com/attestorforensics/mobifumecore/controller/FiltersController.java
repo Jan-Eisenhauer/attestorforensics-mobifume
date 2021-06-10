@@ -17,17 +17,19 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import lombok.Getter;
 
 public class FiltersController {
 
-  @Getter
   private static FiltersController instance;
 
   @FXML
   Parent root;
   @FXML
   private Pane filters;
+
+  public static FiltersController getInstance() {
+    return instance;
+  }
 
   public void removeFilter(Filter filter) {
     filters.getChildren()

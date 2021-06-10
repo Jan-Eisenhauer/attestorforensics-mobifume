@@ -23,11 +23,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import lombok.Getter;
 
 public class GroupItemController {
 
-  @Getter
   private Group group;
 
   @FXML
@@ -38,6 +36,10 @@ public class GroupItemController {
   private Parent groupRoot;
 
   private ScheduledFuture<?> statusUpdateTask;
+
+  public Group getGroup() {
+    return group;
+  }
 
   public void setGroup(Group group, String color) {
     this.group = group;
