@@ -1,7 +1,5 @@
 package com.attestorforensics.mobifumecore.view;
 
-import lombok.Getter;
-
 /**
  * Defines the different colors for a group.
  */
@@ -16,8 +14,8 @@ public enum GroupColor {
   PINK("#ec407a");
 
   private static int currentColor = 0;
-  @Getter
-  private String color;
+
+  private final String color;
 
   GroupColor(String color) {
     this.color = color;
@@ -33,8 +31,13 @@ public enum GroupColor {
     if (currentColor >= length) {
       currentColor -= length;
     }
+
     String color = GroupColor.values()[currentColor].getColor();
     currentColor++;
+    return color;
+  }
+
+  public String getColor() {
     return color;
   }
 }

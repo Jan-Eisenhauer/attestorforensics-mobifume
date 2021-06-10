@@ -25,7 +25,6 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import lombok.Getter;
 
 /**
  * The application window of the program.
@@ -35,13 +34,11 @@ public class MobiApplication extends Application {
   /**
    * Gets the singleton instance of this class.
    */
-  @Getter
   private static MobiApplication instance;
 
   /**
    * Gets the primary stage of the application.
    */
-  @Getter
   private Stage primaryStage;
 
   /**
@@ -52,6 +49,10 @@ public class MobiApplication extends Application {
    */
   public static void main(String[] args) {
     launch(args);
+  }
+
+  public static MobiApplication getInstance() {
+    return instance;
   }
 
   @Override
@@ -132,5 +133,9 @@ public class MobiApplication extends Application {
     Mobifume.getInstance().getEventManager().registerListener(new PurgeListener());
     Mobifume.getInstance().getEventManager().registerListener(UpdateListener.create());
     Mobifume.getInstance().getEventManager().registerListener(UpdatingListener.create());
+  }
+
+  public Stage getPrimaryStage() {
+    return primaryStage;
   }
 }
