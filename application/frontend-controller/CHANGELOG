@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.5.1] - 2021-06-10
 ### Fixed
-- Group logger bugfix (old group logs got log entries from new groups)
+- Group logger bugfix (old group logs got log entries from newer groups)
+- Group timer (heat/purge) reset bugfix (when added time manually with +5:00 and it was over the maximum value, the time was reset to the maximum value when opening the group settings)
+- Wi-fi interface connection fix on foreign os languages
 
 ## [2.5.0] - 2021-05-25
 ### Added

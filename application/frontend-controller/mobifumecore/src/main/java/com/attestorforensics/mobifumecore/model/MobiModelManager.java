@@ -3,7 +3,8 @@ package com.attestorforensics.mobifumecore.model;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import com.attestorforensics.mobifumecore.model.connection.MessageHandler;
-import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
+import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
+import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.FilterEvent;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
@@ -15,10 +16,9 @@ import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.model.object.MobiFilter;
 import com.attestorforensics.mobifumecore.model.object.Room;
 import com.attestorforensics.mobifumecore.model.update.Updater;
-import com.attestorforensics.mobifumecore.util.log.LogMover;
 import com.attestorforensics.mobifumecore.util.log.CustomLogger;
+import com.attestorforensics.mobifumecore.util.log.LogMover;
 import com.attestorforensics.mobifumecore.util.setting.Settings;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,8 +28,7 @@ public class MobiModelManager implements ModelManager {
 
   @Getter
   private ClientConnection connection;
-
-  private boolean wifiConnected;
+  private final WifiConnection wifiConnection;
 
   @Getter
   private List<Device> devices = new ArrayList<>();
@@ -47,8 +46,8 @@ public class MobiModelManager implements ModelManager {
         Mobifume.getInstance().getEventManager());
     updater.startCheckingForUpdate();
 
-    LogMover logMover = LogMover.create(Mobifume.getInstance().getScheduledExecutorService(),
-        updater);
+    LogMover logMover =
+        LogMover.create(Mobifume.getInstance().getScheduledExecutorService(), updater);
     logMover.startMovingToUsb();
 
     filterFileHandler = new FilterFileHandler();
@@ -59,41 +58,13 @@ public class MobiModelManager implements ModelManager {
     MessageHandler msgHandler = new MessageHandler(this);
 
     connection = new ClientConnection(this, msgHandler);
+    wifiConnection =
+        WindowsWifiConnection.create(Mobifume.getInstance().getScheduledExecutorService());
   }
 
   @Override
-  public boolean isWifiEnabled() {
-    return wifiConnected;
-  }
-
-  @Override
-  public void connectWifi() {
-    String ssid = Mobifume.getInstance().getSettings().getProperty("wifi.ssid");
-    String name = Mobifume.getInstance().getSettings().getProperty("wifi.name");
-    String command = String.format("cmd /c netsh wlan connect ssid=%s name=%s interface=WLAN", ssid,
-        name);
-    try {
-      Runtime.getRuntime().exec(command);
-      wifiConnected = true;
-      Mobifume.getInstance()
-          .getEventManager()
-          .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.WIFI_CONNECTED));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @Override
-  public void disconnectWifi() {
-    try {
-      Runtime.getRuntime().exec("cmd /c netsh wlan disconnect");
-      wifiConnected = false;
-      Mobifume.getInstance()
-          .getEventManager()
-          .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.WIFI_DISCONNECTED));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  public WifiConnection getWifiConnection() {
+    return wifiConnection;
   }
 
   @Override
@@ -128,10 +99,8 @@ public class MobiModelManager implements ModelManager {
 
   public void removeGroup(Group group) {
     ((Room) group).stop();
-    List<Device> offlineDevicesInGroup = group.getDevices()
-        .stream()
-        .filter(Device::isOffline)
-        .collect(Collectors.toList());
+    List<Device> offlineDevicesInGroup =
+        group.getDevices().stream().filter(Device::isOffline).collect(Collectors.toList());
     offlineDevicesInGroup.forEach(device -> Mobifume.getInstance()
         .getEventManager()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.DISCONNECTED)));

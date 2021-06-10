@@ -202,7 +202,7 @@ public class GroupSettingsController {
       return;
     }
     lockUpdate = true;
-    heatTime = (int) heatTimeSlider.getValue();
+    heatTime = (int) getFixedValue(heatTimeSlider, heatTimeSlider.getValue());
     heatTimeField.setText(heatTime + "");
     lockUpdate = false;
   }
@@ -226,13 +226,13 @@ public class GroupSettingsController {
       return;
     }
     lockUpdate = true;
-    purgeTime = (int) purgeTimeSlider.getValue();
+    purgeTime = (int) getFixedValue(purgeTimeSlider, purgeTimeSlider.getValue());
     purgeTimeField.setText(purgeTime + "");
     lockUpdate = false;
   }
 
-  private double getFixedValue(Slider slider, double maxHum) {
-    return Math.max(Math.min(maxHum, slider.getMax()), slider.getMin());
+  private double getFixedValue(Slider slider, double value) {
+    return Math.max(Math.min(value, slider.getMax()), slider.getMin());
   }
 
   @FXML
@@ -254,19 +254,20 @@ public class GroupSettingsController {
       settings.setHumidifyMax(maxHumidity);
       group.updateHumidify();
     }
+
     int heaterTemperature = (int) getFixedValue(heaterTempSlider, heaterTemp);
     if (heaterTemperature != settings.getHeaterTemperature()) {
       settings.setHeaterTemperature(heaterTemperature);
       group.updateHeaterSetpoint();
     }
-    int heatTimer = (int) getFixedValue(heatTimeSlider, heatTime);
-    if (heatTimer != settings.getHeatTimer()) {
-      settings.setHeatTimer(heatTimer);
+
+    if (heatTime != settings.getHeatTimer()) {
+      settings.setHeatTimer(heatTime);
       group.resetHeatTimer();
     }
-    int purgeTimer = (int) getFixedValue(purgeTimeSlider, purgeTime);
-    if (purgeTimer != settings.getPurgeTimer()) {
-      settings.setPurgeTimer(purgeTimer);
+
+    if (purgeTime != settings.getPurgeTimer()) {
+      settings.setPurgeTimer(purgeTime);
       group.resetPurgeTimer();
     }
   }

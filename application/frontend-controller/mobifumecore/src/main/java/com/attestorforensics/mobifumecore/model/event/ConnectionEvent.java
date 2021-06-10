@@ -12,7 +12,9 @@ public class ConnectionEvent implements Event {
 
   public enum ConnectionStatus {
     WIFI_CONNECTED,
+    WIFI_CONNECTING,
     WIFI_DISCONNECTED,
+    WIFI_DISCONNECTING,
     BROKER_CONNECTED,
     BROKER_DISCONNECTED,
     BROKER_LOST,

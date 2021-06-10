@@ -93,7 +93,7 @@ public class Mobifume {
     LocaleManager.getInstance().load(language);
 
     modelManager = new MobiModelManager();
-    modelManager.connectWifi();
+    modelManager.getWifiConnection().connect();
   }
 
   /**
