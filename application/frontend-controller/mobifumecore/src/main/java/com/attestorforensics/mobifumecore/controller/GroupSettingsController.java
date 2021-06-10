@@ -282,7 +282,7 @@ public class GroupSettingsController {
         LocaleManager.getInstance().getString("dialog.settings.restore.title"),
         LocaleManager.getInstance().getString("dialog.settings.restore.content"), true,
         accepted -> {
-          if (!accepted) {
+          if (Boolean.FALSE.equals(accepted)) {
             return;
           }
 

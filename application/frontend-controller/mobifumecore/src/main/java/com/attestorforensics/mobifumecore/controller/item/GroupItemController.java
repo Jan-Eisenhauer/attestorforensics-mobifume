@@ -58,14 +58,15 @@ public class GroupItemController {
   private void statusUpdate() {
     statusUpdateTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .scheduleWithFixedDelay(() -> Platform.runLater(this::updateStatus), 0L, 1L, TimeUnit.SECONDS);
+        .scheduleWithFixedDelay(() -> Platform.runLater(this::updateStatus), 0L, 1L,
+            TimeUnit.SECONDS);
   }
 
   private void createGroupRoot() {
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
 
-    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/Group.fxml"),
-        resourceBundle);
+    FXMLLoader loader =
+        new FXMLLoader(getClass().getClassLoader().getResource("view/Group.fxml"), resourceBundle);
     try {
       groupRoot = loader.load();
 
@@ -155,7 +156,7 @@ public class GroupItemController {
         LocaleManager.getInstance()
             .getString("dialog.group.remove.content",
                 group.getName() + " - " + group.getSettings().getCycleCount()), true, accepted -> {
-      if (!accepted) {
+      if (Boolean.FALSE.equals(accepted)) {
         return;
       }
 

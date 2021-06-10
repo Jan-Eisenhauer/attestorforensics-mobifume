@@ -290,8 +290,8 @@ public class GlobalSettingsController {
 
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
 
-    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/Info.fxml"),
-        resourceBundle);
+    FXMLLoader loader =
+        new FXMLLoader(getClass().getClassLoader().getResource("view/Info.fxml"), resourceBundle);
     Parent root = loader.load();
 
     SceneTransition.playForward(scene, root);
@@ -305,17 +305,15 @@ public class GlobalSettingsController {
         LocaleManager.getInstance().getString("dialog.settings.restore.title"),
         LocaleManager.getInstance().getString("dialog.settings.restore.content"), true,
         accepted -> {
-          if (!accepted) {
-            return;
+          if (Boolean.TRUE.equals(accepted)) {
+            Settings settings = new Settings();
+            maxHumField.setText((int) settings.getHumidifyMax() + "");
+            heaterTempField.setText(settings.getHeaterTemperature() + "");
+            heatTimeField.setText(settings.getHeatTimer() + "");
+            purgeTimeField.setText(settings.getPurgeTimer() + "");
+
+            applySettings();
           }
-
-          Settings settings = new Settings();
-          maxHumField.setText((int) settings.getHumidifyMax() + "");
-          heaterTempField.setText(settings.getHeaterTemperature() + "");
-          heatTimeField.setText(settings.getHeatTimer() + "");
-          purgeTimeField.setText(settings.getPurgeTimer() + "");
-
-          applySettings();
         });
   }
 }

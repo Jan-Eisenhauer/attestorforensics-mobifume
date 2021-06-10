@@ -1,5 +1,6 @@
 package com.attestorforensics.mobifumecore.util.log;
 
+import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.update.Updater;
 import java.io.File;
 import java.io.IOException;
@@ -15,14 +16,16 @@ import java.util.concurrent.TimeUnit;
 public class LogMover {
 
   private static final long DELAY_IN_SECONDS = 10;
-  private static final File DEFAULT_USB_DIRECTORY = new File("D:\\");
 
   private final ScheduledExecutorService scheduledExecutorService;
   private final Updater updater;
+  private final File defaultUsbDirectory;
 
   private LogMover(ScheduledExecutorService scheduledExecutorService, Updater updater) {
     this.scheduledExecutorService = scheduledExecutorService;
     this.updater = updater;
+    defaultUsbDirectory =
+        new File(Mobifume.getInstance().getSettings().getProperty("usb_directory"));
   }
 
   public static LogMover create(ScheduledExecutorService scheduledExecutorService,
@@ -39,7 +42,7 @@ public class LogMover {
   }
 
   private void tryMovingToUsb() {
-    if (!DEFAULT_USB_DIRECTORY.exists() || !DEFAULT_USB_DIRECTORY.isDirectory()) {
+    if (!defaultUsbDirectory.exists() || !defaultUsbDirectory.isDirectory()) {
       return;
     }
 
@@ -52,7 +55,7 @@ public class LogMover {
       return;
     }
 
-    File usbDestination = new File(DEFAULT_USB_DIRECTORY, "MOBIfume" + File.separator + "logs");
+    File usbDestination = new File(defaultUsbDirectory, "MOBIfume" + File.separator + "logs");
     try {
       usbDestination.mkdirs();
 

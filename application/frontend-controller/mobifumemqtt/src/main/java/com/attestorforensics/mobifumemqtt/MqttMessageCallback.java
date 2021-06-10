@@ -33,6 +33,6 @@ public class MqttMessageCallback implements MqttCallback {
 
   @Override
   public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
+    // nothing to do on delivery completed
   }
 }

@@ -44,11 +44,11 @@ public class InputController {
       error.setVisible(false);
     });
     input.focusedProperty().addListener((observableValue, oldState, focused) -> {
-      if (!focused) {
-        return;
+      if (Boolean.TRUE.equals(focused)) {
+        Platform.runLater(input::selectAll);
       }
-      Platform.runLater(input::selectAll);
     });
+
     TabTipKeyboard.onFocus(input);
   }
 

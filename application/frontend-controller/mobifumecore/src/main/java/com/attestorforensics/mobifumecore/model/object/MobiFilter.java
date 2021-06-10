@@ -51,7 +51,7 @@ public class MobiFilter implements Filter {
 
   @Override
   public List<Run> getRuns() {
-    return runs.stream().map(run -> (Run) run).collect(Collectors.toList());
+    return runs.stream().map(Run.class::cast).collect(Collectors.toList());
   }
 
   @Override

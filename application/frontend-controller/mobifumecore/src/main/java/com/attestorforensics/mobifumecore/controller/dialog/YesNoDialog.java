@@ -40,19 +40,19 @@ public class YesNoDialog {
   public void show() {
     Platform.runLater(() -> {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/dialog/YesNoDialog.fxml"), resourceBundle);
+      FXMLLoader loader =
+          new FXMLLoader(getClass().getClassLoader().getResource("view/dialog/YesNoDialog.fxml"),
+              resourceBundle);
 
       stage = new Stage();
       stage.initOwner(window);
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-        if (newFocus || closed) {
-          return;
+        if (Boolean.FALSE.equals(newFocus) && !closed) {
+          close(false);
         }
-
-        close(false);
       });
+
       try {
         Parent root = loader.load();
         Scene scene = new Scene(root);

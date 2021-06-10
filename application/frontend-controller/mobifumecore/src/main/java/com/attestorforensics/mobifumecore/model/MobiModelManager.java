@@ -3,8 +3,6 @@ package com.attestorforensics.mobifumecore.model;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import com.attestorforensics.mobifumecore.model.connection.MessageHandler;
-import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
-import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.FilterEvent;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
@@ -26,7 +24,6 @@ import java.util.stream.Collectors;
 public class MobiModelManager implements ModelManager {
 
   private final ClientConnection connection;
-  private final WifiConnection wifiConnection;
 
   private final List<Device> devices = new ArrayList<>();
   private final List<Group> groups = new ArrayList<>();
@@ -53,13 +50,6 @@ public class MobiModelManager implements ModelManager {
     MessageHandler msgHandler = new MessageHandler(this);
 
     connection = new ClientConnection(this, msgHandler);
-    wifiConnection =
-        WindowsWifiConnection.create(Mobifume.getInstance().getScheduledExecutorService());
-  }
-
-  @Override
-  public WifiConnection getWifiConnection() {
-    return wifiConnection;
   }
 
   @Override

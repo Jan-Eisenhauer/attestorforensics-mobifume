@@ -27,19 +27,18 @@ public class ConfirmDialog {
     this.callback = callback;
     Platform.runLater(() -> {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/dialog/ConfirmDialog.fxml"),
-          resourceBundle);
+      FXMLLoader loader =
+          new FXMLLoader(getClass().getClassLoader().getResource("view/dialog/ConfirmDialog.fxml"),
+              resourceBundle);
 
       stage = new Stage();
       stage.initOwner(window);
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-        if (newFocus) {
-          return;
+        if (Boolean.FALSE.equals(newFocus)) {
+          close(false);
         }
 
-        close(false);
       });
       try {
         Parent root = loader.load();

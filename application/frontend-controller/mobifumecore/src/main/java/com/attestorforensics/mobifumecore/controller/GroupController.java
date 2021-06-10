@@ -213,8 +213,9 @@ public class GroupController {
     try {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
 
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/GroupCalculator.fxml"), resourceBundle);
+      FXMLLoader loader =
+          new FXMLLoader(getClass().getClassLoader().getResource("view/GroupCalculator.fxml"),
+              resourceBundle);
       calculator = loader.load();
 
       GroupCalculatorController calcController = loader.getController();
@@ -253,9 +254,9 @@ public class GroupController {
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
     group.getBases().forEach(base -> {
       try {
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getClassLoader().getResource("view/items/GroupBaseItem.fxml"),
-            resourceBundle);
+        FXMLLoader loader =
+            new FXMLLoader(getClass().getClassLoader().getResource("view/items/GroupBaseItem.fxml"),
+                resourceBundle);
         Parent root = loader.load();
         GroupBaseItemController controller = loader.getController();
         controller.setBase(group, base);
@@ -271,9 +272,9 @@ public class GroupController {
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
     group.getHumidifiers().forEach(hum -> {
       try {
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getClassLoader().getResource("view/items/GroupHumItem.fxml"),
-            resourceBundle);
+        FXMLLoader loader =
+            new FXMLLoader(getClass().getClassLoader().getResource("view/items/GroupHumItem.fxml"),
+                resourceBundle);
         Parent root = loader.load();
         GroupHumItemController controller = loader.getController();
         controller.setHumidifier(hum);
@@ -335,8 +336,8 @@ public class GroupController {
   }
 
   private void addCurrentHumidityToChart() {
-    XYChart.Data<Double, Double> data = new XYChart.Data<>((double) latestDataTimestamp,
-        group.getHumidity());
+    XYChart.Data<Double, Double> data =
+        new XYChart.Data<>((double) latestDataTimestamp, group.getHumidity());
     dataSeries.getData().add(data);
   }
 
@@ -458,8 +459,9 @@ public class GroupController {
 
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
 
-    FXMLLoader loader = new FXMLLoader(
-        getClass().getClassLoader().getResource("view/GroupSettings.fxml"), resourceBundle);
+    FXMLLoader loader =
+        new FXMLLoader(getClass().getClassLoader().getResource("view/GroupSettings.fxml"),
+            resourceBundle);
     try {
       Parent root = loader.load();
 
@@ -491,13 +493,14 @@ public class GroupController {
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.next.humidity.title"),
         LocaleManager.getInstance().getString("dialog.next.humidity.content"), true, accepted -> {
-      if (!accepted) {
+      if (Boolean.FALSE.equals(accepted)) {
         return;
       }
 
       if (group.getHumidity() != -128) {
         group.getSettings().setHumidifyMax(group.getHumidity());
       }
+
       group.startEvaporate();
     });
   }
@@ -510,11 +513,9 @@ public class GroupController {
         LocaleManager.getInstance().getString("dialog.cancel.humidity.title"),
         LocaleManager.getInstance().getString("dialog.cancel.humidity" + ".content"), true,
         accepted -> {
-          if (!accepted) {
-            return;
+          if (Boolean.TRUE.equals(accepted)) {
+            group.cancel();
           }
-
-          group.cancel();
         });
   }
 
@@ -525,11 +526,9 @@ public class GroupController {
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.next.evaporate.title"),
         LocaleManager.getInstance().getString("dialog.next.evaporate.content"), true, accepted -> {
-      if (!accepted) {
-        return;
+      if (Boolean.TRUE.equals(accepted)) {
+        group.startPurge();
       }
-
-      group.startPurge();
     });
   }
 
@@ -541,11 +540,9 @@ public class GroupController {
         LocaleManager.getInstance().getString("dialog.cancel.evaporate.title"),
         LocaleManager.getInstance().getString("dialog.cancel.evaporate.content"), true,
         accepted -> {
-          if (!accepted) {
-            return;
+          if (Boolean.TRUE.equals(accepted)) {
+            group.cancel();
           }
-
-          group.cancel();
         });
   }
 
@@ -556,11 +553,9 @@ public class GroupController {
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.cancel.purge.title"),
         LocaleManager.getInstance().getString("dialog.cancel.purge.content"), true, accepted -> {
-      if (!accepted) {
-        return;
+      if (Boolean.TRUE.equals(accepted)) {
+        group.cancel();
       }
-
-      group.cancel();
     });
   }
 
@@ -571,11 +566,9 @@ public class GroupController {
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.again.purge.title"),
         LocaleManager.getInstance().getString("dialog.again.purge.content"), true, accepted -> {
-      if (!accepted) {
-        return;
+      if (Boolean.TRUE.equals(accepted)) {
+        group.startPurge();
       }
-
-      group.startPurge();
     });
   }
 
@@ -584,8 +577,7 @@ public class GroupController {
     Sound.click();
 
     GroupCalculatorController calcController =
-        (GroupCalculatorController) calculator.getProperties()
-        .get("controller");
+        (GroupCalculatorController) calculator.getProperties().get("controller");
 
     Node button = (Node) event.getSource();
     Scene scene = button.getScene();

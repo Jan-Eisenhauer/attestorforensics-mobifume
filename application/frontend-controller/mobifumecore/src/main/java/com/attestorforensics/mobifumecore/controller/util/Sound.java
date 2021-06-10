@@ -9,7 +9,10 @@ import javafx.scene.media.MediaPlayer;
 
 public class Sound {
 
-  private final static Map<String, Media> mediaCache = Maps.newConcurrentMap();
+  private static final Map<String, Media> mediaCache = Maps.newConcurrentMap();
+
+  private Sound() {
+  }
 
   public static void play(String audio) {
     Media cachedSound = mediaCache.get(audio);

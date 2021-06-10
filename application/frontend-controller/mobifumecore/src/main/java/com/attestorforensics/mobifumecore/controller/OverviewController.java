@@ -177,7 +177,7 @@ public class OverviewController {
   }
 
   public void updateConnection() {
-    if (Mobifume.getInstance().getModelManager().getWifiConnection().isEnabled()) {
+    if (Mobifume.getInstance().getWifiConnection().isEnabled()) {
       setWifiImage(
           Mobifume.getInstance().getModelManager().isBrokerConnected() ? "Wifi" : "Wifi_Error");
     } else {
@@ -271,10 +271,10 @@ public class OverviewController {
   @FXML
   public void onWifi() {
     Sound.click();
-    if (Mobifume.getInstance().getModelManager().getWifiConnection().isEnabled()) {
-      Mobifume.getInstance().getModelManager().getWifiConnection().disconnect();
+    if (Mobifume.getInstance().getWifiConnection().isEnabled()) {
+      Mobifume.getInstance().getWifiConnection().disconnect();
     } else {
-      Mobifume.getInstance().getModelManager().getWifiConnection().connect();
+      Mobifume.getInstance().getWifiConnection().connect();
     }
   }
 
@@ -285,14 +285,16 @@ public class OverviewController {
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.shutdown.title"),
         LocaleManager.getInstance().getString("dialog.shutdown.content"), true, accepted -> {
-      if (!accepted) {
+      if (Boolean.FALSE.equals(accepted)) {
         return;
       }
+
       try {
         Runtime.getRuntime().exec("shutdown -s -t 0");
       } catch (IOException e) {
         e.printStackTrace();
       }
+
       System.exit(0);
     });
   }
@@ -308,7 +310,7 @@ public class OverviewController {
     selectedDevices = selectedDevices.stream()
         .filter(DeviceItemController::isSelected)
         .collect(Collectors.toList());
-    if (selectedDevices.size() == 0) {
+    if (selectedDevices.isEmpty()) {
       // no node selected
       createGroupError();
       return;

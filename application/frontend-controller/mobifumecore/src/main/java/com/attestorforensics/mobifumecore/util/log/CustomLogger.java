@@ -23,6 +23,9 @@ public class CustomLogger {
           + File.separator + "logs");
   private static final String SPLIT = ";";
 
+  private CustomLogger() {
+  }
+
   public static Logger createLogger(Class<?> clazz) {
     Logger logger = Logger.getLogger(clazz);
     try {

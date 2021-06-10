@@ -28,23 +28,23 @@ public class InputDialog {
     this.callback = callback;
     Platform.runLater(() -> {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/dialog/InputDialog.fxml"), resourceBundle);
+      FXMLLoader loader =
+          new FXMLLoader(getClass().getClassLoader().getResource("view/dialog/InputDialog.fxml"),
+              resourceBundle);
 
       stage = new Stage();
       stage.initOwner(window);
       stage.initStyle(StageStyle.TRANSPARENT);
       if (closeOnOutside) {
         stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-          if (newFocus) {
-            return;
+          if (Boolean.FALSE.equals(newFocus)) {
+            close(null);
           }
-
-          close(null);
         });
       } else {
         stage.initModality(Modality.APPLICATION_MODAL);
       }
+
       try {
         Parent root = loader.load();
         Scene scene = new Scene(root);

@@ -1,6 +1,8 @@
 package com.attestorforensics.mobifumemqtt;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -48,7 +50,11 @@ public class MobifumeMqtt {
   private MqttDefaultFilePersistence prepareDirectory() {
     File pahoDirectory = new File("paho");
     if (pahoDirectory.exists()) {
-      pahoDirectory.delete();
+      try {
+        Files.delete(pahoDirectory.toPath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     pahoDirectory.mkdirs();

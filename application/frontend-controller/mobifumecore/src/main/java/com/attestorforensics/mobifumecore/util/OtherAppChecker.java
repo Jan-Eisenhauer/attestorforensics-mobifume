@@ -11,6 +11,9 @@ import java.nio.channels.FileLock;
  */
 public class OtherAppChecker {
 
+  private OtherAppChecker() {
+  }
+
   /**
    * Checks if another application of this type is running on the same computer. To check this, a
    * temporary file is created and locked. When the file is already locked then the application is
@@ -21,8 +24,8 @@ public class OtherAppChecker {
    */
   public static boolean isAppActive(File dataFolder) {
     File file = new File(dataFolder, "MOBIfume.tmp");
-    try {
-      FileChannel channel = new RandomAccessFile(file, "rw").getChannel();
+    try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw")) {
+      FileChannel channel = randomAccessFile.getChannel();
       FileLock lock = channel.tryLock();
       if (lock == null) {
         return true;

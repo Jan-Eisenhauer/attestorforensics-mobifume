@@ -59,26 +59,24 @@ public class MobiApplication extends Application {
   public void init() {
     instance = this;
 
-    Font.loadFont(getClass().getClassLoader().getResourceAsStream(
-        "font/Roboto-Regular.ttf"), 10);
+    Font.loadFont(getClass().getClassLoader().getResourceAsStream("font/Roboto-Regular.ttf"), 10);
     Font.loadFont(
-        getClass().getClassLoader().getResourceAsStream(
-            "font/RobotoCondensed-Regular.ttf"), 10);
+        getClass().getClassLoader().getResourceAsStream("font/RobotoCondensed-Regular.ttf"), 10);
   }
 
   @Override
   public void start(Stage primaryStage) throws Exception {
     this.primaryStage = primaryStage;
 
-    InputStream in = getClass().getClassLoader().getResourceAsStream(
-        "images/MOBIfume_Icon.png");
+    InputStream in = getClass().getClassLoader().getResourceAsStream("images/MOBIfume_Icon.png");
     if (in != null) {
       primaryStage.getIcons().add(new Image(in));
     }
 
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-    FXMLLoader loader = new FXMLLoader(
-        getClass().getClassLoader().getResource("view/Overview.fxml"), resourceBundle);
+    FXMLLoader loader =
+        new FXMLLoader(getClass().getClassLoader().getResource("view/Overview.fxml"),
+            resourceBundle);
     Parent root = loader.load();
     double width1 = 800;
     double height1 = 1201;
@@ -102,9 +100,10 @@ public class MobiApplication extends Application {
     primaryStage.setX(0);
     primaryStage.setY(0);
 
-    Mobifume.getInstance().getScheduledExecutorService().schedule(() -> {
-      Mobifume.getInstance().getModelManager().connectToBroker();
-    }, 100L, TimeUnit.MILLISECONDS);
+    Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .schedule(() -> Mobifume.getInstance().getModelManager().connectToBroker(), 100L,
+            TimeUnit.MILLISECONDS);
   }
 
   @Override

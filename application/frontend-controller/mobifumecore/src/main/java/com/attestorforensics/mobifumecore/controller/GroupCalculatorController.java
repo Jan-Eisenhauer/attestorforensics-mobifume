@@ -132,6 +132,7 @@ public class GroupCalculatorController {
           if (newItem.isEmpty()) {
             return;
           }
+
           Evaporant evaporant = Evaporant.valueOf(newItem.toUpperCase());
           settings.setEvaporant(evaporant);
           settings.setEvaporantAmountPerCm(evaporant.getAmountPerCm());

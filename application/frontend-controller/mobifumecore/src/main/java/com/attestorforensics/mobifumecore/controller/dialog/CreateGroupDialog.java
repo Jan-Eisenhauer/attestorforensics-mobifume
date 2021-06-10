@@ -39,11 +39,9 @@ public class CreateGroupDialog {
       stage.initOwner(window);
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-        if (newFocus) {
-          return;
+        if (Boolean.FALSE.equals(newFocus)) {
+          close(null);
         }
-
-        close(null);
       });
       try {
         Parent root = loader.load();

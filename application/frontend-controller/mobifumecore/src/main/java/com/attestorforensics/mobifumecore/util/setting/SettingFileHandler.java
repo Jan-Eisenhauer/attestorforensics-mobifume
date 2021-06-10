@@ -18,16 +18,16 @@ public class SettingFileHandler {
 
   public Settings load() {
     createFile();
-    try {
-      ObjectInputStream stream = new ObjectInputStream(new FileInputStream(settingsFile));
+    try (FileInputStream fileInputStream = new FileInputStream(settingsFile);
+        ObjectInputStream stream = new ObjectInputStream(fileInputStream)) {
       Object obj = stream.readObject();
-      stream.close();
       if (obj != null) {
         return (Settings) obj;
       }
     } catch (IOException | ClassNotFoundException e) {
       // settings file is empty
     }
+
     Settings settings = new Settings();
     save(settings);
     return settings;
@@ -45,10 +45,9 @@ public class SettingFileHandler {
 
   void save(Settings settings) {
     createFile();
-    try {
-      ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(settingsFile));
+    try (FileOutputStream fileOutputStream = new FileOutputStream(settingsFile);
+        ObjectOutputStream stream = new ObjectOutputStream(fileOutputStream)) {
       stream.writeObject(settings);
-      stream.close();
     } catch (IOException e) {
       e.printStackTrace();
     }

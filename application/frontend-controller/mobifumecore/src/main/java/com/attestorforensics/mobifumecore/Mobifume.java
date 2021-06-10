@@ -2,6 +2,8 @@ package com.attestorforensics.mobifumecore;
 
 import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.ModelManager;
+import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
+import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection;
 import com.attestorforensics.mobifumecore.model.listener.EventManager;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.attestorforensics.mobifumecore.util.OtherAppChecker;
@@ -50,6 +52,7 @@ public class Mobifume {
   private ModelManager modelManager;
 
   private final ScheduledExecutorService scheduledExecutorService;
+  private final WifiConnection wifiConnection;
 
   private Mobifume() {
     instance = this;
@@ -78,7 +81,7 @@ public class Mobifume {
 
     if (OtherAppChecker.isAppActive(FileManager.getInstance().getDataFolder())) {
       logger.error("App already active");
-      return;
+      System.exit(1);
     }
 
     eventManager = new EventManager();
@@ -93,7 +96,9 @@ public class Mobifume {
     LocaleManager.getInstance().load(language);
 
     modelManager = new MobiModelManager();
-    modelManager.getWifiConnection().connect();
+
+    wifiConnection = WindowsWifiConnection.create(scheduledExecutorService);
+    wifiConnection.connect();
   }
 
   /**
@@ -132,5 +137,9 @@ public class Mobifume {
 
   public ModelManager getModelManager() {
     return modelManager;
+  }
+
+  public WifiConnection getWifiConnection() {
+    return wifiConnection;
   }
 }

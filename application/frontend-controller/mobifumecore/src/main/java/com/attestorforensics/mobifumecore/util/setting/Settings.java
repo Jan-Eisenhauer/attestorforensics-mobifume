@@ -8,7 +8,7 @@ public class Settings implements Serializable {
 
   private static final long serialVersionUID = -4384611401364322327L;
   public static Settings DEFAULT_SETTINGS;
-  private static SettingFileHandler fileHandler = new SettingFileHandler();
+  private static final SettingFileHandler fileHandler = new SettingFileHandler();
 
   private Locale language = Locale.GERMANY;
   private double humidifyMax = 80;

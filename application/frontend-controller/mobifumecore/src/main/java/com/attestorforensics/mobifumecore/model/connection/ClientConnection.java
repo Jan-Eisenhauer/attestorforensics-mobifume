@@ -6,6 +6,8 @@ import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.attestorforensics.mobifumecore.util.log.CustomLogger;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Properties;
@@ -74,8 +76,13 @@ public class ClientConnection {
     CustomLogger.info("Trying to connect to broker " + broker);
     File pahoDirectory = new File(FileManager.getInstance().getDataFolder(), "paho");
     if (pahoDirectory.exists()) {
-      pahoDirectory.delete();
+      try {
+        Files.delete(pahoDirectory.toPath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
+
     pahoDirectory.mkdirs();
 
     try {

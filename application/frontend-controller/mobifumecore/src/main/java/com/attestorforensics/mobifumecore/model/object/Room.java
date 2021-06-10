@@ -67,7 +67,7 @@ public class Room implements Group {
   public List<Base> getBases() {
     return devices.stream()
         .filter(device -> device.getType() == DeviceType.BASE)
-        .map(map -> (Base) map)
+        .map(Base.class::cast)
         .collect(Collectors.toList());
   }
 
@@ -75,7 +75,7 @@ public class Room implements Group {
   public List<Humidifier> getHumidifiers() {
     return devices.stream()
         .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
-        .map(map -> (Humidifier) map)
+        .map(Humidifier.class::cast)
         .collect(Collectors.toList());
   }
 
@@ -310,11 +310,8 @@ public class Room implements Group {
         if (status == Status.EVAPORATE) {
           base.forceUpdateHeaterSetpoint(settings.getHeaterTemperature());
         }
-        if (status == Status.HUMIDIFY || status == Status.EVAPORATE) {
-          base.forceUpdateLatch(false);
-        } else {
-          base.forceUpdateLatch(true);
-        }
+
+        base.forceUpdateLatch(status != Status.HUMIDIFY && status != Status.EVAPORATE);
         break;
       case HUMIDIFIER:
         Humidifier hum = (Humidifier) device;
