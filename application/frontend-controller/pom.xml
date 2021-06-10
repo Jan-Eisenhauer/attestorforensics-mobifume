@@ -13,7 +13,6 @@
     <module>mobifumecore</module>
     <module>mobifumeupdater</module>
     <module>mobifumeinstaller</module>
-    <module>mobifumemqtt</module>
   </modules>
 
   <packaging>pom</packaging>
