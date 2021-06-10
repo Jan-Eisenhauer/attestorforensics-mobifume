@@ -38,6 +38,10 @@ public class Console {
   }
 
   private void onCommand(String command, String[] arguments) {
+    if(command.isEmpty()) {
+      return;
+    }
+
     System.out.println("Issued command: " + command + " " + String.join(";", arguments));
     switch (command.toLowerCase(Locale.ROOT)) {
       case "raw":
