@@ -297,7 +297,7 @@ public class Room implements Group {
     if (status != Status.EVAPORATE) {
       return;
     }
-    CustomLogger.info(this, "UPDATE_HEATERSETPOINT");
+    CustomLogger.info(this, "UPDATE_HEATERSETPOINT", settings.getHeaterTemperature());
     CustomLogger.logGroupSettings(this);
     getBases().forEach(base -> base.updateHeaterSetpoint(settings.getHeaterTemperature()));
   }
@@ -355,7 +355,7 @@ public class Room implements Group {
       return;
     }
 
-    CustomLogger.info(this, "UPDATE_HEATTIMER", purgeStartTime, settings.getPurgeTimer());
+    CustomLogger.info(this, "UPDATE_PURGETIMER", purgeStartTime, settings.getPurgeTimer());
     CustomLogger.logGroupSettings(this);
     createOrUpdatePurgeTask();
   }
@@ -367,7 +367,7 @@ public class Room implements Group {
     }
 
     purgeStartTime = System.currentTimeMillis();
-    CustomLogger.info(this, "RESET_HEATTIMER", purgeStartTime, settings.getPurgeTimer());
+    CustomLogger.info(this, "RESET_PURGETIMER", purgeStartTime, settings.getPurgeTimer());
     CustomLogger.logGroupSettings(this);
     updatePurgeTimer();
   }
