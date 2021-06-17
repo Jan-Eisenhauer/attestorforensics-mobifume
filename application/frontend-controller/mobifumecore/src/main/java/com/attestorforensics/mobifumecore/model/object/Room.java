@@ -309,6 +309,9 @@ public class Room implements Group {
       case BASE:
         Base base = (Base) device;
         if (status == Status.EVAPORATE) {
+          long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
+          int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
+          base.updateTime(settings.getHeatTimer() - passedTimeInMinutes);
           base.forceUpdateHeaterSetpoint(settings.getHeaterTemperature());
         }
 
