@@ -10,7 +10,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 public class MessageEncoder {
 
   private MqttClient client;
-  private boolean sendingAllowed;
 
   MessageEncoder(MqttClient client) {
     this.client = client;
@@ -41,7 +40,6 @@ public class MessageEncoder {
     try {
       client.publish(Mobifume.getInstance().getSettings().getProperty("channel.broadcast"),
           "ONLINE".getBytes(), 2, false);
-      sendingAllowed = true;
     } catch (MqttException e) {
       e.printStackTrace();
     }
@@ -74,9 +72,7 @@ public class MessageEncoder {
       if (!client.isConnected()) {
         return;
       }
-      if (!sendingAllowed) {
-        return;
-      }
+
       try {
         client.publish(topic, message.getBytes(), 2, false);
       } catch (MqttException e) {
