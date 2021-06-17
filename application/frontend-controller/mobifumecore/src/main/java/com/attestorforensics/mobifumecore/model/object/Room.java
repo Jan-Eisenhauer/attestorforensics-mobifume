@@ -36,6 +36,7 @@ public class Room implements Group {
 
   private long evaporateStartTime;
   private ScheduledFuture<?> evaporateTask;
+  private ScheduledFuture<?> evaporateTimeTask;
 
   private long purgeStartTime;
   private ScheduledFuture<?> purgeTask;
@@ -197,6 +198,10 @@ public class Room implements Group {
     if (Objects.nonNull(evaporateTask) && !evaporateTask.isDone()) {
       evaporateTask.cancel(false);
     }
+
+    if (evaporateTimeTask != null) {
+      evaporateTimeTask.cancel(false);
+    }
   }
 
   private void createOrUpdateEvaporateTask() {
@@ -208,7 +213,19 @@ public class Room implements Group {
           .getEventManager()
           .call(new EvaporateEvent(this, EvaporateEvent.EvaporateStatus.FINISHED));
       startPurge();
+      evaporateTimeTask.cancel(false);
     }, timeLeft, TimeUnit.MILLISECONDS);
+    evaporateTimeTask =
+        Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
+          if (status != Status.EVAPORATE) {
+            return;
+          }
+
+          long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
+          int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
+          getBases().forEach(
+              base -> base.updateTime(settings.getHeatTimer() - passedTimeInMinutes));
+        }, 60L, 60L, TimeUnit.MINUTES);
   }
 
   @Override
@@ -309,6 +326,9 @@ public class Room implements Group {
       case BASE:
         Base base = (Base) device;
         if (status == Status.EVAPORATE) {
+          long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
+          int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
+          base.updateTime(settings.getHeatTimer() - passedTimeInMinutes);
           base.forceUpdateHeaterSetpoint(settings.getHeaterTemperature());
         }
 
