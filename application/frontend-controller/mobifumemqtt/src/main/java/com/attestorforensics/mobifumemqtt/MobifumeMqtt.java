@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -46,7 +48,9 @@ public class MobifumeMqtt {
     clientConnection.connectClient();
     subscribeChannels();
 
-    Console console = Console.create(messageSender, messageRouter);
+    ScheduledExecutorService scheduledExecutorService =
+        Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+    Console console = Console.create(messageSender, messageRouter, scheduledExecutorService);
     console.read();
   }
 
