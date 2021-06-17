@@ -5,6 +5,9 @@ import java.util.Optional;
 
 public class Base extends Device {
 
+  // Devices only support a maximum time of 114 minutes
+  private static final int MAX_TIME = 114;
+
   private double temperature = -128;
   private double humidity = -128;
   private double heaterSetpoint = -128;
@@ -41,7 +44,7 @@ public class Base extends Device {
   }
 
   public void updateTime(int time) {
-    getEncoder().baseTime(this, time);
+    getEncoder().baseTime(this, Math.min(time, MAX_TIME));
   }
 
   public Optional<Calibration> getHumidityCalibration() {
