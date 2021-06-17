@@ -111,7 +111,7 @@ public class Room implements Group {
   @Override
   public void setupStart() {
     status = Status.START;
-    CustomLogger.info(this, "SETUP_START");
+    CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     this.getDevices().forEach(Device::reset);
     Mobifume.getInstance()
@@ -125,7 +125,7 @@ public class Room implements Group {
       return;
     }
     status = Status.HUMIDIFY;
-    CustomLogger.info(this, "START_HUMIDIFY");
+    CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
 
     getBases().forEach(base -> {
@@ -168,7 +168,7 @@ public class Room implements Group {
   @Override
   public void startEvaporate() {
     status = Status.EVAPORATE;
-    CustomLogger.info(this, "START_EVAPORATE");
+    CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     double evaporantAmount =
         settings.getRoomWidth() * settings.getRoomDepth() * settings.getRoomHeight()
@@ -214,7 +214,7 @@ public class Room implements Group {
   @Override
   public void startPurge() {
     status = Status.PURGE;
-    CustomLogger.info(this, "START_PURGE");
+    CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
 
     cancelEvaporateTaskIfScheduled();
@@ -259,7 +259,7 @@ public class Room implements Group {
   @Override
   public void reset() {
     status = Status.RESET;
-    CustomLogger.info(this, "RESET");
+    CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     this.getDevices().forEach(Device::reset);
 
@@ -284,6 +284,7 @@ public class Room implements Group {
       default:
         this.getDevices().forEach(Device::reset);
         status = Status.CANCEL;
+        CustomLogger.logGroupState(this);
         Mobifume.getInstance()
             .getEventManager()
             .call(new GroupEvent(this, GroupEvent.GroupStatus.CANCELED));
@@ -405,7 +406,7 @@ public class Room implements Group {
 
   private void finish() {
     status = Status.FINISH;
-    CustomLogger.info(this, "FINISH");
+    CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     this.getDevices().forEach(Device::reset);
     Mobifume.getInstance()
