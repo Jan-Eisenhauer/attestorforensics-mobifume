@@ -6,7 +6,7 @@ import com.attestorforensics.mobifumecore.controller.item.FilterItemController;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.object.Filter;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -17,17 +17,19 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import lombok.Getter;
 
 public class FiltersController {
 
-  @Getter
   private static FiltersController instance;
 
   @FXML
   Parent root;
   @FXML
   private Pane filters;
+
+  public static FiltersController getInstance() {
+    return instance;
+  }
 
   public void removeFilter(Filter filter) {
     filters.getChildren()

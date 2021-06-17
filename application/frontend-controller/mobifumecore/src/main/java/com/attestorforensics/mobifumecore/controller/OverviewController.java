@@ -13,7 +13,8 @@ import com.attestorforensics.mobifumecore.model.object.Device;
 import com.attestorforensics.mobifumecore.model.object.DeviceType;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.util.Kernel32;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.Kernel32.SystemPowerStatus;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.view.GroupColor;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class OverviewController {
     Mobifume.getInstance()
         .getScheduledExecutorService()
         .scheduleAtFixedRate(() -> Platform.runLater(() -> {
-          Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
-          Kernel32.instance.GetSystemPowerStatus(batteryStatus);
+          SystemPowerStatus batteryStatus = new SystemPowerStatus();
+          Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
           battery.setText(batteryStatus.getBatteryLifePercent());
         }), 0L, 10L, TimeUnit.SECONDS);
   }
@@ -177,7 +178,7 @@ public class OverviewController {
   }
 
   public void updateConnection() {
-    if (Mobifume.getInstance().getModelManager().getWifiConnection().isEnabled()) {
+    if (Mobifume.getInstance().getWifiConnection().isEnabled()) {
       setWifiImage(
           Mobifume.getInstance().getModelManager().isBrokerConnected() ? "Wifi" : "Wifi_Error");
     } else {
@@ -271,10 +272,10 @@ public class OverviewController {
   @FXML
   public void onWifi() {
     Sound.click();
-    if (Mobifume.getInstance().getModelManager().getWifiConnection().isEnabled()) {
-      Mobifume.getInstance().getModelManager().getWifiConnection().disconnect();
+    if (Mobifume.getInstance().getWifiConnection().isEnabled()) {
+      Mobifume.getInstance().getWifiConnection().disconnect();
     } else {
-      Mobifume.getInstance().getModelManager().getWifiConnection().connect();
+      Mobifume.getInstance().getWifiConnection().connect();
     }
   }
 
@@ -285,14 +286,16 @@ public class OverviewController {
     new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.shutdown.title"),
         LocaleManager.getInstance().getString("dialog.shutdown.content"), true, accepted -> {
-      if (!accepted) {
+      if (Boolean.FALSE.equals(accepted)) {
         return;
       }
+
       try {
         Runtime.getRuntime().exec("shutdown -s -t 0");
       } catch (IOException e) {
         e.printStackTrace();
       }
+
       System.exit(0);
     });
   }
@@ -308,7 +311,7 @@ public class OverviewController {
     selectedDevices = selectedDevices.stream()
         .filter(DeviceItemController::isSelected)
         .collect(Collectors.toList());
-    if (selectedDevices.size() == 0) {
+    if (selectedDevices.isEmpty()) {
       // no node selected
       createGroupError();
       return;

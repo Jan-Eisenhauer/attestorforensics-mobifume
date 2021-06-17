@@ -3,15 +3,19 @@ package com.attestorforensics.mobifumecore.model.connection;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
-import com.attestorforensics.mobifumecore.util.log.CustomLogger;
 import com.attestorforensics.mobifumecore.util.FileManager;
+import com.attestorforensics.mobifumecore.util.log.CustomLogger;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import lombok.Getter;
+import java.util.stream.Stream;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -19,24 +23,20 @@ import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 public class ClientConnection {
 
-  @Getter
   private MqttClient client;
-  private String broker;
-  private String type;
-  private int port;
-  @Getter
-  private String id;
-  private String user;
-  private String password;
+  private final String broker;
+  private final String type;
+  private final int port;
+  private final String id;
+  private final String user;
+  private final String password;
 
-  @Getter
   private boolean connected;
-  private MobiModelManager mobiModelManager;
+  private final MobiModelManager mobiModelManager;
   private ScheduledFuture<?> waitForOtherAppTask;
-  private MessageHandler msgHandler;
-  private MessageCallback msgCallback;
+  private final MessageHandler msgHandler;
+  private final MessageCallback msgCallback;
 
-  @Getter
   private MessageEncoder encoder;
 
   public ClientConnection(MobiModelManager mobiModelManager, MessageHandler msgHandler) {
@@ -79,8 +79,19 @@ public class ClientConnection {
     CustomLogger.info("Trying to connect to broker " + broker);
     File pahoDirectory = new File(FileManager.getInstance().getDataFolder(), "paho");
     if (pahoDirectory.exists()) {
-      pahoDirectory.delete();
+      try (Stream<Path> files = Files.walk(pahoDirectory.toPath())) {
+        files.sorted(Comparator.reverseOrder()).forEach(path -> {
+          try {
+            Files.delete(path);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        });
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
+
     pahoDirectory.mkdirs();
 
     try {
@@ -104,9 +115,8 @@ public class ClientConnection {
   }
 
   private void waitForOtherApp() {
-    waitForOtherAppTask = Mobifume.getInstance()
-        .getScheduledExecutorService()
-        .scheduleAtFixedRate(() -> {
+    waitForOtherAppTask =
+        Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
           encoder.requestAppOnline(id);
           if (client.isConnected() && !msgHandler.isOtherAppOnline()) {
             subscribeChannels();
@@ -198,5 +208,21 @@ public class ClientConnection {
         .getEventManager()
         .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_LOST));
     connect();
+  }
+
+  public MqttClient getClient() {
+    return client;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public boolean isConnected() {
+    return connected;
+  }
+
+  public MessageEncoder getEncoder() {
+    return encoder;
   }
 }

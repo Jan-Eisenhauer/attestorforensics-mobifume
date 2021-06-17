@@ -6,7 +6,6 @@ import com.attestorforensics.mobifumecore.model.event.UpdateNotAvailableEvent;
 import com.attestorforensics.mobifumecore.model.event.UpdatingEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventManager;
 import com.attestorforensics.mobifumecore.util.FileManager;
-import com.attestorforensics.mobifumecore.util.log.CustomLogger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,8 +25,6 @@ import org.apache.commons.compress.utils.IOUtils;
 public class Updater {
 
   private static final long DELAY_IN_SECONDS = 10;
-  private static final File UPDATE_FILE = new File("D:\\update.tgz");
-  private static final String UPDATE_DISPLAY_NAME = "UPDATE (D:)";
   private static final String PROJECT_PROPERTIES = "project.properties";
   private static final String MOBIFUME_JAR = "MOBIfume.jar";
   private static final File TMP_UPDATE_FILE =
@@ -36,6 +33,8 @@ public class Updater {
 
   private final ScheduledExecutorService scheduledExecutorService;
   private final EventManager eventManager;
+  private final File updateFile;
+  private final String updateDisplayName;
 
   private boolean updateAvailable = false;
   private String newVersion;
@@ -43,6 +42,8 @@ public class Updater {
   private Updater(ScheduledExecutorService scheduledExecutorService, EventManager eventManager) {
     this.scheduledExecutorService = scheduledExecutorService;
     this.eventManager = eventManager;
+    updateFile = new File(Mobifume.getInstance().getSettings().getProperty("update_file"));
+    updateDisplayName = Mobifume.getInstance().getSettings().getProperty("update_label");
   }
 
   public static Updater create(ScheduledExecutorService scheduledExecutorService,
@@ -57,8 +58,8 @@ public class Updater {
 
   public boolean isUpdateDeviceConnected() {
     String usbDisplayName =
-        FileSystemView.getFileSystemView().getSystemDisplayName(UPDATE_FILE.getParentFile());
-    return usbDisplayName.equals(UPDATE_DISPLAY_NAME);
+        FileSystemView.getFileSystemView().getSystemDisplayName(updateFile.getParentFile());
+    return usbDisplayName.equals(updateDisplayName);
   }
 
   public void installUpdate() {
@@ -69,7 +70,7 @@ public class Updater {
     Mobifume.getInstance().getLogger().info("Installing update");
     eventManager.call(UpdatingEvent.create(UpdatingState.COPY_FROM_USB));
     try (TarArchiveInputStream tarInput = new TarArchiveInputStream(
-        new GzipCompressorInputStream(new FileInputStream(UPDATE_FILE)))) {
+        new GzipCompressorInputStream(new FileInputStream(updateFile)))) {
       TarArchiveEntry entry;
       while ((entry = tarInput.getNextTarEntry()) != null) {
         if (!entry.getName().equals(MOBIFUME_JAR)) {
@@ -115,8 +116,8 @@ public class Updater {
     }
 
     String usbDisplayName =
-        FileSystemView.getFileSystemView().getSystemDisplayName(UPDATE_FILE.getParentFile());
-    if (!usbDisplayName.equals(UPDATE_DISPLAY_NAME)) {
+        FileSystemView.getFileSystemView().getSystemDisplayName(updateFile.getParentFile());
+    if (!usbDisplayName.equals(updateDisplayName)) {
       if (updateAvailable) {
         updateAvailable = false;
         eventManager.call(UpdateNotAvailableEvent.create());
@@ -125,7 +126,7 @@ public class Updater {
       return;
     }
 
-    if (!UPDATE_FILE.exists()) {
+    if (!updateFile.exists()) {
       return;
     }
 
@@ -188,7 +189,7 @@ public class Updater {
 
   private Properties readUpdateProjectProperties() throws IOException {
     try (TarArchiveInputStream tarInput = new TarArchiveInputStream(
-        new GzipCompressorInputStream(new FileInputStream(UPDATE_FILE)))) {
+        new GzipCompressorInputStream(new FileInputStream(updateFile)))) {
       TarArchiveEntry entry;
       while ((entry = tarInput.getNextTarEntry()) != null) {
         if (!entry.getName().equals(PROJECT_PROPERTIES)) {

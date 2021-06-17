@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
@@ -29,18 +29,17 @@ public class InfoBox {
     this.callback = callback;
     Platform.runLater(() -> {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/dialog/InfoBox.fxml"), resourceBundle);
+      FXMLLoader loader =
+          new FXMLLoader(getClass().getClassLoader().getResource("view/dialog/InfoBox.fxml"),
+              resourceBundle);
 
       stage = new Stage();
       stage.initOwner(window);
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-        if (newFocus) {
-          return;
+        if (Boolean.FALSE.equals(newFocus)) {
+          close();
         }
-
-        close();
       });
       try {
         Parent root = loader.load();

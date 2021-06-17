@@ -5,6 +5,7 @@ import com.sun.jna.Structure;
 import com.sun.jna.win32.StdCallLibrary;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Copy from https://stackoverflow.com/questions/3434719/how-to-get-the-remaining-battery-life-in
@@ -12,101 +13,71 @@ import java.util.List;
  */
 public interface Kernel32 extends StdCallLibrary {
 
-  Kernel32 instance = Native.loadLibrary("Kernel32", Kernel32.class);
+  Kernel32 INSTANCE = Native.loadLibrary("Kernel32", Kernel32.class);
 
   /**
    * Fill the structure.
    */
-  int GetSystemPowerStatus(SYSTEM_POWER_STATUS result);
+  // Method must match the native library name
+  int GetSystemPowerStatus(SystemPowerStatus result);
 
   /**
    * @see http://msdn2.microsoft.com/en-us/library/aa373232.aspx
    */
-  class SYSTEM_POWER_STATUS extends Structure {
+  class SystemPowerStatus extends Structure {
 
-    public byte ACLineStatus;
-    public byte BatteryFlag;
-    public byte BatteryLifePercent;
-    public byte Reserved1;
-    public int BatteryLifeTime;
-    public int BatteryFullLifeTime;
-
-    @Override
-    protected List<String> getFieldOrder() {
-      ArrayList<String> fields = new ArrayList<String>();
-      fields.add("ACLineStatus");
-      fields.add("BatteryFlag");
-      fields.add("BatteryLifePercent");
-      fields.add("Reserved1");
-      fields.add("BatteryLifeTime");
-      fields.add("BatteryFullLifeTime");
-      return fields;
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("ACLineStatus: " + getACLineStatusString() + "\n");
-      sb.append("Battery Flag: " + getBatteryFlagString() + "\n");
-      sb.append("Battery Life: " + getBatteryLifePercent() + "\n");
-      sb.append("Battery Left: " + getBatteryLifeTime() + "\n");
-      sb.append("Battery Full: " + getBatteryFullLifeTime() + "\n");
-      return sb.toString();
-    }
-
-    /**
-     * The AC power status
-     */
-    public String getACLineStatusString() {
-      switch (ACLineStatus) {
-        case (0):
-          return "Offline";
-        case (1):
-          return "Online";
-        default:
-          return "Unknown";
-      }
-    }
-
-    /**
-     * The battery charge status
-     */
-    public String getBatteryFlagString() {
-      switch (BatteryFlag) {
-        case (1):
-          return "High, more than 66 percent";
-        case (2):
-          return "Low, less than 33 percent";
-        case (4):
-          return "Critical, less than five percent";
-        case (8):
-          return "Charging";
-        case ((byte) 128):
-          return "No system battery";
-        default:
-          return "Unknown";
-      }
-    }
+    // Fields must be public to be set by the native library
+    public byte acLineStatus;
+    public byte batteryFlag;
+    public byte batteryLifePercent;
+    public byte reserved1;
+    public int batteryLifeTime;
+    public int batteryFullLifeTime;
 
     /**
      * The percentage of full battery charge remaining
      */
     public String getBatteryLifePercent() {
-      return (BatteryLifePercent == (byte) 255) ? "Unknown" : BatteryLifePercent + "%";
+      return (batteryLifePercent == (byte) 255) ? "-" : batteryLifePercent + "%";
     }
 
-    /**
-     * The number of seconds of battery life remaining
-     */
-    public String getBatteryLifeTime() {
-      return (BatteryLifeTime == -1) ? "Unknown" : BatteryLifeTime + " seconds";
+    @Override
+    protected List<String> getFieldOrder() {
+      ArrayList<String> fields = new ArrayList<>();
+      fields.add("acLineStatus");
+      fields.add("batteryFlag");
+      fields.add("batteryLifePercent");
+      fields.add("reserved1");
+      fields.add("batteryLifeTime");
+      fields.add("batteryFullLifeTime");
+      return fields;
     }
 
-    /**
-     * The number of seconds of battery life when at full charge
-     */
-    public String getBatteryFullLifeTime() {
-      return (BatteryFullLifeTime == -1) ? "Unknown" : BatteryFullLifeTime + " seconds";
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      if (!super.equals(o)) {
+        return false;
+      }
+
+      SystemPowerStatus that = (SystemPowerStatus) o;
+      return acLineStatus == that.acLineStatus && batteryFlag == that.batteryFlag
+          && batteryLifePercent == that.batteryLifePercent && reserved1 == that.reserved1
+          && batteryLifeTime == that.batteryLifeTime
+          && batteryFullLifeTime == that.batteryFullLifeTime;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), acLineStatus, batteryFlag, batteryLifePercent,
+          reserved1, batteryLifeTime, batteryFullLifeTime);
     }
   }
 }

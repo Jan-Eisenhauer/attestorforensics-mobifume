@@ -11,7 +11,6 @@ These instructions will get you a copy of the project up and running on your loc
 
 - [Java SE Development Kit 8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) (oracle JDK)
 - [Eclipse](https://www.eclipse.org/downloads/packages/release/2019-06/r/eclipse-ide-java-developers) (IDE)
-- [Lombok](https://projectlombok.org/download) (Java Library with useful functions, must be installed to run preprocessor)
 - [Inno Setup 6.0.2](http://www.jrsoftware.org/isdl.php) (Creates an .exe installer for windows)
 
 ### Installing and Building (Linux)
@@ -22,19 +21,13 @@ These instructions will get you a copy of the project up and running on your loc
     - Download [Eclipse](https://www.eclipse.org/downloads/packages/release/2019-06/r/eclipse-ide-java-developers) for Linux
     - Unpack downloaded file with `tar xfz eclipse-*.tar.gz`
     - Start eclipse with `eclipse/eclipse`
-3. Install Lombok
-    - Download lombok.jar
-    - Execute lombok.jar with `java -jar lombok.jar`
-    - If program doesn't find location of IDE: Specify location -> browse to eclipse root directory
-    - Install / Update
-    - Restart eclipse
-4. Install JavaFX library (OpenJDK-8 for Linux doesn't include JavaFX)
+3. Install JavaFX library (OpenJDK-8 for Linux doesn't include JavaFX)
     - `sudo apt install openjfx=8u161-b12-1ubuntu2 libopenjfx-java=8u161-b12-1ubuntu2 libopenjfx-jni=8u161-b12-1ubuntu2`
-5. Import the project with maven in eclipse:
+4. Import the project with maven in eclipse:
     - Click on File -> Import
     - Select Maven -> Existing Maven Projects -> Next
     - Browse to root directory of the project -> Finish
-6. Install Inno Setup
+5. Install Inno Setup
     - `sudo apt install wine-stable`
     - `wget http://files.jrsoftware.org/is/6/innosetup-6.0.2.exe`
     - `wine innosetup-6.0.2.exe`
@@ -62,7 +55,6 @@ These instructions will get you a copy of the project up and running on your loc
 ## Dependencies
 
 - [JavaFX](https://openjfx.io/) - Library for client application (UI)
-- [Lombok](https://projectlombok.org/download) - Library with useful functions (eg. getter/setter annotation)
 - [GSON](https://mvnrepository.com/artifact/com.google.code.gson/gson) - Library to work with JSON
 - [log4j](https://mvnrepository.com/artifact/log4j/log4j) - Library for Logging in Java
 - [Eclipse Paho](https://www.eclipse.org/paho/) - MQTT Client
@@ -164,6 +156,6 @@ The project is divided in three modules: core, installer, updater
     It contains:
     - `settings` stores the global settings.
     - `filter/` stores all filters for filter management. Files are manually editable (json format).
-    - `paho/` contains files related to eclipse paho for the mqtt client connection
+    - `paho/` contain files related to eclipse paho for the mqtt client connection
 - All files except log files are deleted when the program is reinstalled or uninstalled.
 - Log files are stored in `%userprofile%/documents/MOBIfume`. These files will never be deleted.

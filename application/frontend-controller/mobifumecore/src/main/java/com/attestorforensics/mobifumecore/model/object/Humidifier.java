@@ -3,20 +3,14 @@ package com.attestorforensics.mobifumecore.model.object;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import com.attestorforensics.mobifumecore.model.event.WaterErrorEvent;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
 public class Humidifier extends Device {
 
-  @Setter
   private boolean humidify;
 
   // led status: 0->off; 1->on; 2->blinking
   private int led1;
-  @Setter
   private int led2;
-  @Setter
   private boolean overTemperature;
 
   private int waterState;
@@ -59,5 +53,41 @@ public class Humidifier extends Device {
             .call(new WaterErrorEvent(this, WaterErrorEvent.WaterStatus.FILLED));
       }
     }
+  }
+
+  public boolean isHumidify() {
+    return humidify;
+  }
+
+  public void setHumidify(boolean humidify) {
+    this.humidify = humidify;
+  }
+
+  public int getLed1() {
+    return led1;
+  }
+
+  public int getLed2() {
+    return led2;
+  }
+
+  public void setLed2(int led2) {
+    this.led2 = led2;
+  }
+
+  public boolean isOverTemperature() {
+    return overTemperature;
+  }
+
+  public void setOverTemperature(boolean overTemperature) {
+    this.overTemperature = overTemperature;
+  }
+
+  public int getWaterState() {
+    return waterState;
+  }
+
+  public boolean isWaterEmpty() {
+    return waterEmpty;
   }
 }

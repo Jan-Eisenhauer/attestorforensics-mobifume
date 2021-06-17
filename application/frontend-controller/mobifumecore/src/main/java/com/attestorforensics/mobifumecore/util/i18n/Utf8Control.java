@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.util.localization;
+package com.attestorforensics.mobifumecore.util.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,8 +32,9 @@ public class Utf8Control extends ResourceBundle.Control {
       stream = loader.getResourceAsStream(resourceName);
     }
     if (stream != null) {
-      try {
-        bundle = new PropertyResourceBundle(new InputStreamReader(stream, StandardCharsets.UTF_8));
+      try (InputStreamReader inputStreamReader = new InputStreamReader(stream,
+          StandardCharsets.UTF_8)) {
+        bundle = new PropertyResourceBundle(inputStreamReader);
       } finally {
         stream.close();
       }

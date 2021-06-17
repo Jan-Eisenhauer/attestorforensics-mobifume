@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.model.object.Device;
 import com.attestorforensics.mobifumecore.model.object.DeviceType;
 import com.attestorforensics.mobifumecore.model.object.Filter;
 import com.attestorforensics.mobifumecore.model.object.Group;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,14 +25,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import lombok.Getter;
-import lombok.Setter;
 
 public class CreateGroupController {
 
   private static int lastGroupId = 0;
 
-  @Setter
   private CreateGroupDialog dialog;
   private List<Device> devices;
 
@@ -55,7 +52,6 @@ public class CreateGroupController {
   @FXML
   private Button ok;
 
-  @Getter
   private Map<String, Filter> filterMap;
   private List<Node> filterNodes;
   private boolean updatingFilters;
@@ -75,9 +71,8 @@ public class CreateGroupController {
     if (bases == 0) {
       baseCount.getStyleClass().add("deviceCountError");
     }
-    long hums = devices.stream()
-        .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
-        .count();
+    long hums =
+        devices.stream().filter(device -> device.getType() == DeviceType.HUMIDIFIER).count();
     humCount.setText(LocaleManager.getInstance().getString("dialog.group.create.count.hum", hums));
     if (hums == 0) {
       humCount.getStyleClass().add("deviceCountError");
@@ -119,8 +114,8 @@ public class CreateGroupController {
         .getModelManager()
         .getGroups()
         .forEach(group -> inOtherGroup.addAll(group.getFilters()));
-    List<Filter> allFilters = new ArrayList<>(
-        Mobifume.getInstance().getModelManager().getFilters());
+    List<Filter> allFilters =
+        new ArrayList<>(Mobifume.getInstance().getModelManager().getFilters());
     allFilters.removeAll(inOtherGroup);
     allFilters.forEach(filter -> filterMap.put(filter.getId(), filter));
 
@@ -139,8 +134,7 @@ public class CreateGroupController {
     List<String> selectedFilters = new ArrayList<>();
     for (Node filterNode : filterNodes) {
       CreateGroupFilterController controller =
-          (CreateGroupFilterController) filterNode.getProperties()
-          .get("controller");
+          (CreateGroupFilterController) filterNode.getProperties().get("controller");
       String selected = controller.getSelected();
       if (selected != null && !selected.isEmpty()) {
         selectedFilters.add(selected);
@@ -164,8 +158,7 @@ public class CreateGroupController {
 
     for (Node filterNode : filterNodes) {
       CreateGroupFilterController controller =
-          (CreateGroupFilterController) filterNode.getProperties()
-          .get("controller");
+          (CreateGroupFilterController) filterNode.getProperties().get("controller");
       if (controller.getSelected() == null || controller.getSelected().isEmpty()) {
         return;
       }
@@ -202,10 +195,9 @@ public class CreateGroupController {
       checkOkButton();
     });
     groupName.focusedProperty().addListener((observableValue, oldState, focused) -> {
-      if (!focused) {
-        return;
+      if (Boolean.TRUE.equals(focused)) {
+        Platform.runLater(groupName::selectAll);
       }
-      Platform.runLater(groupName::selectAll);
     });
     TabTipKeyboard.onFocus(groupName);
   }
@@ -215,8 +207,8 @@ public class CreateGroupController {
 
     loop:
     do {
-      defaultName = LocaleManager.getInstance()
-          .getString("dialog.group.create.name.default", defaultId);
+      defaultName =
+          LocaleManager.getInstance().getString("dialog.group.create.name.default", defaultId);
       for (Group group : Mobifume.getInstance().getModelManager().getGroups()) {
         if (group.getName().equals(defaultName)) {
           defaultId++;
@@ -245,8 +237,8 @@ public class CreateGroupController {
     List<Filter> filters = new ArrayList<>();
 
     filterNodes.forEach(node -> {
-      CreateGroupFilterController controller = (CreateGroupFilterController) node.getProperties()
-          .get("controller");
+      CreateGroupFilterController controller =
+          (CreateGroupFilterController) node.getProperties().get("controller");
       String selected = controller.getSelected();
       if (selected == null || selected.isEmpty()) {
         return;
@@ -264,15 +256,14 @@ public class CreateGroupController {
       return;
     }
 
-    long deviceCount = devices.stream()
-        .filter(device -> device.getType() == DeviceType.BASE)
-        .count();
+    long deviceCount =
+        devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
     if (filters.size() != deviceCount) {
       return;
     }
 
-    CreateGroupDialog.GroupData groupData = new CreateGroupDialog.GroupData(groupName.getText(),
-        devices, filters);
+    CreateGroupDialog.GroupData groupData =
+        new CreateGroupDialog.GroupData(groupName.getText(), devices, filters);
     dialog.close(groupData);
     if (groupName.getText().equals(defaultName)) {
       lastGroupId = defaultId;
@@ -283,5 +274,13 @@ public class CreateGroupController {
   public void onCancel() {
     Sound.click();
     dialog.close(null);
+  }
+
+  public Map<String, Filter> getFilterMap() {
+    return filterMap;
+  }
+
+  public void setDialog(CreateGroupDialog dialog) {
+    this.dialog = dialog;
   }
 }

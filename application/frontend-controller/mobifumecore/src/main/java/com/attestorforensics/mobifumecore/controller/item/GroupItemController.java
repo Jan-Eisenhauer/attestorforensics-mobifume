@@ -6,7 +6,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.object.Group;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.view.MobiApplication;
 import java.io.IOException;
 import java.util.Date;
@@ -23,11 +23,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import lombok.Getter;
 
 public class GroupItemController {
 
-  @Getter
   private Group group;
 
   @FXML
@@ -38,6 +36,10 @@ public class GroupItemController {
   private Parent groupRoot;
 
   private ScheduledFuture<?> statusUpdateTask;
+
+  public Group getGroup() {
+    return group;
+  }
 
   public void setGroup(Group group, String color) {
     this.group = group;
@@ -56,14 +58,15 @@ public class GroupItemController {
   private void statusUpdate() {
     statusUpdateTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .scheduleWithFixedDelay(() -> Platform.runLater(this::updateStatus), 0L, 1L, TimeUnit.SECONDS);
+        .scheduleWithFixedDelay(() -> Platform.runLater(this::updateStatus), 0L, 1L,
+            TimeUnit.SECONDS);
   }
 
   private void createGroupRoot() {
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
 
-    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/Group.fxml"),
-        resourceBundle);
+    FXMLLoader loader =
+        new FXMLLoader(getClass().getClassLoader().getResource("view/Group.fxml"), resourceBundle);
     try {
       groupRoot = loader.load();
 
@@ -153,7 +156,7 @@ public class GroupItemController {
         LocaleManager.getInstance()
             .getString("dialog.group.remove.content",
                 group.getName() + " - " + group.getSettings().getCycleCount()), true, accepted -> {
-      if (!accepted) {
+      if (Boolean.FALSE.equals(accepted)) {
         return;
       }
 

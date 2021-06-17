@@ -9,7 +9,7 @@ import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.object.Filter;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.text.SimpleDateFormat;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -21,11 +21,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
-import lombok.Getter;
 
 public class FilterItemController {
 
-  @Getter
   private Filter filter;
 
   @FXML
@@ -122,11 +120,9 @@ public class FilterItemController {
         LocaleManager.getInstance().getString("dialog.filter.change.title", filter.getId()),
         LocaleManager.getInstance().getString("dialog.filter.change.content", filter.getId()), true,
         accepted -> {
-          if (!accepted) {
-            return;
+          if (Boolean.TRUE.equals(accepted)) {
+            Mobifume.getInstance().getModelManager().removeFilter(filter);
           }
-
-          Mobifume.getInstance().getModelManager().removeFilter(filter);
         });
   }
 
@@ -162,5 +158,9 @@ public class FilterItemController {
     }
 
     errorButton.setVisible(false);
+  }
+
+  public Filter getFilter() {
+    return filter;
   }
 }

@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.model.object.Filter;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -16,11 +16,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-import lombok.Setter;
 
 public class CreateGroupFilterController {
 
-  @Setter
   private CreateGroupDialog dialog;
 
   private String addFilter;
@@ -176,5 +174,9 @@ public class CreateGroupFilterController {
     dialog.setLockClosing(true);
     new InfoBox(((Node) event.getSource()).getScene().getWindow(), errorIcon,
         new ErrorWarning(errorText, errorType), nill -> dialog.setLockClosing(false));
+  }
+
+  public void setDialog(CreateGroupDialog dialog) {
+    this.dialog = dialog;
   }
 }

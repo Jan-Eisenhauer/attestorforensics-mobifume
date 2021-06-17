@@ -8,7 +8,7 @@ import com.attestorforensics.mobifumecore.controller.util.SignedIntTextFormatter
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.object.Group;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.setting.Settings;
 import java.util.function.Consumer;
 import javafx.application.Platform;
@@ -20,14 +20,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import lombok.Getter;
 
 public class GroupSettingsController {
 
   @FXML
   Parent root;
   private Consumer<?> callback;
-  @Getter
   private Group group;
   @FXML
   private Label groupName;
@@ -61,6 +59,10 @@ public class GroupSettingsController {
 
   void setCallback(Consumer<?> callback) {
     this.callback = callback;
+  }
+
+  public Group getGroup() {
+    return group;
   }
 
   public void setGroup(Group group) {
@@ -280,7 +282,7 @@ public class GroupSettingsController {
         LocaleManager.getInstance().getString("dialog.settings.restore.title"),
         LocaleManager.getInstance().getString("dialog.settings.restore.content"), true,
         accepted -> {
-          if (!accepted) {
+          if (Boolean.FALSE.equals(accepted)) {
             return;
           }
 

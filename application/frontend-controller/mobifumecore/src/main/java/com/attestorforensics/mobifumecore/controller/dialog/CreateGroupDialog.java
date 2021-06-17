@@ -2,7 +2,7 @@ package com.attestorforensics.mobifumecore.controller.dialog;
 
 import com.attestorforensics.mobifumecore.model.object.Device;
 import com.attestorforensics.mobifumecore.model.object.Filter;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -16,19 +16,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
 public class CreateGroupDialog {
 
-  @Getter
   private Stage stage;
   private Window window;
   private CreateGroupController controller;
   private Consumer<GroupData> callback;
 
-  @Setter
   private boolean lockClosing;
 
   public CreateGroupDialog(Window window, List<Device> devices, Consumer<GroupData> callback) {
@@ -44,11 +39,9 @@ public class CreateGroupDialog {
       stage.initOwner(window);
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-        if (newFocus) {
-          return;
+        if (Boolean.FALSE.equals(newFocus)) {
+          close(null);
         }
-
-        close(null);
       });
       try {
         Parent root = loader.load();
@@ -91,12 +84,36 @@ public class CreateGroupDialog {
     controller.removeDevice(device);
   }
 
-  @AllArgsConstructor
-  @Getter
+  public Stage getStage() {
+    return stage;
+  }
+
+  public void setLockClosing(boolean lockClosing) {
+    this.lockClosing = lockClosing;
+  }
+
   public static class GroupData {
 
-    private String name;
-    private List<Device> devices;
-    private List<Filter> filters;
+    private final String name;
+    private final List<Device> devices;
+    private final List<Filter> filters;
+
+    public GroupData(String name, List<Device> devices, List<Filter> filters) {
+      this.name = name;
+      this.devices = devices;
+      this.filters = filters;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public List<Device> getDevices() {
+      return devices;
+    }
+
+    public List<Filter> getFilters() {
+      return filters;
+    }
   }
 }

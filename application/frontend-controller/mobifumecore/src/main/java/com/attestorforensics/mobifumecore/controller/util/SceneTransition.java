@@ -11,6 +11,9 @@ public class SceneTransition {
 
   private static boolean locked;
 
+  private SceneTransition() {
+  }
+
   public static void playForward(Scene scene, Parent root) {
     if (locked) {
       return;

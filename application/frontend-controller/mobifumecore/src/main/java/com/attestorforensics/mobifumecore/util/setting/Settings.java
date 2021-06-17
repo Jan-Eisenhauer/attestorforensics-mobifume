@@ -3,61 +3,24 @@ package com.attestorforensics.mobifumecore.util.setting;
 import com.attestorforensics.mobifumecore.model.object.Evaporant;
 import java.io.Serializable;
 import java.util.Locale;
-import lombok.Getter;
-import lombok.Setter;
 
 public class Settings implements Serializable {
 
   private static final long serialVersionUID = -4384611401364322327L;
   public static Settings DEFAULT_SETTINGS;
-  private static SettingFileHandler fileHandler = new SettingFileHandler();
+  private static final SettingFileHandler fileHandler = new SettingFileHandler();
 
-  @Getter
-  @Setter
   private Locale language = Locale.GERMANY;
-
-  @Getter
-  @Setter
   private double humidifyMax = 80;
-
-  @Getter
-  @Setter
   private double humidifyPuffer = 0.3;
-
-  @Getter
-
-  @Setter
   private int heaterTemperature = 120;
-
-  @Getter
-  @Setter
   private int heatTimer = 30;
-
-  @Getter
-  @Setter
   private int purgeTimer = 60;
-
-  @Getter
-  @Setter
   private Evaporant evaporant = Evaporant.CYANACRYLAT;
-
-  @Getter
-  @Setter
   private double roomWidth = 5;
-
-  @Getter
-  @Setter
   private double roomDepth = 5;
-
-  @Getter
-  @Setter
   private double roomHeight = 2.5;
-
-  @Getter
-  @Setter
   private double evaporantAmountPerCm = evaporant.getAmountPerCm();
-
-  @Getter
   private int cycleCount = 0;
 
   public Settings() {
@@ -91,5 +54,93 @@ public class Settings implements Serializable {
 
   public static void loadDefaultSettings() {
     DEFAULT_SETTINGS = fileHandler.load();
+  }
+
+  public Locale getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(Locale language) {
+    this.language = language;
+  }
+
+  public double getHumidifyMax() {
+    return humidifyMax;
+  }
+
+  public void setHumidifyMax(double humidifyMax) {
+    this.humidifyMax = humidifyMax;
+  }
+
+  public double getHumidifyPuffer() {
+    return humidifyPuffer;
+  }
+
+  public int getHeaterTemperature() {
+    return heaterTemperature;
+  }
+
+  public void setHeaterTemperature(int heaterTemperature) {
+    this.heaterTemperature = heaterTemperature;
+  }
+
+  public int getHeatTimer() {
+    return heatTimer;
+  }
+
+  public void setHeatTimer(int heatTimer) {
+    this.heatTimer = heatTimer;
+  }
+
+  public int getPurgeTimer() {
+    return purgeTimer;
+  }
+
+  public void setPurgeTimer(int purgeTimer) {
+    this.purgeTimer = purgeTimer;
+  }
+
+  public Evaporant getEvaporant() {
+    return evaporant;
+  }
+
+  public void setEvaporant(Evaporant evaporant) {
+    this.evaporant = evaporant;
+  }
+
+  public double getRoomWidth() {
+    return roomWidth;
+  }
+
+  public void setRoomWidth(double roomWidth) {
+    this.roomWidth = roomWidth;
+  }
+
+  public double getRoomDepth() {
+    return roomDepth;
+  }
+
+  public void setRoomDepth(double roomDepth) {
+    this.roomDepth = roomDepth;
+  }
+
+  public double getRoomHeight() {
+    return roomHeight;
+  }
+
+  public void setRoomHeight(double roomHeight) {
+    this.roomHeight = roomHeight;
+  }
+
+  public double getEvaporantAmountPerCm() {
+    return evaporantAmountPerCm;
+  }
+
+  public void setEvaporantAmountPerCm(double evaporantAmountPerCm) {
+    this.evaporantAmountPerCm = evaporantAmountPerCm;
+  }
+
+  public int getCycleCount() {
+    return cycleCount;
   }
 }

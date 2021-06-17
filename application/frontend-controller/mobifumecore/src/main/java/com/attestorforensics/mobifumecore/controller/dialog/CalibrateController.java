@@ -4,16 +4,14 @@ import com.attestorforensics.mobifumecore.controller.util.SignedDoubleTextFormat
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.object.Calibration;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import lombok.Setter;
 
 public class CalibrateController {
 
-  @Setter
   private CalibrateDialog dialog;
 
   @FXML
@@ -112,5 +110,9 @@ public class CalibrateController {
   public void onReset() {
     Sound.click();
     dialog.close(Calibration.createDefault());
+  }
+
+  public void setDialog(CalibrateDialog dialog) {
+    this.dialog = dialog;
   }
 }

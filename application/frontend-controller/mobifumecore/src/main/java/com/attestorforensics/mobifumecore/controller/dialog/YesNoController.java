@@ -3,11 +3,9 @@ package com.attestorforensics.mobifumecore.controller.dialog;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
-import lombok.Setter;
 
 public class YesNoController {
 
-  @Setter
   private YesNoDialog dialog;
 
   @FXML
@@ -33,5 +31,9 @@ public class YesNoController {
   public void onNo() {
     Sound.click();
     dialog.close(false);
+  }
+
+  public void setDialog(YesNoDialog dialog) {
+    this.dialog = dialog;
   }
 }

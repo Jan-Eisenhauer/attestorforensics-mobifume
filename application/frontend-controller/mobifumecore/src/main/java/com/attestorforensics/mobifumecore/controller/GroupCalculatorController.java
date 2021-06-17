@@ -5,7 +5,7 @@ import com.attestorforensics.mobifumecore.controller.util.SignedDoubleTextFormat
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.object.Evaporant;
 import com.attestorforensics.mobifumecore.model.object.Group;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.setting.Settings;
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -132,6 +132,7 @@ public class GroupCalculatorController {
           if (newItem.isEmpty()) {
             return;
           }
+
           Evaporant evaporant = Evaporant.valueOf(newItem.toUpperCase());
           settings.setEvaporant(evaporant);
           settings.setEvaporantAmountPerCm(evaporant.getAmountPerCm());

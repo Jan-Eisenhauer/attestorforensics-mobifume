@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.object.Evaporant;
 import com.attestorforensics.mobifumecore.model.object.Filter;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.util.Arrays;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,11 +16,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import lombok.Setter;
 
 public class AddFilterRunController {
 
-  @Setter
   private AddFilterRunDialog dialog;
   private Filter filter;
 
@@ -104,5 +102,9 @@ public class AddFilterRunController {
   public void onCancel() {
     Sound.click();
     dialog.close();
+  }
+
+  public void setDialog(AddFilterRunDialog dialog) {
+    this.dialog = dialog;
   }
 }

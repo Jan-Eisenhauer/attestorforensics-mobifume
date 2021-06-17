@@ -3,8 +3,6 @@ package com.attestorforensics.mobifumecore.model;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import com.attestorforensics.mobifumecore.model.connection.MessageHandler;
-import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
-import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.FilterEvent;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
@@ -22,22 +20,16 @@ import com.attestorforensics.mobifumecore.util.setting.Settings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Getter;
 
 public class MobiModelManager implements ModelManager {
 
-  @Getter
-  private ClientConnection connection;
-  private final WifiConnection wifiConnection;
+  private final ClientConnection connection;
 
-  @Getter
-  private List<Device> devices = new ArrayList<>();
-  @Getter
-  private List<Group> groups = new ArrayList<>();
-  @Getter
-  private List<Filter> filters;
+  private final List<Device> devices = new ArrayList<>();
+  private final List<Group> groups = new ArrayList<>();
+  private final List<Filter> filters;
 
-  private FilterFileHandler filterFileHandler;
+  private final FilterFileHandler filterFileHandler;
 
   private final Updater updater;
 
@@ -58,13 +50,6 @@ public class MobiModelManager implements ModelManager {
     MessageHandler msgHandler = new MessageHandler(this);
 
     connection = new ClientConnection(this, msgHandler);
-    wifiConnection =
-        WindowsWifiConnection.create(Mobifume.getInstance().getScheduledExecutorService());
-  }
-
-  @Override
-  public WifiConnection getWifiConnection() {
-    return wifiConnection;
   }
 
   @Override
@@ -77,6 +62,12 @@ public class MobiModelManager implements ModelManager {
     return connection.isConnected();
   }
 
+  @Override
+  public List<Device> getDevices() {
+    return devices;
+  }
+
+  @Override
   public void createGroup(String name, List<Device> devices, List<Filter> filters) {
     if (devices.stream().noneMatch(device -> device.getType() == DeviceType.BASE)) {
       return;
@@ -97,6 +88,7 @@ public class MobiModelManager implements ModelManager {
     group.setupStart();
   }
 
+  @Override
   public void removeGroup(Group group) {
     ((Room) group).stop();
     List<Device> offlineDevicesInGroup =
@@ -112,6 +104,12 @@ public class MobiModelManager implements ModelManager {
         .call(new GroupEvent(group, GroupEvent.GroupStatus.REMOVED));
   }
 
+  @Override
+  public List<Group> getGroups() {
+    return groups;
+  }
+
+  @Override
   public Group getGroup(Device device) {
     return groups.stream()
         .filter(group -> group.getDevices().contains(device))
@@ -119,8 +117,14 @@ public class MobiModelManager implements ModelManager {
         .orElse(null);
   }
 
+  @Override
   public Settings getDefaultSettings() {
     return Settings.DEFAULT_SETTINGS;
+  }
+
+  @Override
+  public List<Filter> getFilters() {
+    return filters;
   }
 
   @Override
@@ -144,6 +148,7 @@ public class MobiModelManager implements ModelManager {
     }
   }
 
+  @Override
   public Updater getUpdater() {
     return updater;
   }
@@ -153,6 +158,10 @@ public class MobiModelManager implements ModelManager {
         .filter(device -> device.getId().equals(deviceId))
         .findFirst()
         .orElse(null);
+  }
+
+  public ClientConnection getConnection() {
+    return connection;
   }
 
   public void connectionLost() {

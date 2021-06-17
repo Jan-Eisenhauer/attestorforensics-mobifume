@@ -9,7 +9,7 @@ import com.attestorforensics.mobifumecore.model.event.WaterErrorEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import com.attestorforensics.mobifumecore.model.object.Device;
-import com.attestorforensics.mobifumecore.util.localization.LocaleManager;
+import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;

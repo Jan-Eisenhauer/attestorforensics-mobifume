@@ -13,7 +13,7 @@ public class TabTipKeyboard {
 
   public static void onFocus(TextField field) {
     field.focusedProperty().addListener((observable, oldValue, focus) -> {
-      if (focus) {
+      if (Boolean.TRUE.equals(focus)) {
         open();
       } else {
         close();
@@ -27,8 +27,8 @@ public class TabTipKeyboard {
     }
 
     Runtime rt = Runtime.getRuntime();
-    String[] commands = {"cmd", "/c",
-        "\"C:\\Program Files\\Common Files\\microsoft shared\\ink\\TabTip.exe"};
+    String[] commands =
+        {"cmd", "/c", "\"C:\\Program Files\\Common Files\\microsoft shared\\ink\\TabTip.exe"};
     try {
       rt.exec(commands);
     } catch (IOException e) {

@@ -64,7 +64,7 @@ Dem Broker gesendete oder vom Broker empfangene Nachrichten werden über einen C
   - 2/3: Fehler beim Öffnen/Schließen
 
 #### Ping eines Luftbefeuchters
-/MOBIfume/hum/status/{id};P;{rssi};{humidify};{led1};{led2};{over-temperature}
+> /MOBIfume/hum/status/{id};P;{rssi};{humidify};{led1};{led2};{over-temperature}
 - id: Geräte-Id
 - rssi (int): Verbindungsstärke zum Router (Wlan); je näher an 0, desto besser die Verbindung
 - humidify (0|1): Zustand des Luftbefeuchters (inaktiv/aktiv)
@@ -72,7 +72,7 @@ Dem Broker gesendete oder vom Broker empfangene Nachrichten werden über einen C
   - aus (0)
   - an (1)
   - blinkt (2): Wasser leer
-- led2
+- led2:
   - aus (0)
   - an (1)
   - blinkt (2)
@@ -91,7 +91,7 @@ Dem Broker gesendete oder vom Broker empfangene Nachrichten werden über einen C
 
 > /MOBIfume/hum/status/{id};S;{status}
 - id: Geräte-Id
-- status
+- status:
   - RST: Gerät wurde zurückgesetzt
   - CMD_OK: Befehl erfolgreich ausgeführt
   - CMD_ERR: Fehler beim Ausführen des Befehls
@@ -106,19 +106,19 @@ Dem Broker gesendete oder vom Broker empfangene Nachrichten werden über einen C
 #### Verriegelung für Filterung/Reinigung einstellen
 > /MOBIfume/base/cmd/{id};L;{state}
 - id: Geräte-Id
-- state
+- state:
   - 0: schließen
   - 1: öffnen (Reinigung)
 
 #### Heizdauer setzen
-/MOBIfume/base/cmd/{id};T;{duration}
+> /MOBIfume/base/cmd/{id};T;{duration}
 - id: Geräte-Id
 - duration (int): Dauer des Heizprozesses in Minuten
 
 #### Gerät zurücksetzen
-> /MOBIfume/base/cmd/<id>;R;1
+> /MOBIfume/base/cmd/{id};R;1
 
-> /MOBIfume/hum/cmd/<id>;R;1
+> /MOBIfume/hum/cmd/{id};R;1
 - id: Geräte-Id
 
 #### Kalibrierungseinstellungen anfordern
@@ -140,7 +140,7 @@ Dem Broker gesendete oder vom Broker empfangene Nachrichten werden über einen C
 - temperature-offset: Offset für die Kalibrierung des Temperatursensors
 
 #### Luftbefeuchtung ein-/ausschalten
-> /MOBIfume/hum/cmd/<id>;H;<humidify>
+> /MOBIfume/hum/cmd/{id};H;{humidify}
 - humidify
   - 0: ausschalten
   - 1: einschalten
@@ -165,7 +165,7 @@ Jede Zeile beginnt mit: `{datetime};{log-level};`
   - Einzelner Eintrag: `{id},{type}`
 
 ### Einstellungen
-Wird nach Erstellung der Gruppe und bei Veränderung der Gruppeneinstellung ausgegeben
+Wird nach Erstellung der Gruppe und bei Veränderung der Gruppeneinstellung ausgegeben.
 > SETTINGS;{humidify-max};{humidify-puffer};{heater-temperature};{heat-time};{purge-time}
 - humidify-max (double): Soll-Luftfeuchtigkeit
 - humidify-puffer (double): Puffer nach oben bei der Verdampfung (Beispiel: Soll-Luftfeuchtigkeit=80%rH, Puffer=0.3 -> Wenn die Luftfeuchtigkeit über 80.3%rH steigt, schaltet der Luftbefeuchter aus. Wenn die Luftfeuchtigkeit wieder unter 80.0%rH fällt, schaltet er wieder ein.)
@@ -174,7 +174,7 @@ Wird nach Erstellung der Gruppe und bei Veränderung der Gruppeneinstellung ausg
 - purge-time (int): Dauer der Reinigung in Minuten
 
 ### Prozessstatus
-Wird bei jedem Zustandswechsel des Prozesses ausgegeben
+Wird bei jedem Zustandswechsel des Prozesses ausgegeben.
 > STATE;{status};{is-humidifying};{is-humidify-max-reached}
 - status:
   - START: Gruppe erstellt
@@ -182,8 +182,8 @@ Wird bei jedem Zustandswechsel des Prozesses ausgegeben
   - EVAPORATE: Verdampfungsprozess gestartet (beginnt sobald die Soll-Luftfeuchtigkeit erreicht wurde)
   - PURGE: Reinigungsprozess gestartet (beginnt sobald der Verdampfungstimer ausgelaufen ist)
   - FINISH: Beendet (sobald der Reinigunstimer ausgelaufen ist)
-  - RESET: Zurückgesetzt (nicht mehr verwendet)
-  - CANCEL: Abgebrochen (nicht mehr verwendet)
+  - RESET: Zurückgesetzt
+  - CANCEL: Abgebrochen
 - is-humidifying (bool): Aktueller Zustand des Luftbefeuchters (aktiv/inaktiv)
 - is-humidify-max-reached (bool): Soll-Luftfeuchtigkeit erreicht
 
@@ -193,7 +193,7 @@ Wird bei jedem Zustandswechsel des Prozesses ausgegeben
 - rssi (int): Verbindungsstärke zum Router (Wlan); je näher an 0, desto besser die Verbindung
 - temperature (double): Aktuell gemessene Raumtemperatur (-128: Sensorfehler)
 - humidity (double): Aktuell gemessene Raumluftfeuchtigkeit (-128: Sensorfehler)
-- heater-setpoint (double): Eingestellte Soll-Heizplattentemperatur
+- heater-setpoint (int): Eingestellte Soll-Heizplattentemperatur
 - heater-temperature (double): Aktuelle Heizplattentemperatur (-128: Sensorfehler)
 - latch (int): Zustand der Verriegelung für die Filterung/Reinigung
   - -1: In Bewegung
@@ -209,7 +209,43 @@ Wird bei jedem Zustandswechsel des Prozesses ausgegeben
   - aus (0)
   - an (1)
   - blinkt (2): Wasser leer
-- led2
+- led2:
   - aus (0)
   - an (1)
   - blinkt (2)
+
+### Abbruch eines Prozesses
+> CANCEL
+
+### Reinigung ein-/ausgeschaltet
+> SET_HUMIDIFY;{humidifying}
+- humidifying (bool): Reinigung aktiv/inaktiv
+
+### State wird neu gesendet
+Wenn ein Gerät die Verbindung verloren hatte und nun wieder verbunden ist, wird der aktuelle Zustand dem Gerät neu gesendet.
+> SENDSTATE;{id};{type}
+- type (BASE|HUMIDIFIER)
+
+### Soll-Heizplattentemperatur geändert
+> UPDATE_HEATERSETPOINT;{heater-setpoint}
+- heater-setpoint (double): Neue Soll-Heizplattentemperatur
+
+### Heizdauer update
+> UPDATE_HEATTIMER;{evaporate-starttime};{heat-duration}
+- evaporate-starttime (long): Start-Timestamp der Verdampfung
+- heat-duration (int): Heizdauer
+
+### Heizdauer zurückgesetzt
+> RESET_HEATTIMER;{evaporate-starttime};{heat-duration}
+- evaporate-starttime (long): Start-Timestamp der Verdampfung
+- heat-duration (int): Heizdauer
+
+### Reinigungsdauer update
+> UPDATE_PURGETIMER;{purge-starttime};{purge-duration}
+- purge-starttime (long): Start-Timestamp der Reinigung
+- purge-duration (int): Reinigungsdauer
+
+### Reinigungsdauer zurückgesetzt
+> RESET_PURGETIMER;{purge-starttime};{purge-duration}
+- purge-starttime (long): Start-Timestamp der Reinigung
+- purge-duration (int): Reinigungsdauer
