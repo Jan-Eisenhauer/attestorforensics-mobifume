@@ -149,6 +149,7 @@ public class ClientConnection {
       connected = false;
       Mobifume.getInstance().getLogger().error("Failed to connect to broker " + broker);
       mobiModelManager.getDevices().forEach(device -> device.setRssi(-100));
+      mobiModelManager.getDevices().forEach(device -> device.setOffline(true));
       Mobifume.getInstance()
           .getEventManager()
           .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_LOST));
