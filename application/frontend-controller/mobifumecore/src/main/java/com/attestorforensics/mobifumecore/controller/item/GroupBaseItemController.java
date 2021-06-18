@@ -46,7 +46,7 @@ public class GroupBaseItemController {
   }
 
   public void updateHeaterTemperature() {
-    setTemperature(base.getHeaterTemperature());
+    setTemperature(base.isOffline() ? -128 : base.getHeaterTemperature());
   }
 
   private void setTemperature(double temperature) {
