@@ -3,6 +3,7 @@ package com.attestorforensics.mobifumecore.model;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import com.attestorforensics.mobifumecore.model.connection.MessageHandler;
+import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.FilterEvent;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
@@ -33,7 +34,7 @@ public class MobiModelManager implements ModelManager {
 
   private final Updater updater;
 
-  public MobiModelManager() {
+  public MobiModelManager(WifiConnection wifiConnection) {
     updater = Updater.create(Mobifume.getInstance().getScheduledExecutorService(),
         Mobifume.getInstance().getEventManager());
     updater.startCheckingForUpdate();
@@ -49,7 +50,7 @@ public class MobiModelManager implements ModelManager {
         .collect(Collectors.toList());
     MessageHandler msgHandler = new MessageHandler(this);
 
-    connection = new ClientConnection(this, msgHandler);
+    connection = new ClientConnection(this, wifiConnection, msgHandler);
   }
 
   @Override

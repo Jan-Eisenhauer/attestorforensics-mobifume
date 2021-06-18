@@ -95,10 +95,10 @@ public class Mobifume {
 
     LocaleManager.getInstance().load(language);
 
-    modelManager = new MobiModelManager();
-
     wifiConnection = WindowsWifiConnection.create(scheduledExecutorService);
     wifiConnection.connect();
+
+    modelManager = new MobiModelManager(wifiConnection);
   }
 
   /**
