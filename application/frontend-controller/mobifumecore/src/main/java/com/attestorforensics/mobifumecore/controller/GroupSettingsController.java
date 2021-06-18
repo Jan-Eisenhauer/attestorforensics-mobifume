@@ -144,6 +144,7 @@ public class GroupSettingsController {
         field.setText(getFixedValue(slider, Integer.parseInt(field.getText())) + "");
       } catch (NumberFormatException ignored) {
         // value invalid
+        field.setText(((int) slider.getValue()) + "");
       }
       return;
     }
