@@ -249,3 +249,7 @@ Wenn ein Gerät die Verbindung verloren hatte und nun wieder verbunden ist, wird
 > RESET_PURGETIMER;{purge-starttime};{purge-duration}
 - purge-starttime (long): Start-Timestamp der Reinigung
 - purge-duration (int): Reinigungsdauer
+
+### Verbindungsverlust eines Gerätes
+> DISCONNECT;{id}
+- id: Geräte-Id
