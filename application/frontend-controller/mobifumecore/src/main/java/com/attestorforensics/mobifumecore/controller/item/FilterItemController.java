@@ -75,6 +75,8 @@ public class FilterItemController {
     }
     if (usages >= 0 && filter.isUsable()) {
       usagesLeft.setText(LocaleManager.getInstance().getString("filter.usages", usages));
+    } else {
+      usagesLeft.setText("");
     }
 
     // error/warnings

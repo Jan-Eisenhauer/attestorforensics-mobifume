@@ -46,6 +46,11 @@ public class MobiFilter implements Filter {
     if (percentage == 0) {
       return -1;
     }
+
+    if (percentage - usages == 0) {
+      return 0;
+    }
+
     return (int) (usages / percentage - usages);
   }
 

@@ -3,10 +3,9 @@ package com.attestorforensics.mobifumecore.controller;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
-import com.attestorforensics.mobifumecore.controller.util.SignedDoubleTextFormatter;
-import com.attestorforensics.mobifumecore.controller.util.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
+import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.setting.Settings;
@@ -50,7 +49,7 @@ public class GroupSettingsController {
   @FXML
   private Slider purgeTimeSlider;
 
-  private double maxHum;
+  private int maxHum;
   private int heaterTemp;
   private int heatTime;
   private int purgeTime;
@@ -75,7 +74,7 @@ public class GroupSettingsController {
     heatTime = settings.getHeatTimer();
     purgeTime = settings.getPurgeTimer();
 
-    maxHumField.setTextFormatter(new SignedDoubleTextFormatter());
+    maxHumField.setTextFormatter(new UnsignedIntTextFormatter());
     maxHumField.textProperty()
         .addListener((observableValue, oldText, newText) -> onMaxHumField(newText));
     maxHumField.focusedProperty()
@@ -85,7 +84,7 @@ public class GroupSettingsController {
     maxHumSlider.valueProperty().addListener((observableValue, number, t1) -> onMaxHumSlider());
     maxHumSlider.setValue((int) maxHum);
 
-    heaterTempField.setTextFormatter(new SignedIntTextFormatter());
+    heaterTempField.setTextFormatter(new UnsignedIntTextFormatter());
     heaterTempField.textProperty()
         .addListener((observableValue, oldText, newText) -> onHeaterTempField(newText));
     heaterTempField.focusedProperty()
@@ -97,7 +96,7 @@ public class GroupSettingsController {
         .addListener((observableValue, number, t1) -> onHeaterTempSlider());
     heaterTempSlider.setValue(heaterTemp);
 
-    heatTimeField.setTextFormatter(new SignedIntTextFormatter());
+    heatTimeField.setTextFormatter(new UnsignedIntTextFormatter());
     heatTimeField.textProperty()
         .addListener((observableValue, oldText, newText) -> onHeatTimeField(newText));
     heatTimeField.focusedProperty()
@@ -107,7 +106,7 @@ public class GroupSettingsController {
     heatTimeSlider.valueProperty().addListener((observableValue, number, t1) -> onHeatTimeSlider());
     heatTimeSlider.setValue(heatTime);
 
-    purgeTimeField.setTextFormatter(new SignedIntTextFormatter());
+    purgeTimeField.setTextFormatter(new UnsignedIntTextFormatter());
     purgeTimeField.textProperty()
         .addListener((observableValue, oldText, newText) -> onPurgeTimeField(newText));
     purgeTimeField.focusedProperty()
@@ -131,8 +130,8 @@ public class GroupSettingsController {
     }
     lockUpdate = true;
     try {
-      maxHum = Double.parseDouble(value);
-      maxHumSlider.setValue((int) maxHum);
+      maxHum = Integer.parseInt(value);
+      maxHumSlider.setValue(maxHum);
     } catch (NumberFormatException ignored) {
       // value invalid
     }
@@ -142,9 +141,10 @@ public class GroupSettingsController {
   private void onFocus(TextField field, Slider slider, boolean focused) {
     if (!focused || field.getText().isEmpty()) {
       try {
-        field.setText((int) getFixedValue(slider, Double.parseDouble(field.getText())) + "");
+        field.setText(getFixedValue(slider, Integer.parseInt(field.getText())) + "");
       } catch (NumberFormatException ignored) {
         // value invalid
+        field.setText(((int) slider.getValue()) + "");
       }
       return;
     }
@@ -157,7 +157,7 @@ public class GroupSettingsController {
     }
     lockUpdate = true;
     maxHum = (int) maxHumSlider.getValue();
-    maxHumField.setText((int) maxHum + "");
+    maxHumField.setText(maxHum + "");
     lockUpdate = false;
   }
 
@@ -204,7 +204,7 @@ public class GroupSettingsController {
       return;
     }
     lockUpdate = true;
-    heatTime = (int) getFixedValue(heatTimeSlider, heatTimeSlider.getValue());
+    heatTime = getFixedValue(heatTimeSlider, (int) heatTimeSlider.getValue());
     heatTimeField.setText(heatTime + "");
     lockUpdate = false;
   }
@@ -228,13 +228,13 @@ public class GroupSettingsController {
       return;
     }
     lockUpdate = true;
-    purgeTime = (int) getFixedValue(purgeTimeSlider, purgeTimeSlider.getValue());
+    purgeTime = getFixedValue(purgeTimeSlider, (int) purgeTimeSlider.getValue());
     purgeTimeField.setText(purgeTime + "");
     lockUpdate = false;
   }
 
-  private double getFixedValue(Slider slider, double value) {
-    return Math.max(Math.min(value, slider.getMax()), slider.getMin());
+  private int getFixedValue(Slider slider, int value) {
+    return Math.max(Math.min(value, (int) slider.getMax()), (int) slider.getMin());
   }
 
   @FXML
@@ -251,7 +251,7 @@ public class GroupSettingsController {
 
   private void applySettings() {
     Settings settings = group.getSettings();
-    double maxHumidity = getFixedValue(maxHumSlider, maxHum);
+    int maxHumidity = getFixedValue(maxHumSlider, maxHum);
     if (maxHumidity != settings.getHumidifyMax()) {
       settings.setHumidifyMax(maxHumidity);
       group.updateHumidify();

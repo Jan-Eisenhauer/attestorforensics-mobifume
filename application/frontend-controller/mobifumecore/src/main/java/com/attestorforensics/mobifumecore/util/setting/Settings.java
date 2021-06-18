@@ -11,7 +11,7 @@ public class Settings implements Serializable {
   private static final SettingFileHandler fileHandler = new SettingFileHandler();
 
   private Locale language = Locale.GERMANY;
-  private double humidifyMax = 80;
+  private int humidifyMax = 80;
   private double humidifyPuffer = 0.3;
   private int heaterTemperature = 120;
   private int heatTimer = 30;
@@ -64,11 +64,11 @@ public class Settings implements Serializable {
     this.language = language;
   }
 
-  public double getHumidifyMax() {
+  public int getHumidifyMax() {
     return humidifyMax;
   }
 
-  public void setHumidifyMax(double humidifyMax) {
+  public void setHumidifyMax(int humidifyMax) {
     this.humidifyMax = humidifyMax;
   }
 

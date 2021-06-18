@@ -1,8 +1,8 @@
 package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
-import com.attestorforensics.mobifumecore.controller.util.SignedDoubleTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
+import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedFloatTextFormatter;
 import com.attestorforensics.mobifumecore.model.object.Evaporant;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
@@ -25,6 +25,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
 public class GroupCalculatorController {
+
+  private static final double MAX_INPUT_VALUE = 999;
 
   @FXML
   Parent root;
@@ -60,7 +62,7 @@ public class GroupCalculatorController {
     groupName.setText(group.getName() + " - " + group.getSettings().getCycleCount());
 
     Settings settings = group.getSettings();
-    roomWidth.setTextFormatter(new SignedDoubleTextFormatter());
+    roomWidth.setTextFormatter(new UnsignedFloatTextFormatter());
     roomWidth.setText(settings.getRoomWidth() + "");
     roomWidth.textProperty().addListener((observableValue, oldText, newText) -> {
       applySettings();
@@ -74,7 +76,7 @@ public class GroupCalculatorController {
             (observableValue, oldState, focused) -> onFocus(roomWidth, settings.getRoomWidth(),
                 focused));
 
-    roomDepth.setTextFormatter(new SignedDoubleTextFormatter());
+    roomDepth.setTextFormatter(new UnsignedFloatTextFormatter());
     roomDepth.setText(settings.getRoomDepth() + "");
     roomDepth.textProperty().addListener((observableValue, oldText, newText) -> {
       applySettings();
@@ -88,7 +90,7 @@ public class GroupCalculatorController {
             (observableValue, oldState, focused) -> onFocus(roomDepth, settings.getRoomDepth(),
                 focused));
 
-    roomHeight.setTextFormatter(new SignedDoubleTextFormatter());
+    roomHeight.setTextFormatter(new UnsignedFloatTextFormatter());
     roomHeight.setText(settings.getRoomHeight() + "");
     roomHeight.textProperty().addListener((observableValue, oldText, newText) -> {
       applySettings();
@@ -102,7 +104,7 @@ public class GroupCalculatorController {
             (observableValue, oldState, focused) -> onFocus(roomHeight, settings.getRoomHeight(),
                 focused));
 
-    amountPerCm.setTextFormatter(new SignedDoubleTextFormatter());
+    amountPerCm.setTextFormatter(new UnsignedFloatTextFormatter());
     amountPerCm.setText(settings.getEvaporantAmountPerCm() + "");
     amountPerCm.textProperty().addListener((observableValue, oldText, newText) -> {
       applySettings();
@@ -146,22 +148,34 @@ public class GroupCalculatorController {
   private void applySettings() {
     Settings settings = group.getSettings();
     try {
-      settings.setRoomWidth(Double.parseDouble(roomWidth.getText()));
+      double roomWidthValue = Double.parseDouble(this.roomWidth.getText());
+      if (roomWidthValue <= MAX_INPUT_VALUE) {
+        settings.setRoomWidth(roomWidthValue);
+      }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
     try {
-      settings.setRoomDepth(Double.parseDouble(roomDepth.getText()));
+      double roomDepthValue = Double.parseDouble(roomDepth.getText());
+      if (roomDepthValue <= MAX_INPUT_VALUE) {
+        settings.setRoomDepth(roomDepthValue);
+      }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
     try {
-      settings.setRoomHeight(Double.parseDouble(roomHeight.getText()));
+      double roomHeightValue = Double.parseDouble(roomHeight.getText());
+      if (roomHeightValue <= MAX_INPUT_VALUE) {
+        settings.setRoomHeight(roomHeightValue);
+      }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
     try {
-      settings.setEvaporantAmountPerCm(Double.parseDouble(amountPerCm.getText()));
+      double amountPerCmValue = Double.parseDouble(amountPerCm.getText());
+      if (amountPerCmValue <= MAX_INPUT_VALUE) {
+        settings.setEvaporantAmountPerCm(amountPerCmValue);
+      }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
@@ -250,6 +264,7 @@ public class GroupCalculatorController {
     if (focusedField == null) {
       return;
     }
+
     if (selectedText.equals(focusedField.getText())) {
       focusedField.setText("");
     } else {

@@ -3,6 +3,8 @@ package com.attestorforensics.mobifumecore.model.connection;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.object.Room;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.attestorforensics.mobifumecore.util.log.CustomLogger;
 import java.io.File;
@@ -33,14 +35,17 @@ public class ClientConnection {
 
   private boolean connected;
   private final MobiModelManager mobiModelManager;
+  private final WifiConnection wifiConnection;
   private ScheduledFuture<?> waitForOtherAppTask;
   private final MessageHandler msgHandler;
   private final MessageCallback msgCallback;
 
   private MessageEncoder encoder;
 
-  public ClientConnection(MobiModelManager mobiModelManager, MessageHandler msgHandler) {
+  public ClientConnection(MobiModelManager mobiModelManager, WifiConnection wifiConnection,
+      MessageHandler msgHandler) {
     this.mobiModelManager = mobiModelManager;
+    this.wifiConnection = wifiConnection;
     this.msgHandler = msgHandler;
     msgCallback = new MessageCallback(this, msgHandler);
 
@@ -143,17 +148,37 @@ public class ClientConnection {
   }
 
   private boolean clientConnect() {
+    if (wifiConnection.isEnabled()) {
+      wifiConnection.connect();
+    }
+
     try {
       client.connect(createOptions(user, password));
     } catch (MqttException e) {
       connected = false;
       Mobifume.getInstance().getLogger().error("Failed to connect to broker " + broker);
-      mobiModelManager.getDevices().forEach(device -> device.setRssi(-100));
+      mobiModelManager.getDevices().forEach(device -> {
+        Room group = (Room) mobiModelManager.getGroup(device);
+        if (group == null) {
+          Mobifume.getInstance()
+              .getEventManager()
+              .call(new DeviceConnectionEvent(device,
+                  DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
+          mobiModelManager.getDevices().remove(device);
+        }
+
+        device.setRssi(-100);
+        device.setOffline(true);
+        Mobifume.getInstance()
+            .getEventManager()
+            .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.LOST));
+      });
       Mobifume.getInstance()
           .getEventManager()
           .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_LOST));
       return false;
     }
+
     connected = true;
     Mobifume.getInstance()
         .getEventManager()

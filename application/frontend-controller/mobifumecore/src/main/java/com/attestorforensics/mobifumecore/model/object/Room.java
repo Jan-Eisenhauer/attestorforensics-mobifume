@@ -330,9 +330,16 @@ public class Room implements Group {
           int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
           base.updateTime(settings.getHeatTimer() - passedTimeInMinutes);
           base.forceUpdateHeaterSetpoint(settings.getHeaterTemperature());
+        } else {
+          base.forceUpdateHeaterSetpoint(0);
         }
 
-        base.forceUpdateLatch(status != Status.HUMIDIFY && status != Status.EVAPORATE);
+        if (status == Status.HUMIDIFY) {
+          base.updateTime(30);
+        }
+
+        boolean latchOpen = status != Status.HUMIDIFY && status != Status.EVAPORATE;
+        base.forceUpdateLatch(latchOpen);
         break;
       case HUMIDIFIER:
         Humidifier hum = (Humidifier) device;

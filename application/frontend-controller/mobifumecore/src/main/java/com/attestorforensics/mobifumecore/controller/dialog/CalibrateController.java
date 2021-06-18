@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
-import com.attestorforensics.mobifumecore.controller.util.SignedDoubleTextFormatter;
+import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedDoubleTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.object.Calibration;

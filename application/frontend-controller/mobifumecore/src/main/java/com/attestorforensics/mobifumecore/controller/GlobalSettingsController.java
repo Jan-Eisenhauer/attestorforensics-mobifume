@@ -3,10 +3,9 @@ package com.attestorforensics.mobifumecore.controller;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
-import com.attestorforensics.mobifumecore.controller.util.SignedDoubleTextFormatter;
-import com.attestorforensics.mobifumecore.controller.util.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
+import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.setting.Settings;
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class GlobalSettingsController {
 
   private Map<String, Locale> languages;
 
-  private double maxHum;
+  private int maxHum;
   private int heaterTemp;
   private int heatTime;
   private int purgeTime;
@@ -83,7 +82,7 @@ public class GlobalSettingsController {
         .selectedItemProperty()
         .addListener((observableValue, oldItem, newItem) -> onLanguageChoose(newItem));
 
-    maxHumField.setTextFormatter(new SignedDoubleTextFormatter());
+    maxHumField.setTextFormatter(new UnsignedIntTextFormatter());
     maxHumField.textProperty()
         .addListener((observableValue, oldText, newText) -> onMaxHumField(newText));
     maxHumField.focusedProperty()
@@ -91,7 +90,7 @@ public class GlobalSettingsController {
             (observableValue, oldState, focused) -> onFocus(maxHumField, maxHumSlider, focused));
     maxHumSlider.valueProperty().addListener((observableValue, number, t1) -> onMaxHumSlider());
 
-    heaterTempField.setTextFormatter(new SignedIntTextFormatter());
+    heaterTempField.setTextFormatter(new UnsignedIntTextFormatter());
     heaterTempField.textProperty()
         .addListener((observableValue, oldText, newText) -> onHeaterTempField(newText));
     heaterTempField.focusedProperty()
@@ -101,7 +100,7 @@ public class GlobalSettingsController {
     heaterTempSlider.valueProperty()
         .addListener((observableValue, number, t1) -> onHeaterTempSlider());
 
-    heatTimeField.setTextFormatter(new SignedIntTextFormatter());
+    heatTimeField.setTextFormatter(new UnsignedIntTextFormatter());
     heatTimeField.textProperty()
         .addListener((observableValue, oldText, newText) -> onHeatTimeField(newText));
     heatTimeField.focusedProperty()
@@ -109,7 +108,7 @@ public class GlobalSettingsController {
             focused));
     heatTimeSlider.valueProperty().addListener((observableValue, number, t1) -> onHeatTimeSlider());
 
-    purgeTimeField.setTextFormatter(new SignedIntTextFormatter());
+    purgeTimeField.setTextFormatter(new UnsignedIntTextFormatter());
     purgeTimeField.textProperty()
         .addListener((observableValue, oldText, newText) -> onPurgeTimeField(newText));
     purgeTimeField.focusedProperty()
@@ -121,8 +120,8 @@ public class GlobalSettingsController {
 
     Settings settings = Mobifume.getInstance().getModelManager().getDefaultSettings();
 
-    maxHumField.setText((int) settings.getHumidifyMax() + "");
-    maxHumSlider.setValue((int) settings.getHumidifyMax());
+    maxHumField.setText(settings.getHumidifyMax() + "");
+    maxHumSlider.setValue(settings.getHumidifyMax());
     heaterTempField.setText(settings.getHeaterTemperature() + "");
     heaterTempSlider.setValue(settings.getHeaterTemperature());
     heatTimeField.setText(settings.getHeatTimer() + "");
@@ -154,8 +153,8 @@ public class GlobalSettingsController {
     }
     lockUpdate = true;
     try {
-      maxHum = Double.parseDouble(value);
-      maxHumSlider.setValue((int) maxHum);
+      maxHum = Integer.parseInt(value);
+      maxHumSlider.setValue(maxHum);
     } catch (NumberFormatException ignored) {
       // value invalid
     }
@@ -165,9 +164,10 @@ public class GlobalSettingsController {
   private void onFocus(TextField field, Slider slider, boolean focused) {
     if (!focused || field.getText().isEmpty()) {
       try {
-        field.setText((int) getFixedValue(slider, Double.parseDouble(field.getText())) + "");
+        field.setText(getFixedValue(slider, Integer.parseInt(field.getText())) + "");
       } catch (NumberFormatException ignored) {
         // value invalid
+        field.setText(((int) slider.getValue()) + "");
       }
       return;
     }
@@ -256,8 +256,8 @@ public class GlobalSettingsController {
     lockUpdate = false;
   }
 
-  private double getFixedValue(Slider slider, double maxHum) {
-    return Math.max(Math.min(maxHum, slider.getMax()), slider.getMin());
+  private int getFixedValue(Slider slider, int value) {
+    return Math.max(Math.min(value, (int) slider.getMax()), (int) slider.getMin());
   }
 
   @FXML
