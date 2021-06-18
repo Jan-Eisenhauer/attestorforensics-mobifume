@@ -498,7 +498,7 @@ public class GroupController {
       }
 
       if (group.getHumidity() != -128) {
-        group.getSettings().setHumidifyMax(group.getHumidity());
+        group.getSettings().setHumidifyMax(Math.round((float) group.getHumidity()));
       }
 
       group.startEvaporate();

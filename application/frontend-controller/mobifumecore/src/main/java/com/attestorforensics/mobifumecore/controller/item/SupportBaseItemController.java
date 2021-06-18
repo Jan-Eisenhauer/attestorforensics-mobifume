@@ -2,7 +2,7 @@ package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.CalibrateDialog;
-import com.attestorforensics.mobifumecore.controller.util.SignedIntTextFormatter;
+import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;

@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.controller.util;
+package com.attestorforensics.mobifumecore.controller.util.textformatter;
 
 import javafx.scene.control.TextFormatter;
 

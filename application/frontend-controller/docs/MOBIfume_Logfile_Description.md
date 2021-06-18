@@ -167,7 +167,7 @@ Jede Zeile beginnt mit: `{datetime};{log-level};`
 ### Einstellungen
 Wird nach Erstellung der Gruppe und bei Veränderung der Gruppeneinstellung ausgegeben.
 > SETTINGS;{humidify-max};{humidify-puffer};{heater-temperature};{heat-time};{purge-time}
-- humidify-max (double): Soll-Luftfeuchtigkeit
+- humidify-max (int): Soll-Luftfeuchtigkeit
 - humidify-puffer (double): Puffer nach oben bei der Verdampfung (Beispiel: Soll-Luftfeuchtigkeit=80%rH, Puffer=0.3 -> Wenn die Luftfeuchtigkeit über 80.3%rH steigt, schaltet der Luftbefeuchter aus. Wenn die Luftfeuchtigkeit wieder unter 80.0%rH fällt, schaltet er wieder ein.)
 - heater-temperature (int); Heizplattentemperatur bei der Verdampfung
 - heat-time (int): Dauer der Verdampfung in Minuten

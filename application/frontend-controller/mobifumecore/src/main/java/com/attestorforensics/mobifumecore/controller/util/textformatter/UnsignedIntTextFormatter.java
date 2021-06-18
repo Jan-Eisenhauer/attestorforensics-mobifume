@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.controller.util;
+package com.attestorforensics.mobifumecore.controller.util.textformatter;
 
 import javafx.scene.control.TextFormatter;
 
@@ -17,7 +17,7 @@ public class UnsignedIntTextFormatter extends TextFormatter<String> {
     String fullText = change.getControlNewText();
 
     try {
-      float value = Integer.parseInt(fullText);
+      int value = Integer.parseInt(fullText);
       if (value < 0) {
         change.setText("");
       }
