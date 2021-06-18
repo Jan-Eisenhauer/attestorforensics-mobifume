@@ -46,7 +46,6 @@ public class MobifumeMqtt {
     client.setCallback(mqttCallback);
 
     clientConnection.connectClient();
-    subscribeChannels();
 
     ScheduledExecutorService scheduledExecutorService =
         Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
@@ -72,13 +71,5 @@ public class MobifumeMqtt {
 
     pahoDirectory.mkdirs();
     return new MqttDefaultFilePersistence(pahoDirectory.getAbsolutePath());
-  }
-
-  private void subscribeChannels() {
-    try {
-      client.subscribe("/MOBIfume/#");
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
   }
 }

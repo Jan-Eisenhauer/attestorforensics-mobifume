@@ -28,6 +28,8 @@ public class MqttClientConnection implements ClientConnection {
     }
 
     System.out.println("Successfully connected!");
+    subscribeChannels();
+
   }
 
   private MqttConnectOptions createOptions() {
@@ -38,5 +40,13 @@ public class MqttClientConnection implements ClientConnection {
     options.setConnectionTimeout(3);
     options.setMaxInflight(1000);
     return options;
+  }
+
+  private void subscribeChannels() {
+    try {
+      client.subscribe("/MOBIfume/#");
+    } catch (MqttException e) {
+      e.printStackTrace();
+    }
   }
 }
