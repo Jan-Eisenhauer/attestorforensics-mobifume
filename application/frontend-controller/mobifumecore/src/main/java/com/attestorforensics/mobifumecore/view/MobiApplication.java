@@ -82,7 +82,6 @@ public class MobiApplication extends Application {
     double height1 = 1201;
     Scene scene = new Scene(root, width1, height1);
     OverviewController controller = loader.getController();
-    root.getProperties().put("controller", controller);
     primaryStage.setScene(scene);
     registerListener(primaryStage, controller);
     controller.load();
