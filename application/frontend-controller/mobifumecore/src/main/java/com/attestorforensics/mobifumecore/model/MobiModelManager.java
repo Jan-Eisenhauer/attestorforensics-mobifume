@@ -38,7 +38,7 @@ public class MobiModelManager implements ModelManager {
   public MobiModelManager(Settings globalSettings, WifiConnection wifiConnection) {
     this.globalSettings = globalSettings;
     updater = Updater.create(Mobifume.getInstance().getScheduledExecutorService(),
-        Mobifume.getInstance().getEventManager());
+        Mobifume.getInstance().getEventDispatcher());
     updater.startCheckingForUpdate();
 
     LogMover logMover =
@@ -89,7 +89,7 @@ public class MobiModelManager implements ModelManager {
     CustomLogger.logGroupDevices(group);
     groups.add(group);
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new GroupEvent(group, GroupEvent.GroupStatus.CREATED));
     group.setupStart();
   }
@@ -100,13 +100,13 @@ public class MobiModelManager implements ModelManager {
     List<Device> offlineDevicesInGroup =
         group.getDevices().stream().filter(Device::isOffline).collect(Collectors.toList());
     offlineDevicesInGroup.forEach(device -> Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.DISCONNECTED)));
     devices.removeAll(offlineDevicesInGroup);
     groups.remove(group);
     CustomLogger.logGroupRemove((Room) group);
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new GroupEvent(group, GroupEvent.GroupStatus.REMOVED));
   }
 
@@ -139,7 +139,7 @@ public class MobiModelManager implements ModelManager {
     filterFileHandler.saveFilter(filter);
     filters.add(filter);
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new FilterEvent(filter, FilterEvent.FilterStatus.ADDED));
     return filter;
   }
@@ -149,7 +149,7 @@ public class MobiModelManager implements ModelManager {
     if (filters.remove(filter)) {
       ((MobiFilter) filter).setRemoved();
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new FilterEvent(filter, FilterEvent.FilterStatus.REMOVED));
     }
   }
@@ -175,12 +175,12 @@ public class MobiModelManager implements ModelManager {
       if (getGroup(device) != null) {
         device.setRssi(-100);
         Mobifume.getInstance()
-            .getEventManager()
+            .getEventDispatcher()
             .call(new DeviceConnectionEvent(device,
                 DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
       } else {
         Mobifume.getInstance()
-            .getEventManager()
+            .getEventDispatcher()
             .call(
                 new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
       }

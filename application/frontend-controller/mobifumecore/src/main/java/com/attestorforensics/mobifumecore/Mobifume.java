@@ -4,12 +4,12 @@ import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
 import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection;
-import com.attestorforensics.mobifumecore.model.listener.EventManager;
+import com.attestorforensics.mobifumecore.model.listener.EventDispatcher;
+import com.attestorforensics.mobifumecore.model.setting.Settings;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.attestorforensics.mobifumecore.util.OtherAppChecker;
 import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.log.CustomLogger;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
 import com.attestorforensics.mobifumecore.view.MobiApplication;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +45,7 @@ public class Mobifume {
   /**
    * Gets the event manager.
    */
-  private EventManager eventManager;
+  private EventDispatcher eventDispatcher;
   /**
    * Gets the model manager which establish connections and holds devices, filters and groups.
    */
@@ -82,7 +82,7 @@ public class Mobifume {
       System.exit(1);
     }
 
-    eventManager = new EventManager();
+    eventDispatcher = new EventDispatcher();
 
     Settings globalSettings = Settings.loadGlobalSettings();
     Locale language = globalSettings.getLanguage();
@@ -124,8 +124,8 @@ public class Mobifume {
     return config;
   }
 
-  public EventManager getEventManager() {
-    return eventManager;
+  public EventDispatcher getEventDispatcher() {
+    return eventDispatcher;
   }
 
   public ModelManager getModelManager() {

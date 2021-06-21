@@ -29,7 +29,7 @@ public class WindowsWifiConnection implements WifiConnection {
   public void connect() {
     enabled = true;
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionStatus.WIFI_CONNECTING));
     scheduledExecutorService.execute(this::executeConnect);
   }
@@ -38,7 +38,7 @@ public class WindowsWifiConnection implements WifiConnection {
   public void disconnect() {
     enabled = false;
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.WIFI_DISCONNECTING));
     scheduledExecutorService.execute(this::executeDisconnect);
   }
@@ -73,7 +73,7 @@ public class WindowsWifiConnection implements WifiConnection {
     }
 
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionStatus.WIFI_CONNECTED));
     lock.unlock();
   }
@@ -99,7 +99,7 @@ public class WindowsWifiConnection implements WifiConnection {
     }
 
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.WIFI_DISCONNECTED));
     lock.unlock();
   }

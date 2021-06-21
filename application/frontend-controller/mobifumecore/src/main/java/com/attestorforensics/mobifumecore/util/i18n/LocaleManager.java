@@ -32,7 +32,7 @@ public class LocaleManager {
     this.locale = locale;
     resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, locale, getClass().getClassLoader(),
         new Utf8Control());
-    Mobifume.getInstance().getEventManager().call(new LocaleChangeEvent(locale));
+    Mobifume.getInstance().getEventDispatcher().call(new LocaleChangeEvent(locale));
   }
 
   public String getString(String key) {

@@ -112,25 +112,25 @@ public class MobiApplication extends Application {
 
   private void registerListener(Stage primaryStage, OverviewController overviewController) {
     BaseErrorListener baseErrorListener = new BaseErrorListener();
-    Mobifume.getInstance().getEventManager().registerListener(baseErrorListener);
+    Mobifume.getInstance().getEventDispatcher().registerListener(baseErrorListener);
     WaterErrorListener waterErrorListener = new WaterErrorListener();
-    Mobifume.getInstance().getEventManager().registerListener(waterErrorListener);
+    Mobifume.getInstance().getEventDispatcher().registerListener(waterErrorListener);
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .registerListener(new ConnectionListener(primaryStage, overviewController));
-    Mobifume.getInstance().getEventManager().registerListener(new EvaporateListener());
-    Mobifume.getInstance().getEventManager().registerListener(new FilterListener());
+    Mobifume.getInstance().getEventDispatcher().registerListener(new EvaporateListener());
+    Mobifume.getInstance().getEventDispatcher().registerListener(new FilterListener());
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .registerListener(
             new GroupListener(overviewController, baseErrorListener, waterErrorListener));
-    Mobifume.getInstance().getEventManager().registerListener(new HumidifyListener());
+    Mobifume.getInstance().getEventDispatcher().registerListener(new HumidifyListener());
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .registerListener(new DeviceConnectionListener(overviewController));
-    Mobifume.getInstance().getEventManager().registerListener(new PurgeListener());
-    Mobifume.getInstance().getEventManager().registerListener(UpdateListener.create());
-    Mobifume.getInstance().getEventManager().registerListener(UpdatingListener.create());
+    Mobifume.getInstance().getEventDispatcher().registerListener(new PurgeListener());
+    Mobifume.getInstance().getEventDispatcher().registerListener(UpdateListener.create());
+    Mobifume.getInstance().getEventDispatcher().registerListener(UpdatingListener.create());
   }
 
   public Stage getPrimaryStage() {

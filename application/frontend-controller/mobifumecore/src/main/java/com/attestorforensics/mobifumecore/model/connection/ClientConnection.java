@@ -73,7 +73,7 @@ public class ClientConnection {
     try {
       client.disconnect();
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_DISCONNECTED));
     } catch (MqttException e) {
       e.printStackTrace();
@@ -128,13 +128,13 @@ public class ClientConnection {
             encoder.online();
             connected = true;
             Mobifume.getInstance()
-                .getEventManager()
+                .getEventDispatcher()
                 .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_CONNECTED));
             cancelWaitForOtherApp();
           } else {
             Mobifume.getInstance().getLogger().error("Another application is already connected");
             Mobifume.getInstance()
-                .getEventManager()
+                .getEventDispatcher()
                 .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_OTHER_ONLINE));
             msgHandler.setOtherAppOnline(false);
           }
@@ -161,7 +161,7 @@ public class ClientConnection {
         Room group = (Room) mobiModelManager.getGroup(device);
         if (group == null) {
           Mobifume.getInstance()
-              .getEventManager()
+              .getEventDispatcher()
               .call(new DeviceConnectionEvent(device,
                   DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
           mobiModelManager.getDevices().remove(device);
@@ -170,18 +170,18 @@ public class ClientConnection {
         device.setRssi(-100);
         device.setOffline(true);
         Mobifume.getInstance()
-            .getEventManager()
+            .getEventDispatcher()
             .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.LOST));
       });
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_LOST));
       return false;
     }
 
     connected = true;
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_CONNECTED));
     return true;
   }
@@ -230,7 +230,7 @@ public class ClientConnection {
   void connectionLost() {
     mobiModelManager.connectionLost();
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.BROKER_LOST));
     connect();
   }

@@ -41,7 +41,7 @@ public class Humidifier extends Device {
       if (waterState == 5 && !waterEmpty) {
         waterEmpty = true;
         Mobifume.getInstance()
-            .getEventManager()
+            .getEventDispatcher()
             .call(new WaterErrorEvent(this, WaterErrorEvent.WaterStatus.EMPTY));
       }
     } else if (waterState > 0) {
@@ -49,7 +49,7 @@ public class Humidifier extends Device {
       if (waterState == 0 && waterEmpty) {
         waterEmpty = false;
         Mobifume.getInstance()
-            .getEventManager()
+            .getEventDispatcher()
             .call(new WaterErrorEvent(this, WaterErrorEvent.WaterStatus.FILLED));
       }
     }

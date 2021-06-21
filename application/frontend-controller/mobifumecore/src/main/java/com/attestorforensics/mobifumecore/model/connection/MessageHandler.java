@@ -65,7 +65,7 @@ public class MessageHandler {
     CustomLogger.info("Reconnect " + device.getId());
     group.sendState(device);
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.RECONNECT));
   }
 
@@ -73,7 +73,7 @@ public class MessageHandler {
     device.setOffline(false);
     mobiModelManager.getDevices().add(device);
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.CONNECTED));
     CustomLogger.info("Device online : " + device.getId());
   }
@@ -95,7 +95,7 @@ public class MessageHandler {
     Room group = (Room) mobiModelManager.getGroup(device);
     if (group == null) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
       mobiModelManager.getDevices().remove(device);
     }
@@ -103,7 +103,7 @@ public class MessageHandler {
     device.setRssi(-100);
     device.setOffline(true);
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.LOST));
   }
 
@@ -123,12 +123,12 @@ public class MessageHandler {
     base.setTemperature(temperature);
     if (temperature == -128 && oldTemperature != -128) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.TEMPERATURE));
     }
     if (oldTemperature == -128 && temperature != -128) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.TEMPERATURE));
     }
 
@@ -136,12 +136,12 @@ public class MessageHandler {
     base.setHumidity(humidity);
     if (humidity == -128 && oldHumidity != -128) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.HUMIDITY));
     }
     if (oldHumidity == -128 && humidity != -128) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.HUMIDITY));
     }
 
@@ -151,12 +151,12 @@ public class MessageHandler {
     base.setHeaterTemperature(heaterTemp);
     if (heaterTemp == -128 && oldHeaterTemperature != -128) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.HEATER));
     }
     if (oldHeaterTemperature == -128 && heaterTemp != -128) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.HEATER));
     }
 
@@ -164,17 +164,17 @@ public class MessageHandler {
     base.setLatch(latch);
     if ((latch == 3 || latch == 4) && (oldLatch != 3 && oldLatch != 4)) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.LATCH));
     }
     if ((latch == 0 || latch == 1) && (oldLatch == 3 || oldLatch == 4)) {
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.LATCH));
     }
 
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
 
     Room group = (Room) mobiModelManager.getGroup(base);
@@ -216,7 +216,7 @@ public class MessageHandler {
     hum.setOverTemperature(overTemperature);
 
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
 
     Room group = (Room) mobiModelManager.getGroup(hum);
@@ -240,7 +240,7 @@ public class MessageHandler {
     Base base = (Base) device;
     base.setCalibration(humidityGradient, humidityOffset, temperatureGradient, temperatureOffset);
     Mobifume.getInstance()
-        .getEventManager()
+        .getEventDispatcher()
         .call(new DeviceConnectionEvent(device,
             DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
   }

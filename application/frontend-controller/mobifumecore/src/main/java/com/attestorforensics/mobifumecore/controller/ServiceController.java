@@ -37,7 +37,7 @@ public class ServiceController {
   @FXML
   public void initialize() {
     serviceListener = new ServiceListener(this);
-    Mobifume.getInstance().getEventManager().registerListener(serviceListener);
+    Mobifume.getInstance().getEventDispatcher().registerListener(serviceListener);
     Mobifume.getInstance().getModelManager().getDevices().forEach(this::addDevice);
   }
 
@@ -70,7 +70,7 @@ public class ServiceController {
   public void onBack(ActionEvent event) {
     Sound.click();
 
-    Mobifume.getInstance().getEventManager().unregisterListener(serviceListener);
+    Mobifume.getInstance().getEventDispatcher().unregisterListener(serviceListener);
 
     Node button = (Node) event.getSource();
     Scene scene = button.getScene();

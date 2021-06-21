@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.event.UpdateAvailableEvent;
 import com.attestorforensics.mobifumecore.model.event.UpdateNotAvailableEvent;
 import com.attestorforensics.mobifumecore.model.event.UpdatingEvent;
-import com.attestorforensics.mobifumecore.model.listener.EventManager;
+import com.attestorforensics.mobifumecore.model.listener.EventDispatcher;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,23 +32,23 @@ public class Updater {
   private static final String JAVAW = "\\jre-8u221\\bin\\javaw.exe";
 
   private final ScheduledExecutorService scheduledExecutorService;
-  private final EventManager eventManager;
+  private final EventDispatcher eventDispatcher;
   private final File updateFile;
   private final String updateDisplayName;
 
   private boolean updateAvailable = false;
   private String newVersion;
 
-  private Updater(ScheduledExecutorService scheduledExecutorService, EventManager eventManager) {
+  private Updater(ScheduledExecutorService scheduledExecutorService, EventDispatcher eventDispatcher) {
     this.scheduledExecutorService = scheduledExecutorService;
-    this.eventManager = eventManager;
+    this.eventDispatcher = eventDispatcher;
     updateFile = new File(Mobifume.getInstance().getConfig().getProperty("update_file"));
     updateDisplayName = Mobifume.getInstance().getConfig().getProperty("update_label");
   }
 
   public static Updater create(ScheduledExecutorService scheduledExecutorService,
-      EventManager eventManager) {
-    return new Updater(scheduledExecutorService, eventManager);
+      EventDispatcher eventDispatcher) {
+    return new Updater(scheduledExecutorService, eventDispatcher);
   }
 
   public void startCheckingForUpdate() {
@@ -68,7 +68,7 @@ public class Updater {
     }
 
     Mobifume.getInstance().getLogger().info("Installing update");
-    eventManager.call(UpdatingEvent.create(UpdatingState.COPY_FROM_USB));
+    eventDispatcher.call(UpdatingEvent.create(UpdatingState.COPY_FROM_USB));
     try (TarArchiveInputStream tarInput = new TarArchiveInputStream(
         new GzipCompressorInputStream(new FileInputStream(updateFile)))) {
       TarArchiveEntry entry;
@@ -83,16 +83,16 @@ public class Updater {
     } catch (IOException e) {
       e.printStackTrace();
       Mobifume.getInstance().getLogger().info("Failed installing update");
-      eventManager.call(UpdatingEvent.create(UpdatingState.FAILED));
+      eventDispatcher.call(UpdatingEvent.create(UpdatingState.FAILED));
       return;
     }
 
-    eventManager.call(UpdatingEvent.create(UpdatingState.START_UPDATER));
+    eventDispatcher.call(UpdatingEvent.create(UpdatingState.START_UPDATER));
     if (!startExternalUpdater()) {
       return;
     }
 
-    eventManager.call(UpdatingEvent.create(UpdatingState.SUCCESS));
+    eventDispatcher.call(UpdatingEvent.create(UpdatingState.SUCCESS));
 
     System.exit(0);
   }
@@ -109,7 +109,7 @@ public class Updater {
     if (!isUpdateDeviceConnected()) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventManager.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateNotAvailableEvent.create());
       }
 
       return;
@@ -120,7 +120,7 @@ public class Updater {
     if (!usbDisplayName.equals(updateDisplayName)) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventManager.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateNotAvailableEvent.create());
       }
 
       return;
@@ -138,7 +138,7 @@ public class Updater {
       e.printStackTrace();
       if (updateAvailable) {
         updateAvailable = false;
-        eventManager.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateNotAvailableEvent.create());
       }
 
       return;
@@ -147,7 +147,7 @@ public class Updater {
     if (updateProjectProperties == null) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventManager.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateNotAvailableEvent.create());
       }
 
       return;
@@ -157,7 +157,7 @@ public class Updater {
     if (updateVersion == null || projectProperties.getProperty("version").equals(updateVersion)) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventManager.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateNotAvailableEvent.create());
       }
 
       return;
@@ -169,7 +169,7 @@ public class Updater {
         .equals(updateProjectProperties.getProperty("groupId"))) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventManager.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateNotAvailableEvent.create());
       }
 
       return;
@@ -184,7 +184,7 @@ public class Updater {
 
     updateAvailable = true;
     Mobifume.getInstance().getLogger().info("Update available: " + newVersion);
-    eventManager.call(UpdateAvailableEvent.create(newVersion));
+    eventDispatcher.call(UpdateAvailableEvent.create(newVersion));
   }
 
   private Properties readUpdateProjectProperties() throws IOException {
@@ -216,7 +216,7 @@ public class Updater {
     } catch (URISyntaxException e) {
       e.printStackTrace();
       Mobifume.getInstance().getLogger().info("Failed installing update");
-      eventManager.call(UpdatingEvent.create(UpdatingState.FAILED));
+      eventDispatcher.call(UpdatingEvent.create(UpdatingState.FAILED));
       return false;
     }
 
@@ -229,7 +229,7 @@ public class Updater {
     } catch (IOException e) {
       e.printStackTrace();
       Mobifume.getInstance().getLogger().info("Failed installing update");
-      eventManager.call(UpdatingEvent.create(UpdatingState.FAILED));
+      eventDispatcher.call(UpdatingEvent.create(UpdatingState.FAILED));
       return false;
     }
 

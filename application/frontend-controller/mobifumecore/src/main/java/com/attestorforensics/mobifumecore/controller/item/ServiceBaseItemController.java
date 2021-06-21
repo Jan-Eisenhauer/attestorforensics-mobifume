@@ -193,7 +193,7 @@ public class ServiceBaseItemController implements ServiceItemController {
 
       base.updateTemperatureCalibration(calibration);
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new DeviceConnectionEvent(base,
               DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
     }, "temperature");
@@ -210,7 +210,7 @@ public class ServiceBaseItemController implements ServiceItemController {
 
       base.updateHumidityCalibration(calibration);
       Mobifume.getInstance()
-          .getEventManager()
+          .getEventDispatcher()
           .call(new DeviceConnectionEvent(base,
               DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
     }, "humidity");
