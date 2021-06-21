@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class WindowsWifiConnection implements WifiConnection {
 
-  private static final long PROCESS_WAIT_TIMEOUT = 1000L;
+  private static final long PROCESS_WAIT_TIMEOUT = 3000L;
 
   private final ExecutorService executorService;
 
