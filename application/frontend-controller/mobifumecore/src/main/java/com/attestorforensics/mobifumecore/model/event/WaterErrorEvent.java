@@ -5,16 +5,16 @@ import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 
 public class WaterErrorEvent implements Event {
 
-  private final Humidifier device;
+  private final Humidifier humidifier;
   private final WaterStatus status;
 
-  public WaterErrorEvent(Humidifier device, WaterStatus status) {
-    this.device = device;
+  public WaterErrorEvent(Humidifier humidifier, WaterStatus status) {
+    this.humidifier = humidifier;
     this.status = status;
   }
 
-  public Humidifier getDevice() {
-    return device;
+  public Humidifier getHumidifier() {
+    return humidifier;
   }
 
   public WaterStatus getStatus() {

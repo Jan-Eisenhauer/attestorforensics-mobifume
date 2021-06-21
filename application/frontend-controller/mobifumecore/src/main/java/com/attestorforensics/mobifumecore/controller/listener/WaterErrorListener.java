@@ -26,12 +26,12 @@ public class WaterErrorListener implements Listener {
   public void onWater(WaterErrorEvent event) {
     switch (event.getStatus()) {
       case FILLED:
-        waterError.remove(event.getDevice());
-        updateErrors(event.getDevice());
+        waterError.remove(event.getHumidifier());
+        updateErrors(event.getHumidifier());
         break;
       case EMPTY:
-        waterError.add(event.getDevice());
-        updateErrors(event.getDevice());
+        waterError.add(event.getHumidifier());
+        updateErrors(event.getHumidifier());
         break;
       default:
         break;
