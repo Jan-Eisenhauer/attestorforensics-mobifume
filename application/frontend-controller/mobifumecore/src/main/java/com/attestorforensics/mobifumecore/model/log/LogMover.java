@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.util.log;
+package com.attestorforensics.mobifumecore.model.log;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.update.Updater;

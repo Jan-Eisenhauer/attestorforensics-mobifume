@@ -9,7 +9,7 @@ import com.attestorforensics.mobifumecore.model.setting.Settings;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.attestorforensics.mobifumecore.util.OtherAppChecker;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.util.log.CustomLogger;
+import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.view.MobiApplication;
 import java.io.IOException;
 import java.io.InputStream;

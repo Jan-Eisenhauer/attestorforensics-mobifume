@@ -11,7 +11,7 @@ import com.attestorforensics.mobifumecore.model.object.DeviceType;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.model.object.Humidifier;
 import com.attestorforensics.mobifumecore.model.object.Room;
-import com.attestorforensics.mobifumecore.util.log.CustomLogger;
+import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 
 public class MessageHandler {
 
