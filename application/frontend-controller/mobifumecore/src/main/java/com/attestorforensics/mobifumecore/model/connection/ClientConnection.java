@@ -49,7 +49,7 @@ public class ClientConnection {
     this.msgHandler = msgHandler;
     msgCallback = new MessageCallback(this, msgHandler);
 
-    Properties settings = Mobifume.getInstance().getSettings();
+    Properties settings = Mobifume.getInstance().getConfig();
     broker = settings.getProperty("connection.broker");
     type = settings.getProperty("connection.type");
     port = Integer.parseInt(settings.getProperty("connection.port"));
@@ -112,7 +112,7 @@ public class ClientConnection {
     encoder = new MessageEncoder(client);
     client.setCallback(msgCallback);
     try {
-      client.subscribe(Mobifume.getInstance().getSettings().getProperty("channel.app") + "#");
+      client.subscribe(Mobifume.getInstance().getConfig().getProperty("channel.app") + "#");
     } catch (MqttException e) {
       e.printStackTrace();
     }
@@ -201,7 +201,7 @@ public class ClientConnection {
     MqttConnectOptions options = new MqttConnectOptions();
     options.setUserName(user);
     options.setPassword(password.toCharArray());
-    options.setWill(Mobifume.getInstance().getSettings().getProperty("channel.app") + id,
+    options.setWill(Mobifume.getInstance().getConfig().getProperty("channel.app") + id,
         "OFFLINE".getBytes(), 2, true);
     options.setKeepAliveInterval(3);
     options.setConnectionTimeout(3);
@@ -211,7 +211,7 @@ public class ClientConnection {
 
   private void subscribeChannels() {
     try {
-      Properties settings = Mobifume.getInstance().getSettings();
+      Properties settings = Mobifume.getInstance().getConfig();
       for (Enumeration<?> e = settings.propertyNames(); e.hasMoreElements(); ) {
         String name = (String) e.nextElement();
         String value = settings.getProperty(name);

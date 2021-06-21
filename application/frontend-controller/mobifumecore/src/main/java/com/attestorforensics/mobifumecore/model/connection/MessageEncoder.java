@@ -19,7 +19,7 @@ public class MessageEncoder {
   void requestAppOnline(String id) {
     System.out.println("REQUEST " + client.isConnected());
     try {
-      client.publish(Mobifume.getInstance().getSettings().getProperty("channel.app") + id,
+      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.app") + id,
           "REQUEST".getBytes(), 2, false);
     } catch (MqttException e) {
       e.printStackTrace();
@@ -28,7 +28,7 @@ public class MessageEncoder {
 
   void appOnline(String id) {
     try {
-      client.publish(Mobifume.getInstance().getSettings().getProperty("channel.app") + id,
+      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.app") + id,
           "ONLINE".getBytes(), 2, false);
     } catch (MqttException e) {
       e.printStackTrace();
@@ -38,7 +38,7 @@ public class MessageEncoder {
   void online() {
     System.out.println("ONLINE " + client.isConnected());
     try {
-      client.publish(Mobifume.getInstance().getSettings().getProperty("channel.broadcast"),
+      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.broadcast"),
           "ONLINE".getBytes(), 2, false);
     } catch (MqttException e) {
       e.printStackTrace();
@@ -47,7 +47,7 @@ public class MessageEncoder {
 
   public void offline() {
     try {
-      client.publish(Mobifume.getInstance().getSettings().getProperty("channel.broadcast"),
+      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.broadcast"),
           "OFFLINE".getBytes(), 2, true);
     } catch (MqttException e) {
       e.printStackTrace();
@@ -62,7 +62,7 @@ public class MessageEncoder {
   }
 
   private void sendBase(Device device, String message) {
-    send(Mobifume.getInstance().getSettings().getProperty("channel.baseCmd") + device.getId(),
+    send(Mobifume.getInstance().getConfig().getProperty("channel.baseCmd") + device.getId(),
         message);
   }
 
@@ -150,7 +150,7 @@ public class MessageEncoder {
   }
 
   private void sendHum(Device device, String message) {
-    send(Mobifume.getInstance().getSettings().getProperty("channel.humCmd") + device.getId(),
+    send(Mobifume.getInstance().getConfig().getProperty("channel.humCmd") + device.getId(),
         message);
   }
 

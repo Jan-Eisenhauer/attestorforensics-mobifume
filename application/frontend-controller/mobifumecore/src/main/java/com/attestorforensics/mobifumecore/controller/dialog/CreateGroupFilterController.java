@@ -96,7 +96,7 @@ public class CreateGroupFilterController {
         LocaleManager.getInstance().getString("dialog.filter.add.title"),
         LocaleManager.getInstance()
             .getString("dialog.filter.add.content",
-                Mobifume.getInstance().getSettings().getProperty("filter.prefix")),
+                Mobifume.getInstance().getConfig().getProperty("filter.prefix")),
         LocaleManager.getInstance().getString("dialog.filter.add.error"), this::isFilterIdValid,
         value -> {
           dialog.setLockClosing(false);
@@ -108,7 +108,7 @@ public class CreateGroupFilterController {
           }
 
           String filterId =
-              Mobifume.getInstance().getSettings().getProperty("filter.prefix") + value;
+              Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
 
           Filter newFilter = Mobifume.getInstance().getModelManager().addFilter(filterId);
           parentController.addedFilter(filterId, newFilter);
@@ -135,7 +135,7 @@ public class CreateGroupFilterController {
   }
 
   private boolean isFilterIdValid(String value) {
-    String filterId = Mobifume.getInstance().getSettings().getProperty("filter.prefix") + value;
+    String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
     if (Mobifume.getInstance()
         .getModelManager()
         .getFilters()
@@ -144,7 +144,7 @@ public class CreateGroupFilterController {
       return false;
     }
     return filterId.matches(
-        Mobifume.getInstance().getSettings().getProperty("filter.prefix") + "[0-9]{4}");
+        Mobifume.getInstance().getConfig().getProperty("filter.prefix") + "[0-9]{4}");
   }
 
   void updateItems(List<String> filters, List<String> selected) {

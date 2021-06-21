@@ -50,8 +50,8 @@ public class WindowsWifiConnection implements WifiConnection {
 
   private void executeConnect() {
     lock.lock();
-    String ssid = Mobifume.getInstance().getSettings().getProperty("wifi.ssid");
-    String name = Mobifume.getInstance().getSettings().getProperty("wifi.name");
+    String ssid = Mobifume.getInstance().getConfig().getProperty("wifi.ssid");
+    String name = Mobifume.getInstance().getConfig().getProperty("wifi.name");
     String command = String.format("cmd /c netsh wlan connect ssid=%s name=%s", ssid, name);
 
     Process process;

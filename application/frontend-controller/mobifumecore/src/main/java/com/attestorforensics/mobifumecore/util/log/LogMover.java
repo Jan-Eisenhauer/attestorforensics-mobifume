@@ -25,7 +25,7 @@ public class LogMover {
     this.scheduledExecutorService = scheduledExecutorService;
     this.updater = updater;
     defaultUsbDirectory =
-        new File(Mobifume.getInstance().getSettings().getProperty("usb_directory"));
+        new File(Mobifume.getInstance().getConfig().getProperty("usb_directory"));
   }
 
   public static LogMover create(ScheduledExecutorService scheduledExecutorService,

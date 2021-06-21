@@ -40,7 +40,7 @@ public class Mobifume {
   /**
    * Gets the settings properties.
    */
-  private final Properties settings;
+  private final Properties config;
 
   /**
    * Gets the event manager.
@@ -70,9 +70,9 @@ public class Mobifume {
     }
     CustomLogger.info(CustomLogger.version());
 
-    settings = new Properties();
-    try (InputStream in = getClass().getClassLoader().getResourceAsStream("settings.properties")) {
-      settings.load(in);
+    config = new Properties();
+    try (InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+      config.load(in);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -127,8 +127,8 @@ public class Mobifume {
     return projectProperties;
   }
 
-  public Properties getSettings() {
-    return settings;
+  public Properties getConfig() {
+    return config;
   }
 
   public EventManager getEventManager() {

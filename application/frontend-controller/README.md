@@ -89,7 +89,7 @@ The project is divided in three modules: core, installer, updater
         │           │           └───MobiApplication.java (Java FX application)
         │           └───resources
         │               ├───project.properties
-        │               ├───settings.properties
+        │               ├───config.properties
         │               ├───font
         │               ├───i18n
         │               ├───images
@@ -131,7 +131,7 @@ The project is divided in three modules: core, installer, updater
 | `mobifumecore/src/main/java/..mobifumecore/view/MobiApplication.java` | JavaFX Application main class which initializes the window and loads the main fxml file |
 | `mobifumecore/src/main/resources/` | Contains all resources |
 | `mobifumecore/src/main/resources/project.properties` | Contains project properties which will be filtered by maven |
-| `mobifumecore/src/main/resources/settings.properties` | Contains settings (broker connection credentials, mqtt channels, filter prefix) |
+| `mobifumecore/src/main/resources/config.properties` | Contains settings (broker connection credentials, mqtt channels, filter prefix) |
 | `mobifumecore/src/main/resources/font/` | Contains additional fonts |
 | `mobifumecore/src/main/resources/i18n/` | Contains resource bundles to translate the application to other languages (`src/main/java/..mobifume/util/localization/LocaleFileHandler#copyResources` copies each file individual) |
 | `mobifumecore/src/main/resources/images/` | Contains all images |

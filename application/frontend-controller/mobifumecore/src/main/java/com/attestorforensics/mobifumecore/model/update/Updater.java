@@ -42,8 +42,8 @@ public class Updater {
   private Updater(ScheduledExecutorService scheduledExecutorService, EventManager eventManager) {
     this.scheduledExecutorService = scheduledExecutorService;
     this.eventManager = eventManager;
-    updateFile = new File(Mobifume.getInstance().getSettings().getProperty("update_file"));
-    updateDisplayName = Mobifume.getInstance().getSettings().getProperty("update_label");
+    updateFile = new File(Mobifume.getInstance().getConfig().getProperty("update_file"));
+    updateDisplayName = Mobifume.getInstance().getConfig().getProperty("update_label");
   }
 
   public static Updater create(ScheduledExecutorService scheduledExecutorService,

@@ -77,7 +77,7 @@ public class FiltersController {
         LocaleManager.getInstance().getString("dialog.filter.add.title"),
         LocaleManager.getInstance()
             .getString("dialog.filter.add.content",
-                Mobifume.getInstance().getSettings().getProperty("filter.prefix")),
+                Mobifume.getInstance().getConfig().getProperty("filter.prefix")),
         LocaleManager.getInstance().getString("dialog.filter.add.error"), this::isFilterIdValid,
         value -> {
           if (value == null) {
@@ -88,14 +88,14 @@ public class FiltersController {
           }
 
           String filterId =
-              Mobifume.getInstance().getSettings().getProperty("filter.prefix") + value;
+              Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
 
           Mobifume.getInstance().getModelManager().addFilter(filterId);
         });
   }
 
   private boolean isFilterIdValid(String value) {
-    String filterId = Mobifume.getInstance().getSettings().getProperty("filter.prefix") + value;
+    String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
     if (Mobifume.getInstance()
         .getModelManager()
         .getFilters()
@@ -104,6 +104,6 @@ public class FiltersController {
       return false;
     }
     return filterId.matches(
-        Mobifume.getInstance().getSettings().getProperty("filter.prefix") + "[0-9]{4}");
+        Mobifume.getInstance().getConfig().getProperty("filter.prefix") + "[0-9]{4}");
   }
 }

@@ -12,7 +12,7 @@ public class MessageDecoder {
 
   void decodeMessage(String topic, String[] args) {
     if (topic.startsWith(
-        getSimplePath(Mobifume.getInstance().getSettings().getProperty("channel.app")))) {
+        getSimplePath(Mobifume.getInstance().getConfig().getProperty("channel.app")))) {
       // app
       if (args.length >= 1 && args[0].equals("ONLINE")) {
         msgHandler.otherAppOnline(getAppId(topic));
@@ -23,12 +23,12 @@ public class MessageDecoder {
       }
     }
     if (topic.startsWith(
-        getSimplePath(Mobifume.getInstance().getSettings().getProperty("channel.broadcast")))) {
+        getSimplePath(Mobifume.getInstance().getConfig().getProperty("channel.broadcast")))) {
       // broadcast
     }
 
     if (topic.startsWith(
-        getSimplePath(Mobifume.getInstance().getSettings().getProperty("channel.baseStatus")))) {
+        getSimplePath(Mobifume.getInstance().getConfig().getProperty("channel.baseStatus")))) {
       // base status
       if (args.length >= 1 && args[0].equals("ONLINE")) {
         msgHandler.receiveBaseOnline(getDeviceId(topic),
@@ -49,7 +49,7 @@ public class MessageDecoder {
     }
 
     if (topic.startsWith(
-        getSimplePath(Mobifume.getInstance().getSettings().getProperty("channel.humStatus")))) {
+        getSimplePath(Mobifume.getInstance().getConfig().getProperty("channel.humStatus")))) {
       // hum status
       if (args.length >= 1 && args[0].equals("ONLINE")) {
         msgHandler.receiveHumOnline(getDeviceId(topic),
@@ -76,7 +76,7 @@ public class MessageDecoder {
 
   private String getAppId(String topic) {
     return topic.substring(
-        Mobifume.getInstance().getSettings().getProperty("channel.app").length());
+        Mobifume.getInstance().getConfig().getProperty("channel.app").length());
   }
 
   private String getDeviceId(String topic) {
