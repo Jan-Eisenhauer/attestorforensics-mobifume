@@ -2,8 +2,8 @@ package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
-import com.attestorforensics.mobifumecore.controller.item.SupportItemController;
-import com.attestorforensics.mobifumecore.controller.listener.SupportListener;
+import com.attestorforensics.mobifumecore.controller.item.ServiceItemController;
+import com.attestorforensics.mobifumecore.controller.listener.ServiceListener;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.object.Device;
@@ -22,7 +22,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
-public class SupportController {
+public class ServiceController {
 
   @FXML
   private Parent root;
@@ -30,21 +30,21 @@ public class SupportController {
   @FXML
   private Pane devices;
 
-  private Map<String, SupportItemController> supportItemControllers = Maps.newHashMap();
+  private Map<String, ServiceItemController> serviceItemController = Maps.newHashMap();
 
-  private SupportListener supportListener;
+  private ServiceListener serviceListener;
 
   @FXML
   public void initialize() {
-    supportListener = new SupportListener(this);
-    Mobifume.getInstance().getEventManager().registerListener(supportListener);
+    serviceListener = new ServiceListener(this);
+    Mobifume.getInstance().getEventManager().registerListener(serviceListener);
     Mobifume.getInstance().getModelManager().getDevices().forEach(this::addDevice);
   }
 
   public void addDevice(Device device) {
     Platform.runLater(() -> {
-      if (supportItemControllers.containsKey(device.getId())) {
-        supportItemControllers.get(device.getId()).setDevice(device);
+      if (serviceItemController.containsKey(device.getId())) {
+        serviceItemController.get(device.getId()).setDevice(device);
         return;
       }
 
@@ -52,13 +52,13 @@ public class SupportController {
         ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
             .getResource(
-                "view/items/Support" + (device.getType() == DeviceType.BASE ? "Base" : "Hum")
+                "view/items/Service" + (device.getType() == DeviceType.BASE ? "Base" : "Hum")
                     + "Item.fxml"), resourceBundle);
         Parent root = loader.load();
-        SupportItemController controller = loader.getController();
+        ServiceItemController controller = loader.getController();
         controller.setDevice(device);
         root.getProperties().put("controller", controller);
-        supportItemControllers.put(device.getId(), controller);
+        serviceItemController.put(device.getId(), controller);
         devices.getChildren().add(root);
       } catch (IOException e) {
         e.printStackTrace();
@@ -70,7 +70,7 @@ public class SupportController {
   public void onBack(ActionEvent event) {
     Sound.click();
 
-    Mobifume.getInstance().getEventManager().unregisterListener(supportListener);
+    Mobifume.getInstance().getEventManager().unregisterListener(serviceListener);
 
     Node button = (Node) event.getSource();
     Scene scene = button.getScene();
@@ -93,14 +93,14 @@ public class SupportController {
   }
 
   public void updateDevice(Device device) {
-    supportItemControllers.get(device.getId()).update();
+    serviceItemController.get(device.getId()).update();
   }
 
   public void removeDevice(Device device) {
-    supportItemControllers.get(device.getId()).remove();
+    serviceItemController.get(device.getId()).remove();
   }
 
-  public SupportItemController getSupportItemController(Device device) {
-    return supportItemControllers.get(device.getId());
+  public ServiceItemController getServiceItemController(Device device) {
+    return serviceItemController.get(device.getId());
   }
 }

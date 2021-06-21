@@ -49,7 +49,7 @@
                         </ImageView>
                     </graphic>
                 </Button>
-                <Button ellipsisString="" mnemonicParsing="false" onAction="#onSupport" prefHeight="80.0"
+                <Button ellipsisString="" mnemonicParsing="false" onAction="#onService" prefHeight="80.0"
                         prefWidth="80.0">
                     <graphic>
                         <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
@@ -57,7 +57,7 @@
                                 <Rectangle2D/>
                             </viewport>
                             <image>
-                                <Image url="@../images/TechSupport.png"/>
+                                <Image url="@../images/TechService.png"/>
                             </image>
                         </ImageView>
                     </graphic>

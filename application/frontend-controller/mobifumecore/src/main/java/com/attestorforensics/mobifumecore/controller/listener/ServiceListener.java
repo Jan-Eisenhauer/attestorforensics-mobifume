@@ -1,18 +1,18 @@
 package com.attestorforensics.mobifumecore.controller.listener;
 
-import com.attestorforensics.mobifumecore.controller.SupportController;
-import com.attestorforensics.mobifumecore.controller.item.SupportBaseItemController;
+import com.attestorforensics.mobifumecore.controller.ServiceController;
+import com.attestorforensics.mobifumecore.controller.item.ServiceBaseItemController;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import javafx.application.Platform;
 
-public class SupportListener implements Listener {
+public class ServiceListener implements Listener {
 
-  private SupportController supportController;
+  private ServiceController serviceController;
 
-  public SupportListener(SupportController supportController) {
-    this.supportController = supportController;
+  public ServiceListener(ServiceController serviceController) {
+    this.serviceController = serviceController;
   }
 
   @EventHandler
@@ -20,17 +20,17 @@ public class SupportListener implements Listener {
     Platform.runLater(() -> {
       switch (event.getStatus()) {
         case CONNECTED:
-          supportController.addDevice(event.getDevice());
+          serviceController.addDevice(event.getDevice());
           break;
         case DISCONNECTED:
         case LOST:
-          supportController.removeDevice(event.getDevice());
+          serviceController.removeDevice(event.getDevice());
           break;
         case STATUS_UPDATED:
-          supportController.updateDevice(event.getDevice());
+          serviceController.updateDevice(event.getDevice());
           break;
         case CALIBRATION_DATA_UPDATED:
-          ((SupportBaseItemController) supportController.getSupportItemController(
+          ((ServiceBaseItemController) serviceController.getServiceItemController(
               event.getDevice())).updateCalibration();
           break;
         default:

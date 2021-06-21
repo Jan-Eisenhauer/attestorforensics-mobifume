@@ -109,7 +109,7 @@ public class InfoController {
   }
 
   @FXML
-  public void onSupport(ActionEvent event) {
+  public void onService(ActionEvent event) {
     Sound.click();
 
     new ConfirmDialog(root.getScene().getWindow(),
@@ -122,7 +122,7 @@ public class InfoController {
       Scene scene = button.getScene();
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
       FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/Support.fxml"), resourceBundle);
+          getClass().getClassLoader().getResource("view/Service.fxml"), resourceBundle);
       try {
         Parent root = loader.load();
         SceneTransition.playForward(scene, root);

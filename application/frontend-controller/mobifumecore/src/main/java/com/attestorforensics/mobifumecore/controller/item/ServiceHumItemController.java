@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 
-public class SupportHumItemController implements SupportItemController {
+public class ServiceHumItemController implements ServiceItemController {
 
   private Humidifier hum;
 

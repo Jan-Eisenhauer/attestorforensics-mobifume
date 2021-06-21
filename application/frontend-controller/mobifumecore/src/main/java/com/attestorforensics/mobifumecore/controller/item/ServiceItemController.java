@@ -2,7 +2,7 @@ package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.model.object.Device;
 
-public interface SupportItemController {
+public interface ServiceItemController {
 
   Device getDevice();
 

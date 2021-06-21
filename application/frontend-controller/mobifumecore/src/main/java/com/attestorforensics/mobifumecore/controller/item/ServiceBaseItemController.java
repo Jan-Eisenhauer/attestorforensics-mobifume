@@ -19,7 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-public class SupportBaseItemController implements SupportItemController {
+public class ServiceBaseItemController implements ServiceItemController {
 
   private final DecimalFormat gradientFormat = new DecimalFormat("#.####");
   private final DecimalFormat offsetFormat = new DecimalFormat("#.##");
