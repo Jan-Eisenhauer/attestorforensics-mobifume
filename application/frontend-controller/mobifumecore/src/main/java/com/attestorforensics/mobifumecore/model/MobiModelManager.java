@@ -17,7 +17,7 @@ import com.attestorforensics.mobifumecore.model.object.Room;
 import com.attestorforensics.mobifumecore.model.update.Updater;
 import com.attestorforensics.mobifumecore.util.log.CustomLogger;
 import com.attestorforensics.mobifumecore.util.log.LogMover;
-import com.attestorforensics.mobifumecore.util.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

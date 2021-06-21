@@ -6,7 +6,7 @@ import com.attestorforensics.mobifumecore.model.event.GroupEvent;
 import com.attestorforensics.mobifumecore.model.event.HumidifyEvent;
 import com.attestorforensics.mobifumecore.model.event.PurgeEvent;
 import com.attestorforensics.mobifumecore.util.log.CustomLogger;
-import com.attestorforensics.mobifumecore.util.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;

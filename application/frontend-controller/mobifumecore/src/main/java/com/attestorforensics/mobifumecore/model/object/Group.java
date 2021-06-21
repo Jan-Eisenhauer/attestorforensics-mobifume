@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.object;
 
-import com.attestorforensics.mobifumecore.util.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.List;
 import org.apache.log4j.Logger;
 

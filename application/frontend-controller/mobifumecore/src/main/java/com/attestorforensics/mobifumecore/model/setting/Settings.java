@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.util.setting;
+package com.attestorforensics.mobifumecore.model.setting;
 
 import com.attestorforensics.mobifumecore.model.object.Evaporant;
 import java.util.Locale;

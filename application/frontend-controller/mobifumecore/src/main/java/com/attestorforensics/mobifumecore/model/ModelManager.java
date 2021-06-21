@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.model.object.Device;
 import com.attestorforensics.mobifumecore.model.object.Filter;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.model.update.Updater;
-import com.attestorforensics.mobifumecore.util.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.List;
 
 /**

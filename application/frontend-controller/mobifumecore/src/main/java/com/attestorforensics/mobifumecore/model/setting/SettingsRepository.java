@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.util.setting;
+package com.attestorforensics.mobifumecore.model.setting;
 
 /**
  * Responsible for the store of the global settings.

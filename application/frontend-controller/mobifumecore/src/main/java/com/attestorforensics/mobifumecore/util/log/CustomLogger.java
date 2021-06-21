@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.object.Base;
 import com.attestorforensics.mobifumecore.model.object.Humidifier;
 import com.attestorforensics.mobifumecore.model.object.Room;
-import com.attestorforensics.mobifumecore.util.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;

@@ -6,7 +6,7 @@ import com.attestorforensics.mobifumecore.controller.util.textformatter.Unsigned
 import com.attestorforensics.mobifumecore.model.object.Evaporant;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.util.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import javafx.application.Platform;

@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.util.setting;
+package com.attestorforensics.mobifumecore.model.setting;
 
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.google.gson.Gson;

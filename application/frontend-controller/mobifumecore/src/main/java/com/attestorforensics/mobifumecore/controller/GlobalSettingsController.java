@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.util.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
