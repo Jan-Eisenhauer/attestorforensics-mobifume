@@ -77,8 +77,6 @@ public class Mobifume {
       e.printStackTrace();
     }
 
-    Settings.loadDefaultSettings();
-
     if (OtherAppChecker.isAppActive(FileManager.getInstance().getDataFolder())) {
       logger.error("App already active");
       System.exit(1);
@@ -86,19 +84,14 @@ public class Mobifume {
 
     eventManager = new EventManager();
 
-    Locale language = Settings.DEFAULT_SETTINGS.getLanguage();
-    if (language == null) {
-      language = new Settings().getLanguage();
-      Settings.DEFAULT_SETTINGS.setLanguage(language);
-      Settings.saveDefaultSettings();
-    }
-
+    Settings globalSettings = Settings.loadGlobalSettings();
+    Locale language = globalSettings.getLanguage();
     LocaleManager.getInstance().load(language);
 
     wifiConnection = WindowsWifiConnection.create(scheduledExecutorService);
     wifiConnection.connect();
 
-    modelManager = new MobiModelManager(wifiConnection);
+    modelManager = new MobiModelManager(globalSettings, wifiConnection);
   }
 
   /**

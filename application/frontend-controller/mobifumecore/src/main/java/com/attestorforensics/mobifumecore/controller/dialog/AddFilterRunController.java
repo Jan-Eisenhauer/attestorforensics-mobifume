@@ -56,7 +56,7 @@ public class AddFilterRunController {
     evaporant.setItems(evaporants);
     Evaporant selected = Mobifume.getInstance()
         .getModelManager()
-        .getDefaultSettings()
+        .getGlobalSettings()
         .getEvaporant();
     evaporant.getSelectionModel()
         .select(selected.name().substring(0, 1).toUpperCase() + selected.name()

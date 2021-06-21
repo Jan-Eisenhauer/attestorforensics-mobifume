@@ -286,7 +286,7 @@ public class GroupSettingsController {
             return;
           }
 
-          Settings settings = Mobifume.getInstance().getModelManager().getDefaultSettings();
+          Settings settings = Mobifume.getInstance().getModelManager().getGlobalSettings();
           maxHumField.setText((int) settings.getHumidifyMax() + "");
           heaterTempField.setText(settings.getHeaterTemperature() + "");
           heatTimeField.setText(settings.getHeatTimer() + "");

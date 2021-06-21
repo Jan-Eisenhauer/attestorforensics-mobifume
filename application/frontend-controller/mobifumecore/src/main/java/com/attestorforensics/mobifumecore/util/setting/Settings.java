@@ -1,13 +1,11 @@
 package com.attestorforensics.mobifumecore.util.setting;
 
 import com.attestorforensics.mobifumecore.model.object.Evaporant;
-import java.io.Serializable;
 import java.util.Locale;
 
-public class Settings implements Serializable {
+public class Settings {
 
-  private static final long serialVersionUID = -4384611401364322327L;
-  public static Settings DEFAULT_SETTINGS;
+  //  public static Settings DEFAULT_SETTINGS;
   private static final SettingsRepository settingsRepository = SettingsFileRepository.create();
 
   private Locale language = Locale.GERMANY;
@@ -23,10 +21,10 @@ public class Settings implements Serializable {
   private double evaporantAmountPerCm = evaporant.getAmountPerCm();
   private int cycleCount = 0;
 
-  public Settings() {
+  private Settings() {
   }
 
-  public Settings(Settings settings) {
+  private Settings(Settings settings) {
     language = settings.getLanguage();
     humidifyMax = settings.getHumidifyMax();
     humidifyPuffer = settings.getHumidifyPuffer();
@@ -39,21 +37,23 @@ public class Settings implements Serializable {
     roomHeight = settings.getRoomHeight();
     evaporantAmountPerCm = settings.getEvaporantAmountPerCm();
 
-    cycleCount = getNextCycleCount();
+    cycleCount = settings.getCycleCount();
   }
 
-  private int getNextCycleCount() {
-    DEFAULT_SETTINGS.cycleCount++;
-    saveDefaultSettings();
-    return DEFAULT_SETTINGS.cycleCount;
+  public static Settings create() {
+    return new Settings();
   }
 
-  public static void saveDefaultSettings() {
-    settingsRepository.save(DEFAULT_SETTINGS);
+  public static Settings copy(Settings settings) {
+    return new Settings(settings);
   }
 
-  public static void loadDefaultSettings() {
-    DEFAULT_SETTINGS = settingsRepository.load();
+  public static void saveGlobalSettings(Settings settings) {
+    settingsRepository.save(settings);
+  }
+
+  public static Settings loadGlobalSettings() {
+    return settingsRepository.load();
   }
 
   public Locale getLanguage() {
@@ -142,5 +142,9 @@ public class Settings implements Serializable {
 
   public int getCycleCount() {
     return cycleCount;
+  }
+
+  public void increaseCycleCount() {
+    cycleCount++;
   }
 }

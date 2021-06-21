@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class MobiModelManager implements ModelManager {
 
+  private final Settings globalSettings;
   private final ClientConnection connection;
 
   private final List<Device> devices = new ArrayList<>();
@@ -34,7 +35,8 @@ public class MobiModelManager implements ModelManager {
 
   private final Updater updater;
 
-  public MobiModelManager(WifiConnection wifiConnection) {
+  public MobiModelManager(Settings globalSettings, WifiConnection wifiConnection) {
+    this.globalSettings = globalSettings;
     updater = Updater.create(Mobifume.getInstance().getScheduledExecutorService(),
         Mobifume.getInstance().getEventManager());
     updater.startCheckingForUpdate();
@@ -77,7 +79,10 @@ public class MobiModelManager implements ModelManager {
       return;
     }
 
-    Room group = new Room(name, devices, filters, new Settings(Settings.DEFAULT_SETTINGS));
+    Room group = new Room(name, devices, filters, Settings.copy(globalSettings));
+    globalSettings.increaseCycleCount();
+    Settings.saveGlobalSettings(globalSettings);
+
     CustomLogger.logGroupHeader(group);
     CustomLogger.logGroupSettings(group);
     CustomLogger.logGroupState(group);
@@ -119,8 +124,8 @@ public class MobiModelManager implements ModelManager {
   }
 
   @Override
-  public Settings getDefaultSettings() {
-    return Settings.DEFAULT_SETTINGS;
+  public Settings getGlobalSettings() {
+    return globalSettings;
   }
 
   @Override

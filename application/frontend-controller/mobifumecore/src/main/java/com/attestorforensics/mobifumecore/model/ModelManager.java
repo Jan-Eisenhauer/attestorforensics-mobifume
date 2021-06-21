@@ -67,7 +67,7 @@ public interface ModelManager {
    *
    * @return the default settings
    */
-  Settings getDefaultSettings();
+  Settings getGlobalSettings();
 
   /**
    * Gets active filters.

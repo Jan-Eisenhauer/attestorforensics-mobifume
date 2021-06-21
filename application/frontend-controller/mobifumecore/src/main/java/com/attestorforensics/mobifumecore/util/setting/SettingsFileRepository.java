@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Writer;
 
+/**
+ * Stores the global settings to file.
+ */
 class SettingsFileRepository implements SettingsRepository {
 
   private static final Gson GSON = new Gson();
@@ -33,15 +36,15 @@ class SettingsFileRepository implements SettingsRepository {
     }
 
     if (!settingsJsonFile.exists()) {
-      return new Settings();
+      return Settings.create();
     }
 
     try (FileReader fileReader = new FileReader(settingsJsonFile);
         JsonReader jsonReader = new JsonReader(fileReader)) {
       Settings settings = GSON.fromJson(jsonReader, Settings.class);
-      return settings == null ? new Settings() : settings;
+      return settings == null ? Settings.create() : settings;
     } catch (IOException e) {
-      return new Settings();
+      return Settings.create();
     }
   }
 
@@ -54,6 +57,9 @@ class SettingsFileRepository implements SettingsRepository {
     }
   }
 
+  /**
+   * Migrates old settings files from older application versions.
+   */
   private void migrateOldSettingsFile() {
     try (FileInputStream fileInputStream = new FileInputStream(oldSettingsFile);
         ObjectInputStream stream = new ObjectInputStream(fileInputStream)) {

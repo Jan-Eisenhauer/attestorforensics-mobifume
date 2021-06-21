@@ -118,7 +118,7 @@ public class GlobalSettingsController {
     purgeTimeSlider.valueProperty()
         .addListener((observableValue, number, t1) -> onPurgeTimeSlider());
 
-    Settings settings = Mobifume.getInstance().getModelManager().getDefaultSettings();
+    Settings settings = Mobifume.getInstance().getModelManager().getGlobalSettings();
 
     maxHumField.setText(settings.getHumidifyMax() + "");
     maxHumSlider.setValue(settings.getHumidifyMax());
@@ -139,7 +139,7 @@ public class GlobalSettingsController {
     Locale locale = languages.get(item);
     if (locale != null && locale != LocaleManager.getInstance().getLocale()) {
       LocaleManager.getInstance().load(locale);
-      Mobifume.getInstance().getModelManager().getDefaultSettings().setLanguage(locale);
+      Mobifume.getInstance().getModelManager().getGlobalSettings().setLanguage(locale);
 
       new ConfirmDialog(languageBox.getScene().getWindow(),
           LocaleManager.getInstance().getString("dialog.settings.restart.title"),
@@ -272,12 +272,12 @@ public class GlobalSettingsController {
   }
 
   private void applySettings() {
-    Settings settings = Mobifume.getInstance().getModelManager().getDefaultSettings();
+    Settings settings = Mobifume.getInstance().getModelManager().getGlobalSettings();
     settings.setHumidifyMax(getFixedValue(maxHumSlider, maxHum));
     settings.setHeaterTemperature((int) getFixedValue(heaterTempSlider, heaterTemp));
     settings.setHeatTimer((int) getFixedValue(heatTimeSlider, heatTime));
     settings.setPurgeTimer((int) getFixedValue(purgeTimeSlider, purgeTime));
-    Settings.saveDefaultSettings();
+    Settings.saveGlobalSettings(settings);
   }
 
   @FXML
@@ -306,7 +306,7 @@ public class GlobalSettingsController {
         LocaleManager.getInstance().getString("dialog.settings.restore.content"), true,
         accepted -> {
           if (Boolean.TRUE.equals(accepted)) {
-            Settings settings = new Settings();
+            Settings settings = Settings.create();
             maxHumField.setText((int) settings.getHumidifyMax() + "");
             heaterTempField.setText(settings.getHeaterTemperature() + "");
             heatTimeField.setText(settings.getHeatTimer() + "");
