@@ -6,7 +6,6 @@ import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.Connection
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -25,8 +24,8 @@ public class WindowsWifiConnection implements WifiConnection {
     this.executorService = executorService;
   }
 
-  public static WifiConnection create(ScheduledExecutorService scheduledExecutorService) {
-    return new WindowsWifiConnection(scheduledExecutorService);
+  public static WifiConnection create(ExecutorService executorService) {
+    return new WindowsWifiConnection(executorService);
   }
 
   @Override
