@@ -21,6 +21,11 @@ public class Base extends Device {
     super(clientConnection, DeviceType.BASE, id, version);
   }
 
+  @Override
+  public void reset() {
+    getEncoder().baseReset(this);
+  }
+
   public void updateHeaterSetpoint(int heaterTemperature) {
     if (heaterSetpoint == heaterTemperature) {
       return;

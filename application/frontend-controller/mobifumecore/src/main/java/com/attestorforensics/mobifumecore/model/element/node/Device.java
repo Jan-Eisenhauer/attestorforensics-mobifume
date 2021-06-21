@@ -10,7 +10,6 @@ public abstract class Device {
   private final String id;
   private int version;
   private int rssi = -100;
-
   private boolean isOffline;
 
   protected Device(ClientConnection clientConnection, final DeviceType type, final String id,
@@ -21,14 +20,15 @@ public abstract class Device {
     this.version = version;
   }
 
-  public void reset() {
-    if (type == DeviceType.BASE) {
-      getEncoder().baseReset(this);
-    }
-    if (type == DeviceType.HUMIDIFIER) {
-      getEncoder().humReset(this);
-    }
-  }
+  public abstract void reset();
+  //  public void reset() {
+  //    if (type == DeviceType.BASE) {
+  //      getEncoder().baseReset(this);
+  //    }
+  //    if (type == DeviceType.HUMIDIFIER) {
+  //      getEncoder().humReset(this);
+  //    }
+  //  }
 
   protected MessageEncoder getEncoder() {
     return clientConnection.getEncoder();
