@@ -4,6 +4,8 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -11,14 +13,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class WindowsWifiConnection implements WifiConnection {
 
-  private final ScheduledExecutorService scheduledExecutorService;
+  private static final long PROCESS_WAIT_TIMEOUT = 1000L;
+
+  private final ExecutorService executorService;
 
   private final Lock lock = new ReentrantLock();
 
   private boolean enabled;
 
-  private WindowsWifiConnection(ScheduledExecutorService scheduledExecutorService) {
-    this.scheduledExecutorService = scheduledExecutorService;
+  private WindowsWifiConnection(ExecutorService executorService) {
+    this.executorService = executorService;
   }
 
   public static WifiConnection create(ScheduledExecutorService scheduledExecutorService) {
@@ -26,21 +30,21 @@ public class WindowsWifiConnection implements WifiConnection {
   }
 
   @Override
-  public void connect() {
+  public Future<Void> connect() {
     enabled = true;
     Mobifume.getInstance()
         .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionStatus.WIFI_CONNECTING));
-    scheduledExecutorService.execute(this::executeConnect);
+    return executorService.submit(this::executeConnect, null);
   }
 
   @Override
-  public void disconnect() {
+  public Future<Void> disconnect() {
     enabled = false;
     Mobifume.getInstance()
         .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.WIFI_DISCONNECTING));
-    scheduledExecutorService.execute(this::executeDisconnect);
+    return executorService.submit(this::executeDisconnect, null);
   }
 
   @Override
@@ -64,7 +68,7 @@ public class WindowsWifiConnection implements WifiConnection {
     }
 
     try {
-      process.waitFor(1000L, TimeUnit.MILLISECONDS);
+      process.waitFor(PROCESS_WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       e.printStackTrace();
       Thread.currentThread().interrupt();
@@ -90,7 +94,7 @@ public class WindowsWifiConnection implements WifiConnection {
     }
 
     try {
-      process.waitFor(1000L, TimeUnit.MILLISECONDS);
+      process.waitFor(PROCESS_WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       e.printStackTrace();
       Thread.currentThread().interrupt();

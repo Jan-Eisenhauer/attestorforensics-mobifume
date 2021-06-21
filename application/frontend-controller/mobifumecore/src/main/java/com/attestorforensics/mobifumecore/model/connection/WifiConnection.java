@@ -1,10 +1,12 @@
 package com.attestorforensics.mobifumecore.model.connection;
 
+import java.util.concurrent.Future;
+
 public interface WifiConnection {
 
-  void connect();
+  Future<Void> connect();
 
-  void disconnect();
+  Future<Void> disconnect();
 
   boolean isEnabled();
 }
