@@ -5,12 +5,12 @@ import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent;
 import com.attestorforensics.mobifumecore.model.event.BaseErrorResolvedEvent;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
-import com.attestorforensics.mobifumecore.model.object.Base;
-import com.attestorforensics.mobifumecore.model.object.Device;
-import com.attestorforensics.mobifumecore.model.object.DeviceType;
-import com.attestorforensics.mobifumecore.model.object.Group;
-import com.attestorforensics.mobifumecore.model.object.Humidifier;
-import com.attestorforensics.mobifumecore.model.object.Room;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.element.group.Room;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 
 public class MessageHandler {

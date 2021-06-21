@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.setting;
 
-import com.attestorforensics.mobifumecore.model.object.Evaporant;
+import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import java.util.Locale;
 
 public class Settings {

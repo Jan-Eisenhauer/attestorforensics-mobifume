@@ -1,4 +1,6 @@
-package com.attestorforensics.mobifumecore.model.object;
+package com.attestorforensics.mobifumecore.model.element.filter;
+
+import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 
 public class RunProcess implements Run {
 
@@ -39,7 +41,7 @@ public class RunProcess implements Run {
 
   @Override
   public double getPercentage() {
-    return (1 / getEvaporant().cycles) * evaporantAmount / totalFilterCount;
+    return (1 / getEvaporant().getCycles()) * evaporantAmount / totalFilterCount;
   }
 
   @Override

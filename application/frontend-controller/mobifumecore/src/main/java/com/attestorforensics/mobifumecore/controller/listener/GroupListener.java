@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHol
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import com.attestorforensics.mobifumecore.model.object.Group;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
 import javafx.application.Platform;
 
 public class GroupListener implements Listener {

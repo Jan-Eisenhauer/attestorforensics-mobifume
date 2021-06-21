@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.InfoBox;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.object.Filter;
+import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.util.NavigableMap;
 import java.util.TreeMap;

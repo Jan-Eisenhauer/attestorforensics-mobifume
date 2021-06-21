@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.model.object;
+package com.attestorforensics.mobifumecore.model.element.node;
 
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import com.attestorforensics.mobifumecore.model.connection.MessageEncoder;

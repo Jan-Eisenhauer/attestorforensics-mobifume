@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.model.object;
+package com.attestorforensics.mobifumecore.model.element.misc;
 
 public class Calibration {
 

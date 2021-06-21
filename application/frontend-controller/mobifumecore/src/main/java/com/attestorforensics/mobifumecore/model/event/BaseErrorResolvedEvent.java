@@ -2,7 +2,7 @@ package com.attestorforensics.mobifumecore.model.event;
 
 import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent.ErrorType;
 import com.attestorforensics.mobifumecore.model.listener.Event;
-import com.attestorforensics.mobifumecore.model.object.Device;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
 
 public class BaseErrorResolvedEvent implements Event {
 

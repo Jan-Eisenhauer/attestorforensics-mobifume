@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.controller;
 
-import com.attestorforensics.mobifumecore.model.object.Group;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.google.common.collect.Maps;
 import java.util.Map;
 

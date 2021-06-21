@@ -1,9 +1,9 @@
 package com.attestorforensics.mobifumecore.model.connection;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.object.Base;
-import com.attestorforensics.mobifumecore.model.object.Device;
-import com.attestorforensics.mobifumecore.model.object.Humidifier;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 

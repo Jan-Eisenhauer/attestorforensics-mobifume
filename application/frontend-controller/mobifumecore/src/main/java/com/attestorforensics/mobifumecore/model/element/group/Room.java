@@ -1,6 +1,11 @@
-package com.attestorforensics.mobifumecore.model.object;
+package com.attestorforensics.mobifumecore.model.element.group;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.EvaporateEvent;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
 import com.attestorforensics.mobifumecore.model.event.HumidifyEvent;
@@ -22,7 +27,7 @@ public class Room implements Group {
 
   private final List<Filter> filters;
 
-  private Status status = Status.START;
+  private GroupStatus status = GroupStatus.START;
 
   private final Settings settings;
 
@@ -111,7 +116,7 @@ public class Room implements Group {
 
   @Override
   public void setupStart() {
-    status = Status.START;
+    status = GroupStatus.START;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     this.getDevices().forEach(Device::reset);
@@ -122,10 +127,10 @@ public class Room implements Group {
 
   @Override
   public void startHumidify() {
-    if (status != Status.START) {
+    if (status != GroupStatus.START) {
       return;
     }
-    status = Status.HUMIDIFY;
+    status = GroupStatus.HUMIDIFY;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
 
@@ -148,7 +153,7 @@ public class Room implements Group {
   }
 
   private void updateLatchOpened() {
-    if (status != Status.HUMIDIFY) {
+    if (status != GroupStatus.HUMIDIFY) {
       updateLatchTask.cancel(false);
       return;
     }
@@ -168,7 +173,7 @@ public class Room implements Group {
 
   @Override
   public void startEvaporate() {
-    status = Status.EVAPORATE;
+    status = GroupStatus.EVAPORATE;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     double evaporantAmount =
@@ -217,7 +222,7 @@ public class Room implements Group {
     }, timeLeft, TimeUnit.MILLISECONDS);
     evaporateTimeTask =
         Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
-          if (status != Status.EVAPORATE) {
+          if (status != GroupStatus.EVAPORATE) {
             return;
           }
 
@@ -230,7 +235,7 @@ public class Room implements Group {
 
   @Override
   public void startPurge() {
-    status = Status.PURGE;
+    status = GroupStatus.PURGE;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
 
@@ -275,7 +280,7 @@ public class Room implements Group {
 
   @Override
   public void reset() {
-    status = Status.RESET;
+    status = GroupStatus.RESET;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     this.getDevices().forEach(Device::reset);
@@ -300,7 +305,7 @@ public class Room implements Group {
         break;
       default:
         this.getDevices().forEach(Device::reset);
-        status = Status.CANCEL;
+        status = GroupStatus.CANCEL;
         CustomLogger.logGroupState(this);
         Mobifume.getInstance()
             .getEventDispatcher()
@@ -311,7 +316,7 @@ public class Room implements Group {
 
   @Override
   public void updateHeaterSetpoint() {
-    if (status != Status.EVAPORATE) {
+    if (status != GroupStatus.EVAPORATE) {
       return;
     }
     CustomLogger.info(this, "UPDATE_HEATERSETPOINT", settings.getHeaterTemperature());
@@ -325,7 +330,7 @@ public class Room implements Group {
     switch (device.getType()) {
       case BASE:
         Base base = (Base) device;
-        if (status == Status.EVAPORATE) {
+        if (status == GroupStatus.EVAPORATE) {
           long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
           int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
           base.updateTime(settings.getHeatTimer() - passedTimeInMinutes);
@@ -334,11 +339,11 @@ public class Room implements Group {
           base.forceUpdateHeaterSetpoint(0);
         }
 
-        if (status == Status.HUMIDIFY) {
+        if (status == GroupStatus.HUMIDIFY) {
           base.updateTime(30);
         }
 
-        boolean latchOpen = status != Status.HUMIDIFY && status != Status.EVAPORATE;
+        boolean latchOpen = status != GroupStatus.HUMIDIFY && status != GroupStatus.EVAPORATE;
         base.forceUpdateLatch(latchOpen);
         break;
       case HUMIDIFIER:
@@ -352,7 +357,7 @@ public class Room implements Group {
 
   @Override
   public void updateHeatTimer() {
-    if (status != Status.EVAPORATE) {
+    if (status != GroupStatus.EVAPORATE) {
       return;
     }
 
@@ -366,7 +371,7 @@ public class Room implements Group {
 
   @Override
   public void resetHeatTimer() {
-    if (status != Status.EVAPORATE) {
+    if (status != GroupStatus.EVAPORATE) {
       return;
     }
 
@@ -378,7 +383,7 @@ public class Room implements Group {
 
   @Override
   public void updatePurgeTimer() {
-    if (status != Status.PURGE) {
+    if (status != GroupStatus.PURGE) {
       return;
     }
 
@@ -389,7 +394,7 @@ public class Room implements Group {
 
   @Override
   public void resetPurgeTimer() {
-    if (status != Status.PURGE) {
+    if (status != GroupStatus.PURGE) {
       return;
     }
 
@@ -400,7 +405,7 @@ public class Room implements Group {
   }
 
   private void checkHumidify() {
-    if (status != Status.HUMIDIFY && status != Status.EVAPORATE) {
+    if (status != GroupStatus.HUMIDIFY && status != GroupStatus.EVAPORATE) {
       return;
     }
     if (!isHumidifyMaxReached()) {
@@ -432,7 +437,7 @@ public class Room implements Group {
   }
 
   private void finish() {
-    status = Status.FINISH;
+    status = GroupStatus.FINISH;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     this.getDevices().forEach(Device::reset);
@@ -460,7 +465,7 @@ public class Room implements Group {
     return filters;
   }
 
-  public Status getStatus() {
+  public GroupStatus getStatus() {
     return status;
   }
 

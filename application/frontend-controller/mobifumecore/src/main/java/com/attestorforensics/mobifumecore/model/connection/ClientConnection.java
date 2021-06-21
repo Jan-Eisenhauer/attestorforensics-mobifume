@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
-import com.attestorforensics.mobifumecore.model.object.Room;
+import com.attestorforensics.mobifumecore.model.element.group.Room;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.io.File;

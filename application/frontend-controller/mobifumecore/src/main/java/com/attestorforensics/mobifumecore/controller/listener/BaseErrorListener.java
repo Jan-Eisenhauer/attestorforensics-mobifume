@@ -9,7 +9,7 @@ import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent;
 import com.attestorforensics.mobifumecore.model.event.BaseErrorResolvedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import com.attestorforensics.mobifumecore.model.object.Device;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.util.HashMap;
 import java.util.HashSet;

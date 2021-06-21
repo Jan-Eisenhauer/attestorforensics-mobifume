@@ -6,9 +6,9 @@ import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIn
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
-import com.attestorforensics.mobifumecore.model.object.Base;
-import com.attestorforensics.mobifumecore.model.object.Calibration;
-import com.attestorforensics.mobifumecore.model.object.Device;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.text.DecimalFormat;
 import java.util.Objects;

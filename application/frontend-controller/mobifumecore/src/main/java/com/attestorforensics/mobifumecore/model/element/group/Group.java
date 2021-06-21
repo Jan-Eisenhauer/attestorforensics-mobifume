@@ -1,5 +1,9 @@
-package com.attestorforensics.mobifumecore.model.object;
+package com.attestorforensics.mobifumecore.model.element.group;
 
+import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -20,7 +24,7 @@ public interface Group {
 
   List<Filter> getFilters();
 
-  Status getStatus();
+  GroupStatus getStatus();
 
   Settings getSettings();
 

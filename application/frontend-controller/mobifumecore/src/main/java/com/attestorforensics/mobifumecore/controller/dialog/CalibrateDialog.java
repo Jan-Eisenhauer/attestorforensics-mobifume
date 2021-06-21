@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
-import com.attestorforensics.mobifumecore.model.object.Calibration;
+import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.ResourceBundle;

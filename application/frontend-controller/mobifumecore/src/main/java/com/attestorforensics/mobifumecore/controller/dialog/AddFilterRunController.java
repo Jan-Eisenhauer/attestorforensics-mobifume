@@ -5,8 +5,8 @@ import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedDo
 import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
-import com.attestorforensics.mobifumecore.model.object.Evaporant;
-import com.attestorforensics.mobifumecore.model.object.Filter;
+import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
+import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.util.Arrays;
 import javafx.collections.FXCollections;

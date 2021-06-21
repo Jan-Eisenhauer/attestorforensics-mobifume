@@ -1,8 +1,8 @@
 package com.attestorforensics.mobifumecore.model;
 
-import com.attestorforensics.mobifumecore.model.object.Device;
-import com.attestorforensics.mobifumecore.model.object.Filter;
-import com.attestorforensics.mobifumecore.model.object.Group;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.update.Updater;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.List;

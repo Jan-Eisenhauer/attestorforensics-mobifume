@@ -5,7 +5,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.InputDialog;
 import com.attestorforensics.mobifumecore.controller.item.FilterItemController;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.object.Filter;
+import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.List;

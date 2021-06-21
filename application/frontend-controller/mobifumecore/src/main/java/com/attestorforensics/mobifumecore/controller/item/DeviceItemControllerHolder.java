@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
-import com.attestorforensics.mobifumecore.model.object.Device;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.google.common.collect.Maps;
 import java.util.Map;
 

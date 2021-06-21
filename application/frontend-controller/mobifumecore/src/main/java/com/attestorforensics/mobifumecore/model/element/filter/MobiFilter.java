@@ -1,5 +1,6 @@
-package com.attestorforensics.mobifumecore.model.object;
+package com.attestorforensics.mobifumecore.model.element.filter;
 
+import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -10,8 +10,8 @@ import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import com.attestorforensics.mobifumecore.model.object.Device;
-import com.attestorforensics.mobifumecore.model.object.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import javafx.application.Platform;
 

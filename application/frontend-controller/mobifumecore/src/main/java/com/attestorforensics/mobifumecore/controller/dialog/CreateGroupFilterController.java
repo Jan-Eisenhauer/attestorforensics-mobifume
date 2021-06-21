@@ -3,7 +3,7 @@ package com.attestorforensics.mobifumecore.controller.dialog;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
-import com.attestorforensics.mobifumecore.model.object.Filter;
+import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.text.SimpleDateFormat;
 import java.util.List;

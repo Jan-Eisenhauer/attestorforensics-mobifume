@@ -1,6 +1,7 @@
-package com.attestorforensics.mobifumecore.model.object;
+package com.attestorforensics.mobifumecore.model.element.node;
 
 import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
+import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import java.util.Optional;
 
 public class Base extends Device {

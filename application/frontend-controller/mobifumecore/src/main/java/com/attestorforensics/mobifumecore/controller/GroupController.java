@@ -7,8 +7,8 @@ import com.attestorforensics.mobifumecore.controller.item.GroupFilterItemControl
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.object.Group;
-import com.attestorforensics.mobifumecore.model.object.Status;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.io.IOException;
@@ -373,7 +373,7 @@ public class GroupController {
       humidity.getStyleClass().remove(errorStyle);
     }
 
-    if (group.getStatus() == Status.HUMIDIFY || group.getStatus() == Status.EVAPORATE) {
+    if (group.getStatus() == GroupStatus.HUMIDIFY || group.getStatus() == GroupStatus.EVAPORATE) {
       double humGoal = group.getSettings().getHumidifyMax();
       humiditySetpoint.setText((int) humGoal + "%rH");
       humiditySetpointPane.setVisible(true);

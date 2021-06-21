@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.InfoBox;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.object.Humidifier;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import javafx.event.ActionEvent;

@@ -4,9 +4,9 @@ import com.attestorforensics.mobifumecore.controller.dialog.InfoBox;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.object.Base;
-import com.attestorforensics.mobifumecore.model.object.Group;
-import com.attestorforensics.mobifumecore.model.object.Status;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -52,7 +52,7 @@ public class GroupBaseItemController {
   private void setTemperature(double temperature) {
     if (temperature == -128) {
       this.temperature.setText(LocaleManager.getInstance().getString("group.error.temperature"));
-    } else if (group.getStatus() == Status.EVAPORATE) {
+    } else if (group.getStatus() == GroupStatus.EVAPORATE) {
       this.temperature.setText(LocaleManager.getInstance()
           .getString("group.base.temperature.setpoint", temperature,
               group.getSettings().getHeaterTemperature()));

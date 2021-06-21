@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.model.event;
 
 import com.attestorforensics.mobifumecore.model.listener.Event;
-import com.attestorforensics.mobifumecore.model.object.Group;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
 
 public class EvaporateEvent implements Event {
 
