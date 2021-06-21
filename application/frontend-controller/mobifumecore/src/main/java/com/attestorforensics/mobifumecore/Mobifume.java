@@ -82,7 +82,7 @@ public class Mobifume {
       System.exit(1);
     }
 
-    eventDispatcher = new EventDispatcher();
+    eventDispatcher = EventDispatcher.create(scheduledExecutorService);
 
     Settings globalSettings = Settings.loadGlobalSettings();
     Locale language = globalSettings.getLanguage();
