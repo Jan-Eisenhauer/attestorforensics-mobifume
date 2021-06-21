@@ -4,8 +4,8 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -30,21 +30,21 @@ public class WindowsWifiConnection implements WifiConnection {
   }
 
   @Override
-  public Future<Void> connect() {
+  public CompletableFuture<Void> connect() {
     enabled = true;
     Mobifume.getInstance()
         .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionStatus.WIFI_CONNECTING));
-    return executorService.submit(this::executeConnect, null);
+    return CompletableFuture.runAsync(this::executeConnect, executorService);
   }
 
   @Override
-  public Future<Void> disconnect() {
+  public CompletableFuture<Void> disconnect() {
     enabled = false;
     Mobifume.getInstance()
         .getEventDispatcher()
         .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.WIFI_DISCONNECTING));
-    return executorService.submit(this::executeDisconnect, null);
+    return CompletableFuture.runAsync(this::executeDisconnect, executorService);
   }
 
   @Override
