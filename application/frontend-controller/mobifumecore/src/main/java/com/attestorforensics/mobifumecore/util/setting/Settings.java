@@ -8,7 +8,7 @@ public class Settings implements Serializable {
 
   private static final long serialVersionUID = -4384611401364322327L;
   public static Settings DEFAULT_SETTINGS;
-  private static final SettingFileHandler fileHandler = new SettingFileHandler();
+  private static final SettingsRepository settingsRepository = SettingsFileRepository.create();
 
   private Locale language = Locale.GERMANY;
   private int humidifyMax = 80;
@@ -49,11 +49,11 @@ public class Settings implements Serializable {
   }
 
   public static void saveDefaultSettings() {
-    fileHandler.save(DEFAULT_SETTINGS);
+    settingsRepository.save(DEFAULT_SETTINGS);
   }
 
   public static void loadDefaultSettings() {
-    DEFAULT_SETTINGS = fileHandler.load();
+    DEFAULT_SETTINGS = settingsRepository.load();
   }
 
   public Locale getLanguage() {
