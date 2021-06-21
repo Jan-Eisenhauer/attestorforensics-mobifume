@@ -13,6 +13,7 @@ public enum GroupColor {
   BROWN("#8d6e63"),
   PINK("#ec407a");
 
+  private static final GroupColor[] VALUES = GroupColor.values();
   private static int currentColor = 0;
 
   private final String color;
@@ -27,12 +28,12 @@ public enum GroupColor {
    * @return the next color
    */
   public static String getNextColor() {
-    int length = GroupColor.values().length;
+    int length = VALUES.length;
     if (currentColor >= length) {
       currentColor -= length;
     }
 
-    String color = GroupColor.values()[currentColor].getColor();
+    String color = VALUES[currentColor].getColor();
     currentColor++;
     return color;
   }
