@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.util.i18n;
+package com.attestorforensics.mobifumecore.model.i18n;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.event.LocaleChangeEvent;

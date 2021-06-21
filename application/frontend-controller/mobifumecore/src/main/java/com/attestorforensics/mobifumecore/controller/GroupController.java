@@ -9,7 +9,7 @@ import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.object.Group;
 import com.attestorforensics.mobifumecore.model.object.Status;
-import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.io.IOException;
 import java.text.SimpleDateFormat;

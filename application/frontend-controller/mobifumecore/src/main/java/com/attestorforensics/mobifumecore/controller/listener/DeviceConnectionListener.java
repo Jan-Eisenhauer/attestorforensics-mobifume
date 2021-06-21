@@ -12,7 +12,7 @@ import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import com.attestorforensics.mobifumecore.model.object.Device;
 import com.attestorforensics.mobifumecore.model.object.DeviceType;
-import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import javafx.application.Platform;
 
 public class DeviceConnectionListener implements Listener {

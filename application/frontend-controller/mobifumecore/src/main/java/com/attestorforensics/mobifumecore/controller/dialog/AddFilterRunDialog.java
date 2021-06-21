@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
 import com.attestorforensics.mobifumecore.model.object.Filter;
-import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;

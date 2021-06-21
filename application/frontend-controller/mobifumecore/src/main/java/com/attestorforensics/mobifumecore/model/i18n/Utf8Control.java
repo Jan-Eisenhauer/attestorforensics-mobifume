@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.util.i18n;
+package com.attestorforensics.mobifumecore.model.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;

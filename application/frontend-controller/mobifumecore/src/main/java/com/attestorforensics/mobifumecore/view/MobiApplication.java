@@ -13,7 +13,7 @@ import com.attestorforensics.mobifumecore.controller.listener.PurgeListener;
 import com.attestorforensics.mobifumecore.controller.listener.UpdateListener;
 import com.attestorforensics.mobifumecore.controller.listener.UpdatingListener;
 import com.attestorforensics.mobifumecore.controller.listener.WaterErrorListener;
-import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.InputStream;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;

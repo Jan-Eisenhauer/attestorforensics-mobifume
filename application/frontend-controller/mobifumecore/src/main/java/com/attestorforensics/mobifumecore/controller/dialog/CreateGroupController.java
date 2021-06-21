@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.model.object.Device;
 import com.attestorforensics.mobifumecore.model.object.DeviceType;
 import com.attestorforensics.mobifumecore.model.object.Filter;
 import com.attestorforensics.mobifumecore.model.object.Group;
-import com.attestorforensics.mobifumecore.util.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
