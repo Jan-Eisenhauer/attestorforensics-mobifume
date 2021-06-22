@@ -4,12 +4,13 @@ import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
 import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection;
+import com.attestorforensics.mobifumecore.model.element.misc.ApplicationLock;
+import com.attestorforensics.mobifumecore.model.element.misc.FileApplicationLock;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.listener.EventDispatcher;
+import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import com.attestorforensics.mobifumecore.util.FileManager;
-import com.attestorforensics.mobifumecore.util.OtherAppChecker;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.view.MobiApplication;
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,11 +78,6 @@ public class Mobifume {
       e.printStackTrace();
     }
 
-    if (OtherAppChecker.isAppActive(FileManager.getInstance().getDataFolder())) {
-      logger.error("App already active");
-      System.exit(1);
-    }
-
     eventDispatcher = EventDispatcher.create(scheduledExecutorService);
 
     Settings globalSettings = Settings.loadGlobalSettings();
@@ -89,9 +85,16 @@ public class Mobifume {
     LocaleManager.getInstance().load(language);
 
     wifiConnection = WindowsWifiConnection.create(scheduledExecutorService);
-//    wifiConnection.connect();
 
     modelManager = new MobiModelManager(globalSettings, wifiConnection);
+
+    ApplicationLock applicationLock =
+        FileApplicationLock.create(FileManager.getInstance().getDataFolder());
+    if (!applicationLock.lockApplication()) {
+      logger.error("App already active");
+      System.exit(1);
+      throw new IllegalStateException("App already active");
+    }
   }
 
   /**
