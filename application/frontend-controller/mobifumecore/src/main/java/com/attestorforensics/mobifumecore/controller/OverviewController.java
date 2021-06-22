@@ -9,12 +9,12 @@ import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.Kernel32;
 import com.attestorforensics.mobifumecore.util.Kernel32.SystemPowerStatus;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.view.GroupColor;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -272,6 +272,11 @@ public class OverviewController {
   @FXML
   public void onWifi() {
     Sound.click();
+
+    if (Mobifume.getInstance().getWifiConnection().isInProcess()) {
+      return;
+    }
+
     if (Mobifume.getInstance().getWifiConnection().isEnabled()) {
       Mobifume.getInstance().getWifiConnection().disconnect();
     } else {

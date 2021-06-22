@@ -1,20 +1,19 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
-import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
 import com.attestorforensics.mobifumecore.model.connection.MessageEncoder;
 
 public abstract class Device {
 
-  protected final ClientConnection clientConnection;
+  protected final MessageEncoder messageEncoder;
   private final DeviceType type;
   private final String id;
   private int version;
   private int rssi = -100;
   private boolean isOffline;
 
-  protected Device(ClientConnection clientConnection, final DeviceType type, final String id,
+  protected Device(MessageEncoder messageEncoder, final DeviceType type, final String id,
       final int version) {
-    this.clientConnection = clientConnection;
+    this.messageEncoder = messageEncoder;
     this.type = type;
     this.id = id;
     this.version = version;
@@ -31,7 +30,7 @@ public abstract class Device {
   //  }
 
   protected MessageEncoder getEncoder() {
-    return clientConnection.getEncoder();
+    return messageEncoder;
   }
 
   public String getShortId() {

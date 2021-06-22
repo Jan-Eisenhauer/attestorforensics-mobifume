@@ -9,4 +9,8 @@ public interface WifiConnection {
   CompletableFuture<Void> disconnect();
 
   boolean isEnabled();
+
+  CompletableFuture<Boolean> isConnected();
+
+  boolean isInProcess();
 }

@@ -12,17 +12,6 @@ public class MessageDecoder {
 
   void decodeMessage(String topic, String[] args) {
     if (topic.startsWith(
-        getSimplePath(Mobifume.getInstance().getConfig().getProperty("channel.app")))) {
-      // app
-      if (args.length >= 1 && args[0].equals("ONLINE")) {
-        msgHandler.otherAppOnline(getAppId(topic));
-      }
-
-      if (args.length >= 1 && args[0].equals("REQUEST")) {
-        msgHandler.otherAppRequest(getAppId(topic));
-      }
-    }
-    if (topic.startsWith(
         getSimplePath(Mobifume.getInstance().getConfig().getProperty("channel.broadcast")))) {
       // broadcast
     }
@@ -75,8 +64,7 @@ public class MessageDecoder {
   }
 
   private String getAppId(String topic) {
-    return topic.substring(
-        Mobifume.getInstance().getConfig().getProperty("channel.app").length());
+    return topic.substring(Mobifume.getInstance().getConfig().getProperty("channel.app").length());
   }
 
   private String getDeviceId(String topic) {

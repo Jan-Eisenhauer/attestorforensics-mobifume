@@ -3,9 +3,9 @@ package com.attestorforensics.mobifumecore.controller.listener;
 import com.attestorforensics.mobifumecore.controller.OverviewController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import javafx.application.Platform;
 import javafx.stage.Window;
 
@@ -31,22 +31,16 @@ public class ConnectionListener implements Listener {
             connectionLostDialog = null;
           }
           break;
-        case BROKER_LOST:
+        case WIFI_CONNECT_ERROR:
+        case BROKER_CONNECT_TIMEOUT:
+        case BROKER_CONNECTION_LOST:
           if (connectionLostDialog != null) {
             break;
           }
+
           connectionLostDialog = new ConfirmDialog(window,
               LocaleManager.getInstance().getString("dialog.connectionlost.title"),
               LocaleManager.getInstance().getString("dialog.connectionlost.content"), false, null);
-          break;
-        case BROKER_OTHER_ONLINE:
-          if (otheronline != null) {
-            break;
-          }
-          otheronline = new ConfirmDialog(window,
-              LocaleManager.getInstance().getString("dialog.otheronline.title"),
-              LocaleManager.getInstance().getString("dialog.otheronline.content"), false,
-              accepted -> otheronline = null);
           break;
         default:
           break;

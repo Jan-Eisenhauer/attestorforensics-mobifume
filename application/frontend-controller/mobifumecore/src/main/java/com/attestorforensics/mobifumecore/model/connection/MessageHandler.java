@@ -2,42 +2,23 @@ package com.attestorforensics.mobifumecore.model.connection;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.MobiModelManager;
-import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent;
-import com.attestorforensics.mobifumecore.model.event.BaseErrorResolvedEvent;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.Room;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.element.group.Room;
+import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent;
+import com.attestorforensics.mobifumecore.model.event.BaseErrorResolvedEvent;
+import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 
 public class MessageHandler {
 
   private final MobiModelManager mobiModelManager;
 
-  private boolean otherAppOnline;
-
   public MessageHandler(MobiModelManager mobiModelManager) {
     this.mobiModelManager = mobiModelManager;
-  }
-
-  void otherAppOnline(String appId) {
-    if (mobiModelManager.getConnection().getId().equals(appId)) {
-      return;
-    }
-    otherAppOnline = true;
-    mobiModelManager.getConnection().cancelWaitForOtherApp();
-  }
-
-  void otherAppRequest(String appId) {
-    if (!mobiModelManager.getConnection().isConnected()) {
-      return;
-    }
-    mobiModelManager.getConnection()
-        .getEncoder()
-        .appOnline(mobiModelManager.getConnection().getId());
   }
 
   void receiveBaseOnline(String deviceId, int version) {
@@ -49,7 +30,7 @@ public class MessageHandler {
       return;
     }
 
-    Base base = new Base(mobiModelManager.getConnection(), deviceId, version);
+    Base base = new Base(mobiModelManager.getBrokerConnection().getEncoder(), deviceId, version);
     deviceOnline(base);
     base.requestCalibrationData();
   }
@@ -192,7 +173,8 @@ public class MessageHandler {
       updateDeviceState(device);
       return;
     }
-    deviceOnline(new Humidifier(mobiModelManager.getConnection(), deviceId, version));
+    deviceOnline(
+        new Humidifier(mobiModelManager.getBrokerConnection().getEncoder(), deviceId, version));
   }
 
   void receiveHumOffline(String deviceId) {
@@ -243,13 +225,5 @@ public class MessageHandler {
         .getEventDispatcher()
         .call(new DeviceConnectionEvent(device,
             DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
-  }
-
-  public boolean isOtherAppOnline() {
-    return otherAppOnline;
-  }
-
-  public void setOtherAppOnline(boolean otherAppOnline) {
-    this.otherAppOnline = otherAppOnline;
   }
 }

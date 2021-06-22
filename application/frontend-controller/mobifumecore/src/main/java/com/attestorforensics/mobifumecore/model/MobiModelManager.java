@@ -1,23 +1,24 @@
 package com.attestorforensics.mobifumecore.model;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
+import com.attestorforensics.mobifumecore.model.connection.BrokerConnection;
 import com.attestorforensics.mobifumecore.model.connection.MessageHandler;
+import com.attestorforensics.mobifumecore.model.connection.MqttBrokerConnection;
 import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
+import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.element.filter.FilterFileHandler;
+import com.attestorforensics.mobifumecore.model.element.filter.MobiFilter;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.Room;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.FilterEvent;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
-import com.attestorforensics.mobifumecore.model.element.filter.Filter;
-import com.attestorforensics.mobifumecore.model.element.filter.FilterFileHandler;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.filter.MobiFilter;
-import com.attestorforensics.mobifumecore.model.element.group.Room;
-import com.attestorforensics.mobifumecore.model.update.Updater;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.model.log.LogMover;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.update.Updater;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public class MobiModelManager implements ModelManager {
 
   private final Settings globalSettings;
-  private final ClientConnection connection;
+  private final BrokerConnection brokerConnection;
 
   private final List<Device> devices = new ArrayList<>();
   private final List<Group> groups = new ArrayList<>();
@@ -52,17 +53,18 @@ public class MobiModelManager implements ModelManager {
         .collect(Collectors.toList());
     MessageHandler msgHandler = new MessageHandler(this);
 
-    connection = new ClientConnection(this, wifiConnection, msgHandler);
+    brokerConnection = MqttBrokerConnection.create(Mobifume.getInstance().getConfig(),
+        Mobifume.getInstance().getScheduledExecutorService(), this, wifiConnection, msgHandler);
   }
 
   @Override
   public void connectToBroker() {
-    Mobifume.getInstance().getScheduledExecutorService().execute(connection::connect);
+    Mobifume.getInstance().getScheduledExecutorService().execute(brokerConnection::connect);
   }
 
   @Override
   public boolean isBrokerConnected() {
-    return connection.isConnected();
+    return brokerConnection.isConnected();
   }
 
   @Override
@@ -166,8 +168,8 @@ public class MobiModelManager implements ModelManager {
         .orElse(null);
   }
 
-  public ClientConnection getConnection() {
-    return connection;
+  public BrokerConnection getBrokerConnection() {
+    return brokerConnection;
   }
 
   public void connectionLost() {

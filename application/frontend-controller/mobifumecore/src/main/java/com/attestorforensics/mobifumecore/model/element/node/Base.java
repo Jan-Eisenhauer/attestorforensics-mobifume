@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
-import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
+import com.attestorforensics.mobifumecore.model.connection.MessageEncoder;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import java.util.Optional;
 
@@ -17,8 +17,8 @@ public class Base extends Device {
   private Calibration humidityCalibration;
   private Calibration temperatureCalibration;
 
-  public Base(ClientConnection clientConnection, final String id, final int version) {
-    super(clientConnection, DeviceType.BASE, id, version);
+  public Base(MessageEncoder messageEncoder, final String id, final int version) {
+    super(messageEncoder, DeviceType.BASE, id, version);
   }
 
   @Override

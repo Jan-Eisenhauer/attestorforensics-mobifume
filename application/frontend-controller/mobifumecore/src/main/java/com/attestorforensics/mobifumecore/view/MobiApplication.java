@@ -16,7 +16,6 @@ import com.attestorforensics.mobifumecore.controller.listener.WaterErrorListener
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.InputStream;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -99,10 +98,8 @@ public class MobiApplication extends Application {
     primaryStage.setX(0);
     primaryStage.setY(0);
 
-    Mobifume.getInstance()
-        .getScheduledExecutorService()
-        .schedule(() -> Mobifume.getInstance().getModelManager().connectToBroker(), 100L,
-            TimeUnit.MILLISECONDS);
+    Mobifume.getInstance().getWifiConnection().connect();
+    Mobifume.getInstance().getModelManager().connectToBroker();
   }
 
   @Override

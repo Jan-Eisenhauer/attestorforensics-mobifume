@@ -13,46 +13,26 @@ public class MessageEncoder {
 
   MessageEncoder(MqttClient client) {
     this.client = client;
-    System.out.println("CLIENT: " + client.isConnected());
   }
 
-  void requestAppOnline(String id) {
-    System.out.println("REQUEST " + client.isConnected());
-    try {
-      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.app") + id,
-          "REQUEST".getBytes(), 2, false);
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
-  }
-
-  void appOnline(String id) {
-    try {
-      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.app") + id,
-          "ONLINE".getBytes(), 2, false);
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
-  }
-
-  void online() {
-    System.out.println("ONLINE " + client.isConnected());
-    try {
-      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.broadcast"),
-          "ONLINE".getBytes(), 2, false);
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public void offline() {
-    try {
-      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.broadcast"),
-          "OFFLINE".getBytes(), 2, true);
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
-  }
+  //  void online() {
+  //    System.out.println("ONLINE " + client.isConnected());
+  //    try {
+  //      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.broadcast"),
+  //          "ONLINE".getBytes(), 2, false);
+  //    } catch (MqttException e) {
+  //      e.printStackTrace();
+  //    }
+  //  }
+  //
+  //  public void offline() {
+  //    try {
+  //      client.publish(Mobifume.getInstance().getConfig().getProperty("channel.broadcast"),
+  //          "OFFLINE".getBytes(), 2, true);
+  //    } catch (MqttException e) {
+  //      e.printStackTrace();
+  //    }
+  //  }
 
   public void baseSetHeater(Device device, int heaterTemperature) {
     if (!(device instanceof Base)) {

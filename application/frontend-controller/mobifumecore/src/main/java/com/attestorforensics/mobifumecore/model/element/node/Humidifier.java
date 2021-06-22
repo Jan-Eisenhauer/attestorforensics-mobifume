@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.connection.ClientConnection;
+import com.attestorforensics.mobifumecore.model.connection.MessageEncoder;
 import com.attestorforensics.mobifumecore.model.event.WaterErrorEvent;
 
 public class Humidifier extends Device {
@@ -16,8 +16,8 @@ public class Humidifier extends Device {
   private int waterState;
   private boolean waterEmpty;
 
-  public Humidifier(ClientConnection clientConnection, final String id, final int version) {
-    super(clientConnection, DeviceType.HUMIDIFIER, id, version);
+  public Humidifier(MessageEncoder messageEncoder, final String id, final int version) {
+    super(messageEncoder, DeviceType.HUMIDIFIER, id, version);
   }
 
   @Override
