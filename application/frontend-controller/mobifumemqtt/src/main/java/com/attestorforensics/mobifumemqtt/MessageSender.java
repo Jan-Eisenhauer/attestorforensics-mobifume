@@ -7,6 +7,8 @@ public interface MessageSender {
 
   void sendRawMessage(String topic, String rawPayload);
 
+  void sendRetainedRawMessage(String topic, String rawPayload);
+
   void sendBaseOnline(String deviceId);
 
   void sendBaseOffline(String deviceId);

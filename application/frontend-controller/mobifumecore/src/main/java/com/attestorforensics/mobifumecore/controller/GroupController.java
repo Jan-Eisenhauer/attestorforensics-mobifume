@@ -229,6 +229,7 @@ public class GroupController {
         evaporantAmount.setText(
             LocaleManager.getInstance().getString("group.amount.gramm", amount));
       });
+
       calcController.setGroup(group);
       calculator.getProperties().put("controller", calcController);
     } catch (IOException e) {

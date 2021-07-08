@@ -78,6 +78,11 @@ public class MobiModelManager implements ModelManager {
     CustomLogger.logGroupSettings(group);
     CustomLogger.logGroupState(group);
     CustomLogger.logGroupDevices(group);
+    Settings groupSettings = group.getSettings();
+    group.getLogger()
+        .info("DEFAULT_EVAPORANT;" + groupSettings.getEvaporant() + ";"
+            + groupSettings.getEvaporantAmountPerCm() + ";" + groupSettings.getRoomWidth() + ";"
+            + groupSettings.getRoomDepth() + ";" + groupSettings.getRoomHeight());
     groups.add(group);
     Mobifume.getInstance()
         .getEventDispatcher()
