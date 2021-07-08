@@ -1,10 +1,11 @@
 package com.attestorforensics.mobifumecore.controller;
 
+import com.attestorforensics.mobifumecore.controller.dialog.SaveDiscardDialog;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedFloatTextFormatter;
-import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.Arrays;
@@ -14,7 +15,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -53,6 +53,12 @@ public class GroupCalculatorController {
   private String selectedText;
   private boolean keyboardUsed;
 
+  private Evaporant evaporantValue;
+  private double roomWidthValue;
+  private double roomDepthValue;
+  private double roomHeightValue;
+  private double amountPerCmValue;
+
   void setCallback(Consumer<Double> callback) {
     this.callback = callback;
   }
@@ -65,57 +71,50 @@ public class GroupCalculatorController {
     roomWidth.setTextFormatter(new UnsignedFloatTextFormatter());
     roomWidth.setText(settings.getRoomWidth() + "");
     roomWidth.textProperty().addListener((observableValue, oldText, newText) -> {
-      applySettings();
-      calculateEvaporantAmount();
+      updateInputEvaporantAmount();
       if (focusedField == roomWidth) {
         selectedText = roomWidth.getSelectedText();
       }
     });
     roomWidth.focusedProperty()
         .addListener(
-            (observableValue, oldState, focused) -> onFocus(roomWidth, settings.getRoomWidth(),
-                focused));
+            (observableValue, oldState, focused) -> onFocus(roomWidth, roomWidthValue, focused));
 
     roomDepth.setTextFormatter(new UnsignedFloatTextFormatter());
     roomDepth.setText(settings.getRoomDepth() + "");
     roomDepth.textProperty().addListener((observableValue, oldText, newText) -> {
-      applySettings();
-      calculateEvaporantAmount();
+      updateInputEvaporantAmount();
       if (focusedField == roomDepth) {
         selectedText = roomDepth.getSelectedText();
       }
     });
     roomDepth.focusedProperty()
         .addListener(
-            (observableValue, oldState, focused) -> onFocus(roomDepth, settings.getRoomDepth(),
-                focused));
+            (observableValue, oldState, focused) -> onFocus(roomDepth, roomDepthValue, focused));
 
     roomHeight.setTextFormatter(new UnsignedFloatTextFormatter());
     roomHeight.setText(settings.getRoomHeight() + "");
     roomHeight.textProperty().addListener((observableValue, oldText, newText) -> {
-      applySettings();
-      calculateEvaporantAmount();
+      updateInputEvaporantAmount();
       if (focusedField == roomHeight) {
         selectedText = roomHeight.getSelectedText();
       }
     });
     roomHeight.focusedProperty()
         .addListener(
-            (observableValue, oldState, focused) -> onFocus(roomHeight, settings.getRoomHeight(),
-                focused));
+            (observableValue, oldState, focused) -> onFocus(roomHeight, roomHeightValue, focused));
 
     amountPerCm.setTextFormatter(new UnsignedFloatTextFormatter());
     amountPerCm.setText(settings.getEvaporantAmountPerCm() + "");
     amountPerCm.textProperty().addListener((observableValue, oldText, newText) -> {
-      applySettings();
-      calculateEvaporantAmount();
+      updateInputEvaporantAmount();
       if (focusedField == amountPerCm) {
         selectedText = amountPerCm.getSelectedText();
       }
     });
     amountPerCm.focusedProperty()
-        .addListener((observableValue, oldState, focused) -> onFocus(amountPerCm,
-            settings.getEvaporantAmountPerCm(), focused));
+        .addListener((observableValue, oldState, focused) -> onFocus(amountPerCm, amountPerCmValue,
+            focused));
 
     ObservableList<String> evaporants = FXCollections.observableArrayList();
     Arrays.asList(Evaporant.values())
@@ -135,14 +134,57 @@ public class GroupCalculatorController {
             return;
           }
 
-          Evaporant evaporant = Evaporant.valueOf(newItem.toUpperCase());
-          settings.setEvaporant(evaporant);
-          settings.setEvaporantAmountPerCm(evaporant.getAmountPerCm());
-          amountPerCm.setText(evaporant.getAmountPerCm() + "");
-          calculateEvaporantAmount();
+          evaporantValue = Evaporant.valueOf(newItem.toUpperCase());
+          amountPerCmValue = evaporantValue.getAmountPerCm();
+          amountPerCm.setText(amountPerCmValue + "");
+          updateInputEvaporantAmount();
         });
 
-    calculateEvaporantAmount();
+    roomWidthValue = settings.getRoomWidth();
+    roomDepthValue = settings.getRoomDepth();
+    roomHeightValue = settings.getRoomHeight();
+    amountPerCmValue = settings.getEvaporantAmountPerCm();
+    evaporantValue = settings.getEvaporant();
+    updateInputEvaporantAmount();
+  }
+
+  private boolean haveSettingsChanged() {
+    Settings settings = group.getSettings();
+    try {
+      if (roomWidthValue <= MAX_INPUT_VALUE && roomWidthValue != settings.getRoomWidth()) {
+        return true;
+      }
+    } catch (NumberFormatException ignored) {
+      // value invalid
+    }
+    try {
+      if (roomDepthValue <= MAX_INPUT_VALUE && roomDepthValue != settings.getRoomDepth()) {
+        return true;
+      }
+    } catch (NumberFormatException ignored) {
+      // value invalid
+    }
+    try {
+      if (roomHeightValue <= MAX_INPUT_VALUE && roomHeightValue != settings.getRoomHeight()) {
+        return true;
+      }
+    } catch (NumberFormatException ignored) {
+      // value invalid
+    }
+    try {
+      if (amountPerCmValue <= MAX_INPUT_VALUE
+          && amountPerCmValue != settings.getEvaporantAmountPerCm()) {
+        return true;
+      }
+    } catch (NumberFormatException ignored) {
+      // value invalid
+    }
+
+    if (evaporantValue != settings.getEvaporant()) {
+      return true;
+    }
+
+    return false;
   }
 
   private void applySettings() {
@@ -179,26 +221,101 @@ public class GroupCalculatorController {
     } catch (NumberFormatException ignored) {
       // value invalid
     }
+
+    settings.setEvaporant(evaporantValue);
+    group.getLogger()
+        .info(
+            "EVAPORANT;" + settings.getEvaporant() + ";" + settings.getEvaporantAmountPerCm() + ";"
+                + settings.getRoomWidth() + ";" + settings.getRoomDepth() + ";"
+                + settings.getRoomHeight());
   }
 
-  private double calculateEvaporantAmount() {
+  private void resetSettings() {
+    Settings settings = group.getSettings();
+    roomWidthValue = settings.getRoomWidth();
+    roomWidth.setText(roomWidthValue + "");
+    roomDepthValue = settings.getRoomDepth();
+    roomDepth.setText(roomDepthValue + "");
+    roomHeightValue = settings.getRoomHeight();
+    roomHeight.setText(roomHeightValue + "");
+    amountPerCmValue = settings.getEvaporantAmountPerCm();
+    amountPerCm.setText(amountPerCmValue + "");
+    evaporantValue = settings.getEvaporant();
+    updateInputEvaporantAmount();
+  }
+
+  private void updateInputEvaporantAmount() {
+    try {
+      roomWidthValue = Double.parseDouble(this.roomWidth.getText());
+      if (roomWidthValue > MAX_INPUT_VALUE) {
+        result.setText(LocaleManager.getInstance().getString("group.amount.gramm", "-"));
+        return;
+      }
+    } catch (NumberFormatException ignored) {
+      // value invalid
+      result.setText(LocaleManager.getInstance().getString("group.amount.gramm", "-"));
+      return;
+    }
+
+    try {
+      roomDepthValue = Double.parseDouble(roomDepth.getText());
+      if (roomDepthValue > MAX_INPUT_VALUE) {
+        result.setText(LocaleManager.getInstance().getString("group.amount.gramm", "-"));
+        return;
+      }
+    } catch (NumberFormatException ignored) {
+      // value invalid
+      result.setText(LocaleManager.getInstance().getString("group.amount.gramm", "-"));
+      return;
+    }
+
+    try {
+      roomHeightValue = Double.parseDouble(roomHeight.getText());
+      if (roomHeightValue > MAX_INPUT_VALUE) {
+        result.setText(LocaleManager.getInstance().getString("group.amount.gramm", "-"));
+        return;
+      }
+    } catch (NumberFormatException ignored) {
+      // value invalid
+      result.setText(LocaleManager.getInstance().getString("group.amount.gramm", "-"));
+      return;
+    }
+
+    try {
+      amountPerCmValue = Double.parseDouble(amountPerCm.getText());
+      if (amountPerCmValue > MAX_INPUT_VALUE) {
+        result.setText(LocaleManager.getInstance().getString("group.amount.gramm", "-"));
+        return;
+      }
+    } catch (NumberFormatException ignored) {
+      // value invalid
+      result.setText(LocaleManager.getInstance().getString("group.amount.gramm", "-"));
+      return;
+    }
+
+    double roomSize = roomWidthValue * roomDepthValue * roomHeightValue;
+    double evaporantAmount = roomSize * amountPerCmValue;
+    evaporantAmount = (double) Math.round(evaporantAmount * 100) / 100;
+    result.setText(LocaleManager.getInstance().getString("group.amount.gramm", evaporantAmount));
+  }
+
+  private double calculateSettingsEvaporantAmount() {
     Settings settings = group.getSettings();
     double roomSize = settings.getRoomWidth() * settings.getRoomDepth() * settings.getRoomHeight();
     double evaporantAmount = roomSize * settings.getEvaporantAmountPerCm();
     evaporantAmount = (double) Math.round(evaporantAmount * 100) / 100;
-    result.setText(LocaleManager.getInstance().getString("group.amount.gramm", evaporantAmount));
     return evaporantAmount;
   }
 
-  private void onFocus(TextField field, double setting, boolean focused) {
+  private void onFocus(TextField field, double previousValue, boolean focused) {
     if (!focused) {
       Platform.runLater(() -> {
         if (!keyboardUsed) {
           focusedField = null;
           try {
-            field.setText(setting + "");
-          } catch (NumberFormatException ignored) {
-            // value invalid
+            field.setText(Double.parseDouble(field.getText()) + "");
+          } catch (NumberFormatException e) {
+            field.setText(previousValue + "");
           }
         } else {
           field.requestFocus();
@@ -220,6 +337,14 @@ public class GroupCalculatorController {
     });
   }
 
+  private void closeCalculator() {
+    Scene scene = root.getScene();
+    SceneTransition.playBackward(scene, root);
+    if (callback != null) {
+      callback.accept(calculateSettingsEvaporantAmount());
+    }
+  }
+
   void onShow() {
     Platform.runLater(() -> roomWidth.requestFocus());
   }
@@ -228,14 +353,28 @@ public class GroupCalculatorController {
   public void onBack(ActionEvent event) {
     Sound.click();
 
-    applySettings();
-
-    Node button = (Node) event.getSource();
-    Scene scene = button.getScene();
-    SceneTransition.playBackward(scene, root);
-    if (callback != null) {
-      callback.accept(calculateEvaporantAmount());
+    if (!haveSettingsChanged()) {
+      closeCalculator();
+      return;
     }
+
+    SaveDiscardDialog saveDiscardDialog = SaveDiscardDialog.create(root.getScene().getWindow(),
+        LocaleManager.getInstance().getString("dialog.calculator.save.title"),
+        LocaleManager.getInstance().getString("dialog.calculator.save.content"), action -> {
+          switch (action) {
+            case SAVE:
+              applySettings();
+              closeCalculator();
+              break;
+            case DISCARD:
+              resetSettings();
+              closeCalculator();
+              break;
+            default:
+              break;
+          }
+        });
+    saveDiscardDialog.show();
   }
 
   @FXML
@@ -306,16 +445,26 @@ public class GroupCalculatorController {
     if (focusedField == null) {
       return;
     }
+
     Button button = (Button) event.getSource();
     if (selectedText.equals(focusedField.getText())) {
       focusedField.setText(button.getText());
     } else {
       focusedField.appendText(button.getText());
     }
+
     Platform.runLater(() -> {
       focusedField.deselect();
       focusedField.positionCaret(focusedField.getLength());
     });
+
     keyboardUsed = true;
+  }
+
+  @FXML
+  public void onSave(ActionEvent event) {
+    Sound.click();
+
+    applySettings();
   }
 }

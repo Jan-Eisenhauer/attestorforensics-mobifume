@@ -31,13 +31,24 @@ public class MqttMessageSender implements MessageSender {
   }
 
   @Override
+  public void sendRetainedRawMessage(String topic, String rawPayload) {
+    try {
+      client.publish(topic, rawPayload.getBytes(), 2, true);
+      System.out.println("<-retained: " + topic + " " + rawPayload);
+    } catch (MqttException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Override
   public void sendBaseOnline(String deviceId) {
-    sendRawMessage("/MOBIfume/base/status/" + deviceId, "ONLINE;3");
+    sendRetainedRawMessage("/MOBIfume/base/status/" + deviceId, "ONLINE;3");
   }
 
   @Override
   public void sendBaseOffline(String deviceId) {
     sendRawMessage("/MOBIfume/base/status/" + deviceId, "OFFLINE");
+    sendRetainedRawMessage("/MOBIfume/base/status/" + deviceId, "");
   }
 
   @Override
@@ -53,12 +64,13 @@ public class MqttMessageSender implements MessageSender {
 
   @Override
   public void sendHumOnline(String deviceId) {
-    sendRawMessage("/MOBIfume/hum/status/" + deviceId, "ONLINE;2");
+    sendRetainedRawMessage("/MOBIfume/hum/status/" + deviceId, "ONLINE;2");
   }
 
   @Override
   public void sendHumOffline(String deviceId) {
     sendRawMessage("/MOBIfume/hum/status/" + deviceId, "OFFLINE");
+    sendRetainedRawMessage("/MOBIfume/hum/status/" + deviceId, "");
   }
 
   @Override

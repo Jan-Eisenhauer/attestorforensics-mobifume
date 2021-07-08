@@ -253,3 +253,23 @@ Wenn ein Gerät die Verbindung verloren hatte und nun wieder verbunden ist, wird
 ### Verbindungsverlust eines Gerätes
 > DISCONNECT;{id}
 - id: Geräte-Id
+
+### Klebemittel und Raumgröße auf Standard gesetzt
+Wenn eine neue Gruppe erstellt wird, werden Standardeinstellungen für das Klebemittel und die Raumgröße verwendet.
+> DEFAULT_EVAPORANT;{evaporant};{gramm-per-cm};{room-width};{room-depth};{room-height}
+- evaporant: Standardmäßiges Klebemittel
+- gramm-per-cm (double): Gramm pro m³
+- room-width (double): Breite des Raumes
+- room-depth (double): Tiefe des Raumes
+- room-height (double): Höhe des Raumes
+
+Verwendete Menge an Klebemittel lässt sich mit folgender Formel berechnen:
+`total-amount = gramm-per-cm * room-width * room-depth * room-height`
+
+### Klebemittel und Raumgröße eingestellt
+> EVAPORANT;{evaporant};{gramm-per-cm};{room-width};{room-depth};{room-height}
+- evaporant: Eingestelltes Klebemittel
+- gramm-per-cm (double): Gramm pro m³
+- room-width (double): Breite des Raumes
+- room-depth (double): Tiefe des Raumes
+- room-height (double): Höhe des Raumes

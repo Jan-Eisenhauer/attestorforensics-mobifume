@@ -47,7 +47,6 @@ public class MessageEncoder {
   }
 
   private void send(String topic, String message) {
-    System.out.println("SEND " + client.isConnected());
     Mobifume.getInstance().getScheduledExecutorService().execute(() -> {
       if (!client.isConnected()) {
         return;

@@ -4,7 +4,6 @@ import com.attestorforensics.mobifumemqtt.message.BasePing;
 import com.attestorforensics.mobifumemqtt.message.HumPing;
 import com.attestorforensics.mobifumemqtt.message.HumPing.HumidifyState;
 import com.attestorforensics.mobifumemqtt.message.HumPing.LedState;
-import com.attestorforensics.mobifumemqtt.route.AppRoute;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,10 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 public class Console {
 
-  private static final long INITIAL_DELAY = 40_000;
-  private static final long HUMIDIFY_DURATION = 300_000;
-  private static final long HEAT_DURATION = 1_800_000;
-  private static final long PURGE_DURATION = 1_800_000;
+  private static final long INITIAL_DELAY = 40_000; // 40 sec
+  private static final long HUMIDIFY_DURATION = 300_000; // 5 min
+  private static final long HEAT_DURATION = 1_800_000; // 30 min
+  private static final long PURGE_DURATION = 1_800_000; // 30 min
+  private static final long FINISH_DURATION = 600_000; // 10 min
 
   private final MessageSender messageSender;
   private final MessageRouter messageRouter;
@@ -67,6 +67,9 @@ public class Console {
       case "raw":
         onRaw(arguments);
         break;
+      case "retained":
+        onRetained(arguments);
+        break;
       case "base":
         onBase(arguments);
         break;
@@ -89,6 +92,16 @@ public class Console {
     }
 
     messageSender.sendRawMessage(arguments[0], arguments.length == 1 ? ""
+        : String.join(" ", Arrays.copyOfRange(arguments, 1, arguments.length)));
+  }
+
+  private void onRetained(String[] arguments) {
+    if (arguments.length == 0) {
+      System.out.println("Usage: raw <topic> [message]");
+      return;
+    }
+
+    messageSender.sendRetainedRawMessage(arguments[0], arguments.length == 1 ? ""
         : String.join(" ", Arrays.copyOfRange(arguments, 1, arguments.length)));
   }
 
@@ -121,14 +134,15 @@ public class Console {
 
     String baseId = "node-1000";
     String humId = "node-2000";
-    AppRoute appRoute = AppRoute.create(appId -> {
-      messageSender.sendBaseOnline(baseId);
-      messageSender.sendHumOnline(humId);
+    messageSender.sendBaseOnline(baseId);
+    messageSender.sendHumOnline(humId);
 
-      startPingsTask(baseId, humId);
-    });
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      messageSender.sendBaseOffline(baseId);
+      messageSender.sendHumOffline(humId);
+    }));
 
-    messageRouter.registerRoute(appRoute);
+    startPingsTask(baseId, humId);
   }
 
   private void startPingsTask(String baseId, String humId) {
@@ -145,6 +159,8 @@ public class Console {
   }
 
   private void sendSimulationPings(String baseId, String humId, long duration) {
+    duration = duration % (INITIAL_DELAY + HUMIDIFY_DURATION + HEAT_DURATION + PURGE_DURATION
+        + FINISH_DURATION);
     if (duration < INITIAL_DELAY) {
       // setup
       BasePing basePing = BasePing.create(baseId, -1, 20, 35, 0, 20, 1);
