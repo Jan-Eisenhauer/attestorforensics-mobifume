@@ -180,10 +180,10 @@ public class OverviewController {
   public void updateConnection() {
     if (Mobifume.getInstance().getWifiConnection().isEnabled()) {
       setWifiImage(
-          Mobifume.getInstance().getModelManager().isBrokerConnected() ? "Wifi" : "Wifi_Error");
+          Mobifume.getInstance().getBrokerConnection().isConnected() ? "Wifi" : "Wifi_Error");
     } else {
       setWifiImage(
-          Mobifume.getInstance().getModelManager().isBrokerConnected() ? "Lan" : "Lan_Error");
+          Mobifume.getInstance().getBrokerConnection().isConnected() ? "Lan" : "Lan_Error");
     }
   }
 

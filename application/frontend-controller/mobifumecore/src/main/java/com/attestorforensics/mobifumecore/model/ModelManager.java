@@ -1,10 +1,10 @@
 package com.attestorforensics.mobifumecore.model;
 
-import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.update.Updater;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.update.Updater;
 import java.util.List;
 
 /**
@@ -13,23 +13,13 @@ import java.util.List;
 public interface ModelManager {
 
   /**
-   * Connects to broker.
-   */
-  void connectToBroker();
-
-  /**
-   * Checks if broker is connected.
-   *
-   * @return if broker is connected
-   */
-  boolean isBrokerConnected();
-
-  /**
    * Gets all devices which are online.
    *
    * @return the list of devices
    */
   List<Device> getDevices();
+
+  Device getDevice(String deviceId);
 
   /**
    * Creates a group.

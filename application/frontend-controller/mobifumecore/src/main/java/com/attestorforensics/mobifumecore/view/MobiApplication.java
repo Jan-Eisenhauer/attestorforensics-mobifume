@@ -99,7 +99,7 @@ public class MobiApplication extends Application {
     primaryStage.setY(0);
 
     Mobifume.getInstance().getWifiConnection().connect();
-    Mobifume.getInstance().getModelManager().connectToBroker();
+    Mobifume.getInstance().getBrokerConnection().connect();
   }
 
   @Override

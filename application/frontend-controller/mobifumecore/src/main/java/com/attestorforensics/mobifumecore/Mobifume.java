@@ -2,6 +2,10 @@ package com.attestorforensics.mobifumecore;
 
 import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.ModelManager;
+import com.attestorforensics.mobifumecore.model.connection.BrokerConnection;
+import com.attestorforensics.mobifumecore.model.connection.MessageDecoder;
+import com.attestorforensics.mobifumecore.model.connection.MessageHandler;
+import com.attestorforensics.mobifumecore.model.connection.MqttBrokerConnection;
 import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
 import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection;
 import com.attestorforensics.mobifumecore.model.element.misc.ApplicationLock;
@@ -54,6 +58,7 @@ public class Mobifume {
 
   private final ScheduledExecutorService scheduledExecutorService;
   private final WifiConnection wifiConnection;
+  private final BrokerConnection brokerConnection;
 
   private Mobifume() {
     instance = this;
@@ -86,7 +91,12 @@ public class Mobifume {
 
     wifiConnection = WindowsWifiConnection.create(scheduledExecutorService);
 
-    modelManager = new MobiModelManager(globalSettings, wifiConnection);
+    modelManager = new MobiModelManager(globalSettings);
+    MessageHandler messageHandler = new MessageHandler(modelManager, brokerConnection);
+    MessageDecoder messageDecoder = new MessageDecoder(messageHandler);
+    brokerConnection = MqttBrokerConnection.create(Mobifume.getInstance().getConfig(),
+        Mobifume.getInstance().getScheduledExecutorService(), modelManager, wifiConnection,
+        messageDecoder);
 
     ApplicationLock applicationLock =
         FileApplicationLock.create(FileManager.getInstance().getDataFolder());
@@ -137,5 +147,9 @@ public class Mobifume {
 
   public WifiConnection getWifiConnection() {
     return wifiConnection;
+  }
+
+  public BrokerConnection getBrokerConnection() {
+    return brokerConnection;
   }
 }

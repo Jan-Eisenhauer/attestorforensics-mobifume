@@ -16,7 +16,7 @@ public class MqttBrokerConnection implements BrokerConnection {
   private final MessageEncoder messageEncoder;
 
   private MqttBrokerConnection(Properties config, ExecutorService executorService,
-      ModelManager modelManager, WifiConnection wifiConnection, MessageHandler messageHandler) {
+      ModelManager modelManager, WifiConnection wifiConnection, MessageDecoder messageDecoder) {
     String appId = MqttClient.generateClientId();
     try {
       mqttClient = createMqttClient(appId, config);
@@ -30,13 +30,13 @@ public class MqttBrokerConnection implements BrokerConnection {
             wifiConnection);
     messageEncoder = new MessageEncoder(mqttClient);
 
-    mqttClient.setCallback(MqttBrokerCallback.create(mqttBrokerConnector, messageHandler));
+    mqttClient.setCallback(MqttBrokerCallback.create(mqttBrokerConnector, messageDecoder));
   }
 
   public static BrokerConnection create(Properties config, ExecutorService executorService,
-      ModelManager modelManager, WifiConnection wifiConnection, MessageHandler messageHandler) {
+      ModelManager modelManager, WifiConnection wifiConnection, MessageDecoder messageDecoder) {
     return new MqttBrokerConnection(config, executorService, modelManager, wifiConnection,
-        messageHandler);
+        messageDecoder);
   }
 
   @Override

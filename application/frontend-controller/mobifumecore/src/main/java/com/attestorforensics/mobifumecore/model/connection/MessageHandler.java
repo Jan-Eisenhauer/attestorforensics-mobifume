@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.model.connection;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.MobiModelManager;
+import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.Room;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
@@ -15,33 +15,35 @@ import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 
 public class MessageHandler {
 
-  private final MobiModelManager mobiModelManager;
+  private final ModelManager modelManager;
+  private final BrokerConnection brokerConnection;
 
-  public MessageHandler(MobiModelManager mobiModelManager) {
-    this.mobiModelManager = mobiModelManager;
+  public MessageHandler(ModelManager modelManager, BrokerConnection brokerConnection) {
+    this.modelManager = modelManager;
+    this.brokerConnection = brokerConnection;
   }
 
   void receiveBaseOnline(String deviceId, int version) {
     if (existsDevice(deviceId)) {
-      Device device = mobiModelManager.getDevice(deviceId);
+      Device device = modelManager.getDevice(deviceId);
       device.setVersion(version);
       updateDeviceState(device);
       ((Base) device).requestCalibrationData();
       return;
     }
 
-    Base base = new Base(mobiModelManager.getBrokerConnection().getEncoder(), deviceId, version);
+    Base base = new Base(brokerConnection.getEncoder(), deviceId, version);
     deviceOnline(base);
     base.requestCalibrationData();
   }
 
   private boolean existsDevice(String deviceId) {
-    return mobiModelManager.getDevices().stream().anyMatch(n -> n.getId().equals(deviceId));
+    return modelManager.getDevices().stream().anyMatch(n -> n.getId().equals(deviceId));
   }
 
   private void updateDeviceState(Device device) {
     device.setOffline(false);
-    Group group = mobiModelManager.getGroup(device);
+    Group group = modelManager.getGroup(device);
     CustomLogger.info(group, "RECONNECT", device.getId());
     CustomLogger.info("Reconnect " + device.getId());
     group.sendState(device);
@@ -52,7 +54,7 @@ public class MessageHandler {
 
   private void deviceOnline(Device device) {
     device.setOffline(false);
-    mobiModelManager.getDevices().add(device);
+    modelManager.getDevices().add(device);
     Mobifume.getInstance()
         .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.CONNECTED));
@@ -64,21 +66,21 @@ public class MessageHandler {
   }
 
   private void deviceOffline(String deviceId) {
-    Device device = mobiModelManager.getDevice(deviceId);
+    Device device = modelManager.getDevice(deviceId);
     if (device == null) {
       return;
     }
-    if (mobiModelManager.getGroup(device) != null) {
-      CustomLogger.info(mobiModelManager.getGroup(device), "DISCONNECT", device.getId());
+    if (modelManager.getGroup(device) != null) {
+      CustomLogger.info(modelManager.getGroup(device), "DISCONNECT", device.getId());
     }
     CustomLogger.info("Device disconnect: " + device.getId());
 
-    Room group = (Room) mobiModelManager.getGroup(device);
+    Room group = (Room) modelManager.getGroup(device);
     if (group == null) {
       Mobifume.getInstance()
           .getEventDispatcher()
           .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
-      mobiModelManager.getDevices().remove(device);
+      modelManager.getDevices().remove(device);
     }
 
     device.setRssi(-100);
@@ -90,7 +92,7 @@ public class MessageHandler {
 
   void receiveBaseStatus(String deviceId, int rssi, double temperature, double humidity,
       double heaterSetpoint, double heaterTemp, int latch) {
-    Device device = mobiModelManager.getDevice(deviceId);
+    Device device = modelManager.getDevice(deviceId);
     if (device == null) {
       return;
     }
@@ -158,7 +160,7 @@ public class MessageHandler {
         .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
 
-    Room group = (Room) mobiModelManager.getGroup(base);
+    Room group = (Room) modelManager.getGroup(base);
     if (group == null) {
       return;
     }
@@ -168,13 +170,12 @@ public class MessageHandler {
 
   void receiveHumOnline(String deviceId, int version) {
     if (existsDevice(deviceId)) {
-      Device device = mobiModelManager.getDevice(deviceId);
+      Device device = modelManager.getDevice(deviceId);
       device.setVersion(version);
       updateDeviceState(device);
       return;
     }
-    deviceOnline(
-        new Humidifier(mobiModelManager.getBrokerConnection().getEncoder(), deviceId, version));
+    deviceOnline(new Humidifier(brokerConnection.getEncoder(), deviceId, version));
   }
 
   void receiveHumOffline(String deviceId) {
@@ -183,7 +184,7 @@ public class MessageHandler {
 
   void receiveHumStatus(String deviceId, int rssi, int humidify, int led1, int led2,
       boolean overTemperature) {
-    Device device = mobiModelManager.getDevice(deviceId);
+    Device device = modelManager.getDevice(deviceId);
     if (device == null) {
       return;
     }
@@ -201,7 +202,7 @@ public class MessageHandler {
         .getEventDispatcher()
         .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
 
-    Room group = (Room) mobiModelManager.getGroup(hum);
+    Room group = (Room) modelManager.getGroup(hum);
     if (group == null) {
       return;
     }
@@ -210,7 +211,7 @@ public class MessageHandler {
 
   public void receiveCalibrateData(String deviceId, float humidityGradient, float humidityOffset,
       float temperatureGradient, float temperatureOffset) {
-    Device device = mobiModelManager.getDevice(deviceId);
+    Device device = modelManager.getDevice(deviceId);
     if (device == null) {
       return;
     }

@@ -14,14 +14,14 @@ class MqttBrokerCallback implements MqttCallback {
   private final MessageDecoder messageDecoder;
 
   private MqttBrokerCallback(MqttBrokerConnector mqttBrokerConnector,
-      MessageHandler messageHandler) {
+      MessageDecoder messageDecoder) {
     this.mqttBrokerConnector = mqttBrokerConnector;
-    this.messageDecoder = new MessageDecoder(messageHandler);
+    this.messageDecoder = messageDecoder;
   }
 
   static MqttCallback create(MqttBrokerConnector mqttBrokerConnector,
-      MessageHandler messageHandler) {
-    return new MqttBrokerCallback(mqttBrokerConnector, messageHandler);
+      MessageDecoder messageDecoder) {
+    return new MqttBrokerCallback(mqttBrokerConnector, messageDecoder);
   }
 
   @Override
@@ -34,10 +34,10 @@ class MqttBrokerCallback implements MqttCallback {
 
   @Override
   public void messageArrived(String topic, MqttMessage message) throws Exception {
-    String msg = new String(message.getPayload());
-    String[] args = msg.split(";");
-    messageDecoder.decodeMessage(topic, args);
-    CustomLogger.info(topic, msg);
+    String payload = new String(message.getPayload());
+    String[] arguments = payload.split(";");
+    messageDecoder.decodeMessage(topic, arguments);
+    CustomLogger.info(topic, payload);
   }
 
   @Override

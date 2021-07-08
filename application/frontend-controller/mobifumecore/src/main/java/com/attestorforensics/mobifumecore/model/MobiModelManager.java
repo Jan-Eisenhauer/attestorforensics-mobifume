@@ -1,10 +1,6 @@
 package com.attestorforensics.mobifumecore.model;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.connection.BrokerConnection;
-import com.attestorforensics.mobifumecore.model.connection.MessageHandler;
-import com.attestorforensics.mobifumecore.model.connection.MqttBrokerConnection;
-import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.filter.FilterFileHandler;
 import com.attestorforensics.mobifumecore.model.element.filter.MobiFilter;
@@ -26,7 +22,6 @@ import java.util.stream.Collectors;
 public class MobiModelManager implements ModelManager {
 
   private final Settings globalSettings;
-  private final BrokerConnection brokerConnection;
 
   private final List<Device> devices = new ArrayList<>();
   private final List<Group> groups = new ArrayList<>();
@@ -36,7 +31,7 @@ public class MobiModelManager implements ModelManager {
 
   private final Updater updater;
 
-  public MobiModelManager(Settings globalSettings, WifiConnection wifiConnection) {
+  public MobiModelManager(Settings globalSettings) {
     this.globalSettings = globalSettings;
     updater = Updater.create(Mobifume.getInstance().getScheduledExecutorService(),
         Mobifume.getInstance().getEventDispatcher());
@@ -51,25 +46,19 @@ public class MobiModelManager implements ModelManager {
         .stream()
         .filter(f -> !f.isRemoved())
         .collect(Collectors.toList());
-    MessageHandler msgHandler = new MessageHandler(this);
-
-    brokerConnection = MqttBrokerConnection.create(Mobifume.getInstance().getConfig(),
-        Mobifume.getInstance().getScheduledExecutorService(), this, wifiConnection, msgHandler);
-  }
-
-  @Override
-  public void connectToBroker() {
-    Mobifume.getInstance().getScheduledExecutorService().execute(brokerConnection::connect);
-  }
-
-  @Override
-  public boolean isBrokerConnected() {
-    return brokerConnection.isConnected();
   }
 
   @Override
   public List<Device> getDevices() {
     return devices;
+  }
+
+  @Override
+  public Device getDevice(String deviceId) {
+    return devices.stream()
+        .filter(device -> device.getId().equals(deviceId))
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
@@ -159,17 +148,6 @@ public class MobiModelManager implements ModelManager {
   @Override
   public Updater getUpdater() {
     return updater;
-  }
-
-  public Device getDevice(String deviceId) {
-    return devices.stream()
-        .filter(device -> device.getId().equals(deviceId))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public BrokerConnection getBrokerConnection() {
-    return brokerConnection;
   }
 
   public void connectionLost() {
