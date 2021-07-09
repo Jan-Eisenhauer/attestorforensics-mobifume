@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.model.connection;
+package com.attestorforensics.mobifumecore.model.connection.wifi;
 
 import java.util.concurrent.CompletableFuture;
 

@@ -27,7 +27,7 @@ public class ConnectionListener implements Listener {
       switch (event.getStatus()) {
         case BROKER_CONNECTED:
           if (connectionLostDialog != null) {
-            connectionLostDialog.close(false);
+            connectionLostDialog.close();
             connectionLostDialog = null;
           }
           break;

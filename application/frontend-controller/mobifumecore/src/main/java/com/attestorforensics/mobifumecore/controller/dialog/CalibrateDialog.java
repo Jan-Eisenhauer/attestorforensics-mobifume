@@ -15,15 +15,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class CalibrateDialog {
+public class CalibrateDialog implements Dialog {
 
   private Stage stage;
   private Window window;
   private CalibrateController controller;
   private Consumer<Calibration> callback;
 
-  public CalibrateDialog(Window window, Consumer<Calibration> callback,
-      String calibrationName) {
+  public CalibrateDialog(Window window, Consumer<Calibration> callback, String calibrationName) {
     this.window = window;
     this.callback = callback;
     Platform.runLater(() -> {
@@ -40,7 +39,7 @@ public class CalibrateDialog {
           return;
         }
 
-        close(null);
+        close();
       });
       try {
         Parent root = loader.load();
@@ -64,7 +63,12 @@ public class CalibrateDialog {
     });
   }
 
-  public void close(Calibration calibration) {
+  @Override
+  public void close() {
+    closeWithCalibration(null);
+  }
+
+  public void closeWithCalibration(Calibration calibration) {
     Platform.runLater(() -> {
       stage.close();
       window.getScene().getRoot().setEffect(null);

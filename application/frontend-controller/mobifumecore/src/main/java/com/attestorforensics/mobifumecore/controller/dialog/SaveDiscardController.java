@@ -25,19 +25,19 @@ public class SaveDiscardController {
   @FXML
   public void onSave() {
     Sound.click();
-    dialog.close(SaveDiscardAction.SAVE);
+    dialog.closeWithAction(SaveDiscardAction.SAVE);
   }
 
   @FXML
   public void onDiscard() {
     Sound.click();
-    dialog.close(SaveDiscardAction.DISCARD);
+    dialog.closeWithAction(SaveDiscardAction.DISCARD);
   }
 
   @FXML
   public void onCancel() {
     Sound.click();
-    dialog.close(SaveDiscardAction.CANCEL);
+    dialog.closeWithAction(SaveDiscardAction.CANCEL);
   }
 
   public void setDialog(SaveDiscardDialog dialog) {

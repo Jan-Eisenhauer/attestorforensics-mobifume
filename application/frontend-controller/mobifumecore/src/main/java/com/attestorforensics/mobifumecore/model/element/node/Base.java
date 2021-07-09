@@ -1,13 +1,19 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
-import com.attestorforensics.mobifumecore.model.connection.MessageEncoder;
+import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseDuration;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseLatch;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseRequestCalibrationData;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseReset;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseSetpoint;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHumidityGradient;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHumidityOffset;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseTemperatureGradient;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseTemperatureOffset;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import java.util.Optional;
 
 public class Base extends Device {
-
-  // Devices only support a maximum time of 114 minutes
-  private static final int MAX_TIME = 114;
 
   private double temperature = -128;
   private double humidity = -128;
@@ -17,24 +23,25 @@ public class Base extends Device {
   private Calibration humidityCalibration;
   private Calibration temperatureCalibration;
 
-  public Base(MessageEncoder messageEncoder, final String id, final int version) {
-    super(messageEncoder, DeviceType.BASE, id, version);
+  public Base(MessageSender messageSender, final String deviceId, final int version) {
+    super(messageSender, DeviceType.BASE, deviceId, version);
   }
 
   @Override
   public void reset() {
-    getEncoder().baseReset(this);
+    messageSender.send(BaseReset.create(deviceId));
   }
 
   public void updateHeaterSetpoint(int heaterTemperature) {
     if (heaterSetpoint == heaterTemperature) {
       return;
     }
+
     forceUpdateHeaterSetpoint(heaterTemperature);
   }
 
   public void forceUpdateHeaterSetpoint(int heaterTemperature) {
-    getEncoder().baseSetHeater(this, heaterTemperature);
+    messageSender.send(BaseSetpoint.create(deviceId, heaterTemperature));
   }
 
   public void updateLatch(boolean open) {
@@ -46,11 +53,11 @@ public class Base extends Device {
   }
 
   public void forceUpdateLatch(boolean open) {
-    getEncoder().baseLatch(this, open);
+    messageSender.send(BaseLatch.create(deviceId, open));
   }
 
   public void updateTime(int time) {
-    getEncoder().baseTime(this, Math.min(time, MAX_TIME));
+    messageSender.send(BaseDuration.create(deviceId, time));
   }
 
   public Optional<Calibration> getHumidityCalibration() {
@@ -62,7 +69,7 @@ public class Base extends Device {
   }
 
   public void requestCalibrationData() {
-    getEncoder().baseRequestCalibrationData(this);
+    messageSender.send(BaseRequestCalibrationData.create(deviceId));
   }
 
   public void setCalibration(float humidityGradient, float humidityOffset,
@@ -78,14 +85,14 @@ public class Base extends Device {
 
   public void updateHumidityCalibration(Calibration calibration) {
     humidityCalibration = calibration;
-    getEncoder().baseHumGradient(this, calibration.getGradient());
-    getEncoder().baseHumOffset(this, calibration.getOffset());
+    messageSender.send(BaseHumidityGradient.create(deviceId, calibration.getGradient()));
+    messageSender.send(BaseHumidityOffset.create(deviceId, calibration.getOffset()));
   }
 
   public void updateTemperatureCalibration(Calibration calibration) {
     temperatureCalibration = calibration;
-    getEncoder().baseTempGradient(this, calibration.getGradient());
-    getEncoder().baseTempOffset(this, calibration.getOffset());
+    messageSender.send(BaseTemperatureGradient.create(deviceId, calibration.getGradient()));
+    messageSender.send(BaseTemperatureOffset.create(deviceId, calibration.getOffset()));
   }
 
   public double getTemperature() {

@@ -102,19 +102,19 @@ public class CustomLogger {
   public static void logGroupDevices(Room group) {
     List<String> nodeList = group.getDevices()
         .stream()
-        .map(mapper -> mapper.getId() + "," + mapper.getType())
+        .map(mapper -> mapper.getDeviceId() + "," + mapper.getType())
         .collect(Collectors.toList());
     nodeList.add(0, "DEVICES");
     info(group, nodeList.toArray());
   }
 
   public static void logGroupBase(Room group, Base base) {
-    info(group, "BASE", base.getId(), base.getRssi(), base.getTemperature(), base.getHumidity(),
+    info(group, "BASE", base.getDeviceId(), base.getRssi(), base.getTemperature(), base.getHumidity(),
         base.getHeaterSetpoint(), base.getHeaterTemperature(), base.getLatch());
   }
 
   public static void logGroupHum(Room group, Humidifier hum) {
-    info(group, "HUM", hum.getId(), hum.getRssi(), hum.isHumidify(), hum.getLed1(), hum.getLed2());
+    info(group, "HUM", hum.getDeviceId(), hum.getRssi(), hum.isHumidify(), hum.getLed1(), hum.getLed2());
   }
 
   public static void logGroupRemove(Room group) {

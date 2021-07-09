@@ -172,7 +172,7 @@ public class CreateGroupFilterController {
   @FXML
   public void onErrorInfo(ActionEvent event) {
     dialog.setLockClosing(true);
-    new InfoBox(((Node) event.getSource()).getScene().getWindow(), errorIcon,
+    new InfoBoxDialog(((Node) event.getSource()).getScene().getWindow(), errorIcon,
         new ErrorWarning(errorText, errorType), nill -> dialog.setLockClosing(false));
   }
 

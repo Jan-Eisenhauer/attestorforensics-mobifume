@@ -17,20 +17,20 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class InfoBox {
+public class InfoBoxDialog implements Dialog {
 
   private Stage stage;
   private Window window;
   private Consumer<Void> callback;
   private InfoBoxController controller;
 
-  public InfoBox(Window window, Node parent, ErrorWarning error, Consumer<Void> callback) {
+  public InfoBoxDialog(Window window, Node parent, ErrorWarning error, Consumer<Void> callback) {
     this.window = window;
     this.callback = callback;
     Platform.runLater(() -> {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
       FXMLLoader loader =
-          new FXMLLoader(getClass().getClassLoader().getResource("view/dialog/InfoBox.fxml"),
+          new FXMLLoader(getClass().getClassLoader().getResource("view/dialog/InfoBoxDialog.fxml"),
               resourceBundle);
 
       stage = new Stage();
@@ -70,6 +70,7 @@ public class InfoBox {
     });
   }
 
+  @Override
   public void close() {
     Platform.runLater(() -> {
       stage.close();

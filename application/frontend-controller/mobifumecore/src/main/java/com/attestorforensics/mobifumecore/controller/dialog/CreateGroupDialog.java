@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class CreateGroupDialog {
+public class CreateGroupDialog implements Dialog {
 
   private Stage stage;
   private Window window;
@@ -40,7 +40,7 @@ public class CreateGroupDialog {
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
         if (Boolean.FALSE.equals(newFocus)) {
-          close(null);
+          close();
         }
       });
       try {
@@ -67,10 +67,15 @@ public class CreateGroupDialog {
     });
   }
 
-  public void close(GroupData groupData) {
+  public void close() {
+    closeWithGroupData(null);
+  }
+
+  public void closeWithGroupData(GroupData groupData) {
     if (lockClosing) {
       return;
     }
+
     Platform.runLater(() -> {
       stage.close();
       window.getScene().getRoot().setEffect(null);

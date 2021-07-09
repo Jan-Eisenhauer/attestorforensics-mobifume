@@ -43,8 +43,8 @@ public class ServiceController {
 
   public void addDevice(Device device) {
     Platform.runLater(() -> {
-      if (serviceItemController.containsKey(device.getId())) {
-        serviceItemController.get(device.getId()).setDevice(device);
+      if (serviceItemController.containsKey(device.getDeviceId())) {
+        serviceItemController.get(device.getDeviceId()).setDevice(device);
         return;
       }
 
@@ -58,7 +58,7 @@ public class ServiceController {
         ServiceItemController controller = loader.getController();
         controller.setDevice(device);
         root.getProperties().put("controller", controller);
-        serviceItemController.put(device.getId(), controller);
+        serviceItemController.put(device.getDeviceId(), controller);
         devices.getChildren().add(root);
       } catch (IOException e) {
         e.printStackTrace();
@@ -93,14 +93,14 @@ public class ServiceController {
   }
 
   public void updateDevice(Device device) {
-    serviceItemController.get(device.getId()).update();
+    serviceItemController.get(device.getDeviceId()).update();
   }
 
   public void removeDevice(Device device) {
-    serviceItemController.get(device.getId()).remove();
+    serviceItemController.get(device.getDeviceId()).remove();
   }
 
   public ServiceItemController getServiceItemController(Device device) {
-    return serviceItemController.get(device.getId());
+    return serviceItemController.get(device.getDeviceId());
   }
 }

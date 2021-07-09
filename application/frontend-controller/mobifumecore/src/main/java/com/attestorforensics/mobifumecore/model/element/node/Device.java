@@ -1,40 +1,28 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
-import com.attestorforensics.mobifumecore.model.connection.MessageEncoder;
+import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
 
 public abstract class Device {
 
-  protected final MessageEncoder messageEncoder;
+  protected final MessageSender messageSender;
   private final DeviceType type;
-  private final String id;
+  protected final String deviceId;
   private int version;
   private int rssi = -100;
   private boolean isOffline;
 
-  protected Device(MessageEncoder messageEncoder, final DeviceType type, final String id,
+  protected Device(MessageSender messageSender, final DeviceType type, final String deviceId,
       final int version) {
-    this.messageEncoder = messageEncoder;
+    this.messageSender = messageSender;
     this.type = type;
-    this.id = id;
+    this.deviceId = deviceId;
     this.version = version;
   }
 
   public abstract void reset();
-  //  public void reset() {
-  //    if (type == DeviceType.BASE) {
-  //      getEncoder().baseReset(this);
-  //    }
-  //    if (type == DeviceType.HUMIDIFIER) {
-  //      getEncoder().humReset(this);
-  //    }
-  //  }
-
-  protected MessageEncoder getEncoder() {
-    return messageEncoder;
-  }
 
   public String getShortId() {
-    String nodeNumber = id.replace("node-", "");
+    String nodeNumber = deviceId.replace("node-", "");
     try {
       int parsedValue = Integer.parseInt(nodeNumber);
       return String.format("%1$06X", parsedValue);
@@ -47,8 +35,8 @@ public abstract class Device {
     return type;
   }
 
-  public String getId() {
-    return id;
+  public String getDeviceId() {
+    return deviceId;
   }
 
   public int getVersion() {

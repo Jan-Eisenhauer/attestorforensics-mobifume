@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class ConfirmDialog {
+public class ConfirmDialog implements Dialog {
 
   private Stage stage;
   private Window window;
@@ -36,7 +36,7 @@ public class ConfirmDialog {
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
         if (Boolean.FALSE.equals(newFocus)) {
-          close(false);
+          close();
         }
 
       });
@@ -66,7 +66,20 @@ public class ConfirmDialog {
     });
   }
 
-  public void close(boolean accepted) {
+  @Override
+  public void close() {
+    closeWithResult(false);
+  }
+
+  public void accepted() {
+    closeWithResult(true);
+  }
+
+  public void canceled() {
+    closeWithResult(false);
+  }
+
+  public void closeWithResult(boolean accepted) {
     Platform.runLater(() -> {
       stage.close();
       window.getScene().getRoot().setEffect(null);

@@ -1,6 +1,10 @@
-package com.attestorforensics.mobifumecore.model.connection;
+package com.attestorforensics.mobifumecore.model.connection.broker;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.model.ModelManager;
+import com.attestorforensics.mobifumecore.model.connection.message.MessageRouter;
+import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
+import com.attestorforensics.mobifumecore.model.connection.message.MqttMessageRouter;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
@@ -11,17 +15,17 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 class MqttBrokerCallback implements MqttCallback {
 
   private final MqttBrokerConnector mqttBrokerConnector;
-  private final MessageDecoder messageDecoder;
+  private final MessageRouter messageRouter;
 
-  private MqttBrokerCallback(MqttBrokerConnector mqttBrokerConnector,
-      MessageDecoder messageDecoder) {
+  private MqttBrokerCallback(MqttBrokerConnector mqttBrokerConnector, ModelManager modelManager,
+      MessageSender messageSender) {
     this.mqttBrokerConnector = mqttBrokerConnector;
-    this.messageDecoder = messageDecoder;
+    this.messageRouter = MqttMessageRouter.create(modelManager, messageSender);
   }
 
-  static MqttCallback create(MqttBrokerConnector mqttBrokerConnector,
-      MessageDecoder messageDecoder) {
-    return new MqttBrokerCallback(mqttBrokerConnector, messageDecoder);
+  static MqttCallback create(MqttBrokerConnector mqttBrokerConnector, ModelManager modelManager,
+      MessageSender messageSender) {
+    return new MqttBrokerCallback(mqttBrokerConnector, modelManager, messageSender);
   }
 
   @Override
@@ -36,7 +40,7 @@ class MqttBrokerCallback implements MqttCallback {
   public void messageArrived(String topic, MqttMessage message) throws Exception {
     String payload = new String(message.getPayload());
     String[] arguments = payload.split(";");
-    messageDecoder.decodeMessage(topic, arguments);
+    messageRouter.receivedMessage(topic, arguments);
     CustomLogger.info(topic, payload);
   }
 

@@ -24,13 +24,13 @@ public class YesNoController {
   @FXML
   public void onYes() {
     Sound.click();
-    dialog.close(true);
+    dialog.yes();
   }
 
   @FXML
   public void onNo() {
     Sound.click();
-    dialog.close(false);
+    dialog.no();
   }
 
   public void setDialog(YesNoDialog dialog) {

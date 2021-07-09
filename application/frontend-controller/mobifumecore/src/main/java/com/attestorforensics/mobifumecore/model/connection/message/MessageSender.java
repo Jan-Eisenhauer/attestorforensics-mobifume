@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.connection.message;
 
-import com.attestorforensics.mobifumecore.model.connection.message.out.OutgoingMessage;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.OutgoingMessage;
 
 public interface MessageSender {
 

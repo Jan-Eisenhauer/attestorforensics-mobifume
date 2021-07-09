@@ -326,7 +326,7 @@ public class Room implements Group {
 
   @Override
   public void sendState(Device device) {
-    CustomLogger.info(this, "SENDSTATE", device.getId(), device.getType());
+    CustomLogger.info(this, "SENDSTATE", device.getDeviceId(), device.getType());
     switch (device.getType()) {
       case BASE:
         Base base = (Base) device;

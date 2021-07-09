@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class YesNoDialog {
+public class YesNoDialog implements Dialog {
 
   private final Window window;
   private final String title;
@@ -49,7 +49,7 @@ public class YesNoDialog {
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
         if (Boolean.FALSE.equals(newFocus) && !closed) {
-          close(false);
+          close();
         }
       });
 
@@ -76,7 +76,20 @@ public class YesNoDialog {
     });
   }
 
-  public void close(boolean accepted) {
+  @Override
+  public void close() {
+    closeWithResult(false);
+  }
+
+  public void yes() {
+    closeWithResult(true);
+  }
+
+  public void no() {
+    closeWithResult(false);
+  }
+
+  public void closeWithResult(boolean accepted) {
     closed = true;
     Platform.runLater(() -> {
       stage.close();

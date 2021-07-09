@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class AddFilterRunDialog {
+public class AddFilterRunDialog implements Dialog {
 
   private Stage stage;
   private Window window;
@@ -63,6 +63,7 @@ public class AddFilterRunDialog {
     });
   }
 
+  @Override
   public void close() {
     Platform.runLater(() -> {
       stage.close();

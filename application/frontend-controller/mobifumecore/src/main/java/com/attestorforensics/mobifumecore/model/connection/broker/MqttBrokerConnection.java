@@ -1,6 +1,9 @@
-package com.attestorforensics.mobifumecore.model.connection;
+package com.attestorforensics.mobifumecore.model.connection.broker;
 
 import com.attestorforensics.mobifumecore.model.ModelManager;
+import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
+import com.attestorforensics.mobifumecore.model.connection.message.MqttMessageSender;
+import com.attestorforensics.mobifumecore.model.connection.wifi.WifiConnection;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -13,10 +16,10 @@ public class MqttBrokerConnection implements BrokerConnection {
 
   private final MqttClient mqttClient;
   private final MqttBrokerConnector mqttBrokerConnector;
-  private final MessageEncoder messageEncoder;
+  private final MessageSender messageSender;
 
   private MqttBrokerConnection(Properties config, ExecutorService executorService,
-      ModelManager modelManager, WifiConnection wifiConnection, MessageDecoder messageDecoder) {
+      ModelManager modelManager, WifiConnection wifiConnection) {
     String appId = MqttClient.generateClientId();
     try {
       mqttClient = createMqttClient(appId, config);
@@ -28,15 +31,14 @@ public class MqttBrokerConnection implements BrokerConnection {
     mqttBrokerConnector =
         MqttBrokerConnector.create(config, mqttClient, executorService, modelManager,
             wifiConnection);
-    messageEncoder = new MessageEncoder(mqttClient);
-
-    mqttClient.setCallback(MqttBrokerCallback.create(mqttBrokerConnector, messageDecoder));
+    messageSender = MqttMessageSender.create(mqttClient, executorService);
+    mqttClient.setCallback(
+        MqttBrokerCallback.create(mqttBrokerConnector, modelManager, messageSender));
   }
 
   public static BrokerConnection create(Properties config, ExecutorService executorService,
-      ModelManager modelManager, WifiConnection wifiConnection, MessageDecoder messageDecoder) {
-    return new MqttBrokerConnection(config, executorService, modelManager, wifiConnection,
-        messageDecoder);
+      ModelManager modelManager, WifiConnection wifiConnection) {
+    return new MqttBrokerConnection(config, executorService, modelManager, wifiConnection);
   }
 
   @Override
@@ -50,12 +52,8 @@ public class MqttBrokerConnection implements BrokerConnection {
   }
 
   @Override
-  public MessageEncoder getEncoder() {
-    return messageEncoder;
-  }
-
-  public MqttClient getMqttClient() {
-    return mqttClient;
+  public MessageSender messageSender() {
+    return messageSender;
   }
 
   private MqttClient createMqttClient(String clientId, Properties config) throws MqttException {

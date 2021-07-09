@@ -2,6 +2,7 @@ package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.Dialog;
 import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupFilterItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
@@ -95,6 +96,7 @@ public class GroupController {
   @FXML
   private LineChart<Double, Double> chart;
 
+  private Dialog currentDialog;
   private Parent calculator;
 
   private int tempWrong;
@@ -170,6 +172,7 @@ public class GroupController {
     purgePane.setVisible(false);
     finishedPane.setVisible(false);
     evaporantPane.setVisible(false);
+    closeCurrentDialog();
   }
 
   public void setupEvaporateTimer() {
@@ -417,6 +420,13 @@ public class GroupController {
     timerText.setText(formatted);
   }
 
+  private void closeCurrentDialog() {
+    if (currentDialog != null) {
+      currentDialog.close();
+      currentDialog = null;
+    }
+  }
+
   public void destroy() {
     cancelTimerTaskIfScheduled();
     cancelStatusTaskIfScheduled();
@@ -491,9 +501,11 @@ public class GroupController {
   public void onHumidifyNextStep(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
+    closeCurrentDialog();
+    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.next.humidity.title"),
         LocaleManager.getInstance().getString("dialog.next.humidity.content"), true, accepted -> {
+      currentDialog = null;
       if (Boolean.FALSE.equals(accepted)) {
         return;
       }
@@ -510,10 +522,12 @@ public class GroupController {
   public void onHumidifyCancel(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
+    closeCurrentDialog();
+    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.cancel.humidity.title"),
         LocaleManager.getInstance().getString("dialog.cancel.humidity" + ".content"), true,
         accepted -> {
+          currentDialog = null;
           if (Boolean.TRUE.equals(accepted)) {
             group.cancel();
           }
@@ -524,9 +538,11 @@ public class GroupController {
   public void onEvaporateNextStep(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
+    closeCurrentDialog();
+    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.next.evaporate.title"),
         LocaleManager.getInstance().getString("dialog.next.evaporate.content"), true, accepted -> {
+      currentDialog = null;
       if (Boolean.TRUE.equals(accepted)) {
         group.startPurge();
       }
@@ -537,10 +553,12 @@ public class GroupController {
   public void onEvaporateCancel(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
+    closeCurrentDialog();
+    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.cancel.evaporate.title"),
         LocaleManager.getInstance().getString("dialog.cancel.evaporate.content"), true,
         accepted -> {
+          currentDialog = null;
           if (Boolean.TRUE.equals(accepted)) {
             group.cancel();
           }
@@ -551,9 +569,11 @@ public class GroupController {
   public void onPurgeCancel(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
+    closeCurrentDialog();
+    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.cancel.purge.title"),
         LocaleManager.getInstance().getString("dialog.cancel.purge.content"), true, accepted -> {
+      currentDialog = null;
       if (Boolean.TRUE.equals(accepted)) {
         group.cancel();
       }
@@ -564,9 +584,11 @@ public class GroupController {
   public void onPurgeAgain(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
+    closeCurrentDialog();
+    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
         LocaleManager.getInstance().getString("dialog.again.purge.title"),
         LocaleManager.getInstance().getString("dialog.again.purge.content"), true, accepted -> {
+      currentDialog = null;
       if (Boolean.TRUE.equals(accepted)) {
         group.startPurge();
       }

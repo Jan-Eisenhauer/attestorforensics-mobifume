@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class InputDialog {
+public class InputDialog implements Dialog {
 
   private Stage stage;
   private Window window;
@@ -38,7 +38,7 @@ public class InputDialog {
       if (closeOnOutside) {
         stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
           if (Boolean.FALSE.equals(newFocus)) {
-            close(null);
+            close();
           }
         });
       } else {
@@ -70,7 +70,12 @@ public class InputDialog {
     });
   }
 
-  public void close(String value) {
+  @Override
+  public void close() {
+    closeWithValue(null);
+  }
+
+  public void closeWithValue(String value) {
     Platform.runLater(() -> {
       stage.close();
       window.getScene().getRoot().setEffect(null);

@@ -56,7 +56,7 @@ public class MobiModelManager implements ModelManager {
   @Override
   public Device getDevice(String deviceId) {
     return devices.stream()
-        .filter(device -> device.getId().equals(deviceId))
+        .filter(device -> device.getDeviceId().equals(deviceId))
         .findFirst()
         .orElse(null);
   }

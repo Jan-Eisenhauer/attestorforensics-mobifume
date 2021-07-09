@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
-import com.attestorforensics.mobifumecore.controller.dialog.InfoBox;
+import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
@@ -39,7 +39,7 @@ public class GroupHumItemController {
 
   @FXML
   public void onErrorInfo(ActionEvent event) {
-    new InfoBox(((Node) event.getSource()).getScene().getWindow(), errorIcon,
+    new InfoBoxDialog(((Node) event.getSource()).getScene().getWindow(), errorIcon,
         errors.lastEntry().getValue(), null);
   }
 

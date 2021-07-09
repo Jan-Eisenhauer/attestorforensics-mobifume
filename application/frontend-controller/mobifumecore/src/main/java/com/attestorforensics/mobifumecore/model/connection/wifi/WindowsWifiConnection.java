@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.model.connection;
+package com.attestorforensics.mobifumecore.model.connection.wifi;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;

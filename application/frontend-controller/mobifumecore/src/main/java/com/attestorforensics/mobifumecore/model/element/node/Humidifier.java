@@ -1,7 +1,9 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.connection.MessageEncoder;
+import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierEnable;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierReset;
 import com.attestorforensics.mobifumecore.model.event.WaterErrorEvent;
 
 public class Humidifier extends Device {
@@ -16,13 +18,13 @@ public class Humidifier extends Device {
   private int waterState;
   private boolean waterEmpty;
 
-  public Humidifier(MessageEncoder messageEncoder, final String id, final int version) {
-    super(messageEncoder, DeviceType.HUMIDIFIER, id, version);
+  public Humidifier(MessageSender messageSender, final String deviceId, final int version) {
+    super(messageSender, DeviceType.HUMIDIFIER, deviceId, version);
   }
 
   @Override
   public void reset() {
-    getEncoder().humReset(this);
+    messageSender.send(HumidifierReset.create(deviceId));
   }
 
   public void updateHumidify(boolean humidifying) {
@@ -34,7 +36,7 @@ public class Humidifier extends Device {
   }
 
   public void forceUpdateHumidify(boolean humidifying) {
-    getEncoder().humEnable(this, humidifying);
+    messageSender.send(HumidifierEnable.create(deviceId, humidifying));
   }
 
   public void setLed1(int led1) {

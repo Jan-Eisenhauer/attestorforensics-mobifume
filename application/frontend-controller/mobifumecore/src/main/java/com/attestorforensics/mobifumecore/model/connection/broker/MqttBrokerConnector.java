@@ -1,7 +1,8 @@
-package com.attestorforensics.mobifumecore.model.connection;
+package com.attestorforensics.mobifumecore.model.connection.broker;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.ModelManager;
+import com.attestorforensics.mobifumecore.model.connection.wifi.WifiConnection;
 import com.attestorforensics.mobifumecore.model.element.group.Room;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;

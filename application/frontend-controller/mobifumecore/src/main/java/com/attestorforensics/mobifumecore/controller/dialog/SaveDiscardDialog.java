@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class SaveDiscardDialog {
+public class SaveDiscardDialog implements Dialog {
 
   private final Window window;
   private final String title;
@@ -50,7 +50,7 @@ public class SaveDiscardDialog {
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
         if (Boolean.FALSE.equals(newFocus) && !closed) {
-          close(SaveDiscardAction.CANCEL);
+          closeWithAction(SaveDiscardAction.CANCEL);
         }
       });
 
@@ -77,7 +77,12 @@ public class SaveDiscardDialog {
     });
   }
 
-  public void close(SaveDiscardAction action) {
+  @Override
+  public void close() {
+    closeWithAction(SaveDiscardAction.CANCEL);
+  }
+
+  public void closeWithAction(SaveDiscardAction action) {
     closed = true;
     Platform.runLater(() -> {
       stage.close();

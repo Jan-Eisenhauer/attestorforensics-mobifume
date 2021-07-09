@@ -5,7 +5,6 @@ import java.util.Locale;
 
 public class Settings {
 
-  //  public static Settings DEFAULT_SETTINGS;
   private static final SettingsRepository settingsRepository = SettingsFileRepository.create();
 
   private Locale language = Locale.GERMANY;

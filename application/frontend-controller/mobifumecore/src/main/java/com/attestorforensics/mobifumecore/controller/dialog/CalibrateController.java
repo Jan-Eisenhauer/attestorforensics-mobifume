@@ -91,7 +91,7 @@ public class CalibrateController {
     double secondDeviceValue = Double.parseDouble(secondMeasurementDevice.getText());
     Calibration calibration = calculateCalibrationFromPoints(firstReferenceValue,
         secondReferenceValue, firstDeviceValue, secondDeviceValue);
-    dialog.close(calibration);
+    dialog.closeWithCalibration(calibration);
   }
 
   private Calibration calculateCalibrationFromPoints(double x1, double x2, double y1, double y2) {
@@ -103,13 +103,13 @@ public class CalibrateController {
   @FXML
   public void onCancel() {
     Sound.click();
-    dialog.close(null);
+    dialog.close();
   }
 
   @FXML
   public void onReset() {
     Sound.click();
-    dialog.close(Calibration.createDefault());
+    dialog.closeWithCalibration(Calibration.createDefault());
   }
 
   public void setDialog(CalibrateDialog dialog) {

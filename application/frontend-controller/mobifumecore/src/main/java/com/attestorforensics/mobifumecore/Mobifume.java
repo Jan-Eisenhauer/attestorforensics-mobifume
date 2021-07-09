@@ -2,12 +2,10 @@ package com.attestorforensics.mobifumecore;
 
 import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.ModelManager;
-import com.attestorforensics.mobifumecore.model.connection.BrokerConnection;
-import com.attestorforensics.mobifumecore.model.connection.MessageDecoder;
-import com.attestorforensics.mobifumecore.model.connection.MessageHandler;
-import com.attestorforensics.mobifumecore.model.connection.MqttBrokerConnection;
-import com.attestorforensics.mobifumecore.model.connection.WifiConnection;
-import com.attestorforensics.mobifumecore.model.connection.WindowsWifiConnection;
+import com.attestorforensics.mobifumecore.model.connection.broker.BrokerConnection;
+import com.attestorforensics.mobifumecore.model.connection.broker.MqttBrokerConnection;
+import com.attestorforensics.mobifumecore.model.connection.wifi.WifiConnection;
+import com.attestorforensics.mobifumecore.model.connection.wifi.WindowsWifiConnection;
 import com.attestorforensics.mobifumecore.model.element.misc.ApplicationLock;
 import com.attestorforensics.mobifumecore.model.element.misc.FileApplicationLock;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
@@ -50,11 +48,11 @@ public class Mobifume {
   /**
    * Gets the event manager.
    */
-  private EventDispatcher eventDispatcher;
+  private final EventDispatcher eventDispatcher;
   /**
    * Gets the model manager which establish connections and holds devices, filters and groups.
    */
-  private ModelManager modelManager;
+  private final ModelManager modelManager;
 
   private final ScheduledExecutorService scheduledExecutorService;
   private final WifiConnection wifiConnection;
@@ -62,6 +60,14 @@ public class Mobifume {
 
   private Mobifume() {
     instance = this;
+
+    ApplicationLock applicationLock =
+        FileApplicationLock.create(FileManager.getInstance().getDataFolder());
+    if (!applicationLock.lockApplication()) {
+      logger.error("App already active");
+      System.exit(1);
+      throw new IllegalStateException("App already active");
+    }
 
     ScheduledThreadPoolExecutor scheduledThreadPoolExecutor =
         new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
@@ -89,22 +95,12 @@ public class Mobifume {
     Locale language = globalSettings.getLanguage();
     LocaleManager.getInstance().load(language);
 
+    modelManager = new MobiModelManager(globalSettings);
+
     wifiConnection = WindowsWifiConnection.create(scheduledExecutorService);
 
-    modelManager = new MobiModelManager(globalSettings);
-    MessageHandler messageHandler = new MessageHandler(modelManager, brokerConnection);
-    MessageDecoder messageDecoder = new MessageDecoder(messageHandler);
     brokerConnection = MqttBrokerConnection.create(Mobifume.getInstance().getConfig(),
-        Mobifume.getInstance().getScheduledExecutorService(), modelManager, wifiConnection,
-        messageDecoder);
-
-    ApplicationLock applicationLock =
-        FileApplicationLock.create(FileManager.getInstance().getDataFolder());
-    if (!applicationLock.lockApplication()) {
-      logger.error("App already active");
-      System.exit(1);
-      throw new IllegalStateException("App already active");
-    }
+        Mobifume.getInstance().getScheduledExecutorService(), modelManager, wifiConnection);
   }
 
   /**

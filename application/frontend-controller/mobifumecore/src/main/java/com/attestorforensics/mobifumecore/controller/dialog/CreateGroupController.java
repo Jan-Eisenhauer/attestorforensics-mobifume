@@ -264,7 +264,7 @@ public class CreateGroupController {
 
     CreateGroupDialog.GroupData groupData =
         new CreateGroupDialog.GroupData(groupName.getText(), devices, filters);
-    dialog.close(groupData);
+    dialog.closeWithGroupData(groupData);
     if (groupName.getText().equals(defaultName)) {
       lastGroupId = defaultId;
     }
@@ -273,7 +273,7 @@ public class CreateGroupController {
   @FXML
   public void onCancel() {
     Sound.click();
-    dialog.close(null);
+    dialog.close();
   }
 
   public Map<String, Filter> getFilterMap() {

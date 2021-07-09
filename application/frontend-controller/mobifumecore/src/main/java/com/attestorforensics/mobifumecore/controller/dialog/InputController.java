@@ -56,7 +56,7 @@ public class InputController {
   public void onOk() {
     Sound.click();
     if (validator.isValid(input.getText())) {
-      dialog.close(input.getText());
+      dialog.closeWithValue(input.getText());
     } else {
       ok.disableProperty().setValue(true);
       error.setVisible(true);
@@ -66,7 +66,7 @@ public class InputController {
   @FXML
   public void onCancel() {
     Sound.click();
-    dialog.close(null);
+    dialog.close();
   }
 
   public void setDialog(InputDialog dialog) {

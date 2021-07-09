@@ -11,7 +11,7 @@ public class MessageEncoder {
 
   private MqttClient client;
 
-  MessageEncoder(MqttClient client) {
+  private MessageEncoder(MqttClient client) {
     this.client = client;
   }
 
@@ -42,7 +42,7 @@ public class MessageEncoder {
   }
 
   private void sendBase(Device device, String message) {
-    send(Mobifume.getInstance().getConfig().getProperty("channel.baseCmd") + device.getId(),
+    send(Mobifume.getInstance().getConfig().getProperty("channel.baseCmd") + device.getDeviceId(),
         message);
   }
 
@@ -129,7 +129,7 @@ public class MessageEncoder {
   }
 
   private void sendHum(Device device, String message) {
-    send(Mobifume.getInstance().getConfig().getProperty("channel.humCmd") + device.getId(),
+    send(Mobifume.getInstance().getConfig().getProperty("channel.humCmd") + device.getDeviceId(),
         message);
   }
 
