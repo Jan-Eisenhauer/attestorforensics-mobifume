@@ -228,34 +228,36 @@ public class GroupController extends CloseableController {
   }
 
   private void initBases() {
-    group.getBases().forEach(base -> {
-      GroupBaseItemController groupBaseItemController = loadItem("GroupBaseItem.fxml");
-      Parent groupBaseItemRoot = groupBaseItemController.getRoot();
-      groupBaseItemController.setBase(group, base);
-      groupBaseItemRoot.getProperties().put("controller", groupBaseItemController);
-      bases.getChildren().add(groupBaseItemRoot);
-    });
+    group.getBases()
+        .forEach(base -> this.<GroupBaseItemController>loadItem("GroupBaseItem.fxml")
+            .thenAccept(groupBaseItemController -> {
+              Parent groupBaseItemRoot = groupBaseItemController.getRoot();
+              groupBaseItemController.setBase(group, base);
+              groupBaseItemRoot.getProperties().put("controller", groupBaseItemController);
+              bases.getChildren().add(groupBaseItemRoot);
+            }));
   }
 
   private void initHumidifiers() {
-    group.getHumidifiers().forEach(hum -> {
-      GroupHumItemController groupHumItemController = loadItem("GroupHumItem.fxml");
-      Parent groupHumItemRoot = groupHumItemController.getRoot();
-      groupHumItemController.setHumidifier(hum);
-      groupHumItemRoot.getProperties().put("controller", groupHumItemController);
-      humidifiers.getChildren().add(groupHumItemRoot);
-    });
+    group.getHumidifiers()
+        .forEach(hum -> this.<GroupHumItemController>loadItem("GroupHumItem.fxml")
+            .thenAccept(groupHumItemController -> {
+              Parent groupHumItemRoot = groupHumItemController.getRoot();
+              groupHumItemController.setHumidifier(hum);
+              groupHumItemRoot.getProperties().put("controller", groupHumItemController);
+              humidifiers.getChildren().add(groupHumItemRoot);
+            }));
   }
 
   private void initFilters() {
-    ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-    group.getFilters().forEach(filter -> {
-      GroupFilterItemController groupFilterItemController = loadItem("GroupFilterItem.fxml");
-      Parent groupFilterItemRoot = groupFilterItemController.getRoot();
-      groupFilterItemController.setFilter(filter);
-      groupFilterItemRoot.getProperties().put("controller", groupFilterItemController);
-      filters.getChildren().add(groupFilterItemRoot);
-    });
+    group.getFilters()
+        .forEach(filter -> this.<GroupFilterItemController>loadItem("GroupFilterItem.fxml")
+            .thenAccept(groupFilterItemController -> {
+              Parent groupFilterItemRoot = groupFilterItemController.getRoot();
+              groupFilterItemController.setFilter(filter);
+              groupFilterItemRoot.getProperties().put("controller", groupFilterItemController);
+              filters.getChildren().add(groupFilterItemRoot);
+            }));
   }
 
   private void initChart() {
@@ -414,9 +416,11 @@ public class GroupController extends CloseableController {
   public void onSettings() {
     Sound.click();
 
-    GroupSettingsController groupSettingsController = loadAndOpenView("GroupSettings.fxml");
-    groupSettingsController.setGroup(group);
-    groupSettingsController.setCallback(c -> updateSettings());
+    this.<GroupSettingsController>loadAndOpenView("GroupSettings.fxml")
+        .thenAccept(groupSettingsController -> {
+          groupSettingsController.setGroup(group);
+          groupSettingsController.setCallback(c -> updateSettings());
+        });
   }
 
   private void updateSettings() {
@@ -532,18 +536,18 @@ public class GroupController extends CloseableController {
   public void onCalculate() {
     Sound.click();
 
-    GroupCalculatorController groupCalculatorController = loadAndOpenView("GroupCalculator.fxml");
-    groupCalculatorController.setCallback(amount -> {
-      Settings settings = group.getSettings();
-      evaporant.setText(
-          settings.getEvaporant().name().substring(0, 1).toUpperCase() + settings.getEvaporant()
-              .name()
-              .substring(1)
-              .toLowerCase());
-      evaporantAmount.setText(LocaleManager.getInstance().getString("group.amount.gramm", amount));
-    });
+    this.<GroupCalculatorController>loadAndOpenView("GroupCalculator.fxml")
+        .thenAccept(groupCalculatorController -> {
+          groupCalculatorController.setCallback(amount -> {
+            Settings settings = group.getSettings();
+            evaporant.setText(settings.getEvaporant().name().substring(0, 1).toUpperCase()
+                + settings.getEvaporant().name().substring(1).toLowerCase());
+            evaporantAmount.setText(
+                LocaleManager.getInstance().getString("group.amount.gramm", amount));
+          });
 
-    groupCalculatorController.setGroup(group);
+          groupCalculatorController.setGroup(group);
+        });
   }
 
   @FXML

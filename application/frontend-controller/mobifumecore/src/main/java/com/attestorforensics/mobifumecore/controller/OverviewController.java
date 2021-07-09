@@ -83,29 +83,30 @@ public class OverviewController extends Controller {
   }
 
   public void addNode(Device device) {
-    DeviceItemController deviceItemController = loadItem("DeviceItem.fxml");
-    Parent deviceItemRoot = deviceItemController.getRoot();
-    deviceItemController.setDevice(device);
-    deviceItemRoot.getProperties().put("controller", deviceItemController);
-    devices.getChildren().add(deviceItemRoot);
-    updateDeviceOrder();
+    this.<DeviceItemController>loadItem("DeviceItem.fxml").thenAccept(deviceItemController -> {
+      Parent deviceItemRoot = deviceItemController.getRoot();
+      deviceItemController.setDevice(device);
+      deviceItemRoot.getProperties().put("controller", deviceItemController);
+      devices.getChildren().add(deviceItemRoot);
+      updateDeviceOrder();
+    });
   }
 
   public void addGroup(Group group) {
-    GroupItemController groupItemController = loadItem("GroupItem.fxml");
-    TitledPane groupItemRoot = (TitledPane) groupItemController.getRoot();
-    String groupColor = GroupColor.getNextColor();
-    groupItemController.setGroup(group, groupColor);
-    groupItemRoot.getProperties().put("controller", groupItemController);
-    groups.getPanes().add(groupItemRoot);
-    ObservableList<Node> deviceChildren = devices.getChildren();
-    deviceChildren.filtered(node -> group.containsDevice(
-        ((DeviceItemController) node.getProperties().get("controller")).getDevice()))
-        .forEach(
-            node -> ((DeviceItemController) node.getProperties().get("controller")).setGroup(group,
-                groupColor));
-    updateOrder();
-    groupItemRoot.setExpanded(true);
+    this.<GroupItemController>loadItem("GroupItem.fxml").thenAccept(groupItemController -> {
+      TitledPane groupItemRoot = (TitledPane) groupItemController.getRoot();
+      String groupColor = GroupColor.getNextColor();
+      groupItemController.setGroup(group, groupColor);
+      groupItemRoot.getProperties().put("controller", groupItemController);
+      groups.getPanes().add(groupItemRoot);
+      ObservableList<Node> deviceChildren = devices.getChildren();
+      deviceChildren.filtered(node -> group.containsDevice(
+          ((DeviceItemController) node.getProperties().get("controller")).getDevice()))
+          .forEach(node -> ((DeviceItemController) node.getProperties().get("controller")).setGroup(
+              group, groupColor));
+      updateOrder();
+      groupItemRoot.setExpanded(true);
+    });
   }
 
   private void updateDeviceOrder() {

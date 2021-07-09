@@ -13,7 +13,6 @@ import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
@@ -50,18 +49,20 @@ public class ServiceController extends CloseableController {
         return;
       }
 
-      ServiceItemController serviceItemController = loadItem(
-          "Service" + (device.getType() == DeviceType.BASE ? "Base" : "Hum") + "Item.fxml");
-      Parent serviceItemRoot = serviceItemController.getRoot();
-      serviceItemController.setDevice(device);
-      serviceItemRoot.getProperties().put("controller", serviceItemController);
-      serviceItemControllers.put(device.getDeviceId(), serviceItemController);
-      devices.getChildren().add(serviceItemRoot);
+      this.<ServiceItemController>loadItem(
+          "Service" + (device.getType() == DeviceType.BASE ? "Base" : "Hum") + "Item.fxml")
+          .thenAccept(serviceItemController -> {
+            Parent serviceItemRoot = serviceItemController.getRoot();
+            serviceItemController.setDevice(device);
+            serviceItemRoot.getProperties().put("controller", serviceItemController);
+            serviceItemControllers.put(device.getDeviceId(), serviceItemController);
+            devices.getChildren().add(serviceItemRoot);
+          });
     });
   }
 
   @FXML
-  public void onBack(ActionEvent event) {
+  public void onBack() {
     Sound.click();
 
     Mobifume.getInstance().getEventDispatcher().unregisterListener(serviceListener);
@@ -70,7 +71,7 @@ public class ServiceController extends CloseableController {
   }
 
   @FXML
-  public void onExit(ActionEvent event) {
+  public void onExit() {
     Sound.click();
 
     new ConfirmDialog(root.getScene().getWindow(),

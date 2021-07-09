@@ -42,11 +42,12 @@ public class FiltersController extends CloseableController {
   }
 
   public void addFilter(Filter filter) {
-    FilterItemController filterItemController = loadItem("FilterItem.fxml");
-    Parent filterItemRoot = filterItemController.getRoot();
-    filters.getChildren().add(filterItemRoot);
-    filterItemController.setFilter(filter);
-    filterItemRoot.getProperties().put("controller", filterItemController);
+    this.<FilterItemController>loadItem("FilterItem.fxml").thenAccept(filterItemController -> {
+      Parent filterItemRoot = filterItemController.getRoot();
+      filters.getChildren().add(filterItemRoot);
+      filterItemController.setFilter(filter);
+      filterItemRoot.getProperties().put("controller", filterItemController);
+    });
   }
 
   @FXML

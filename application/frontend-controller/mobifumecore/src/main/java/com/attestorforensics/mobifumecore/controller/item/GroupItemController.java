@@ -66,10 +66,12 @@ public class GroupItemController extends Controller {
   }
 
   private void loadGroupView() {
-    groupController = loadView("Group.fxml");
-    Parent groupRoot = groupController.getRoot();
-    groupController.setGroup(group);
-    groupRoot.getProperties().put("controller", groupController);
+    this.<GroupController>loadView("Group.fxml").thenAccept(groupController -> {
+      this.groupController = groupController;
+      Parent groupRoot = groupController.getRoot();
+      groupController.setGroup(group);
+      groupRoot.getProperties().put("controller", groupController);
+    });
   }
 
   private void updateStatus() {
@@ -126,14 +128,20 @@ public class GroupItemController extends Controller {
   public void onMouseClicked(MouseEvent event) {
     if (event.getClickCount() == 2) {
       Sound.click();
-      openView(groupController);
+
+      if (groupController != null) {
+        openView(groupController);
+      }
     }
   }
 
   @FXML
   public void onForward() {
     Sound.click();
-    openView(groupController);
+
+    if (groupController != null) {
+      openView(groupController);
+    }
   }
 
   @FXML
