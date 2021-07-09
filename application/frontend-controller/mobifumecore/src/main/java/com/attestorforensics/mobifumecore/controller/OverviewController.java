@@ -9,13 +9,11 @@ import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.element.group.CreateGroupException;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.event.GroupEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.Kernel32;
 import com.attestorforensics.mobifumecore.util.Kernel32.SystemPowerStatus;
@@ -369,16 +367,22 @@ public class OverviewController {
         return;
       }
 
-      try {
-        Group group = Mobifume.getInstance()
-            .getModelManager()
-            .getGroupFactory()
-            .createGroup(groupData.getName(), groupData.getDevices(), groupData.getFilters());
-        Mobifume.getInstance().getModelManager().getGroupPool().addGroup(group);
-      } catch (CreateGroupException e) {
-        // not reachable yet
-        e.printStackTrace();
-      }
+      List<Base> bases = groupData.getDevices()
+          .stream()
+          .filter(device -> device.getType() == DeviceType.BASE)
+          .map(Base.class::cast)
+          .collect(Collectors.toList());
+      List<Humidifier> humidifiers = groupData.getDevices()
+          .stream()
+          .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
+          .map(Humidifier.class::cast)
+          .collect(Collectors.toList());
+
+      Group group = Mobifume.getInstance()
+          .getModelManager()
+          .getGroupFactory()
+          .createGroup(groupData.getName(), bases, humidifiers, groupData.getFilters());
+      Mobifume.getInstance().getModelManager().getGroupPool().addGroup(group);
     });
   }
 

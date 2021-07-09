@@ -1,13 +1,17 @@
 package com.attestorforensics.mobifumecore.model.element.group;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.List;
+import org.apache.commons.compress.utils.Lists;
 
 public class RoomFactory implements GroupFactory {
 
@@ -22,21 +26,15 @@ public class RoomFactory implements GroupFactory {
   }
 
   @Override
-  public Group createGroup(String name, List<Device> devices, List<Filter> filters)
-      throws CreateGroupException {
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.BASE)) {
-      throw new MissingBaseException();
-    }
+  public Group createGroup(String name, List<Base> bases, List<Humidifier> humidifiers,
+      List<Filter> filters) {
+    checkArgument(!bases.isEmpty(), "No base provided");
+    checkArgument(!humidifiers.isEmpty(), "No humidifier provided");
+    checkArgument(bases.size() == filters.size(), "Filter count does not match base count");
 
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.HUMIDIFIER)) {
-      throw new MissingHumidifierException();
-    }
-
-    if (devices.stream().filter(device -> device.getType() == DeviceType.BASE).count()
-        != filters.size()) {
-      throw new InvalidFilterCountException();
-    }
-
+    List<Device> devices = Lists.newArrayList();
+    devices.addAll(bases);
+    devices.addAll(humidifiers);
     Room room = new Room(name, devices, filters, Settings.copy(globalSettings));
     globalSettings.increaseCycleCount();
     Settings.saveGlobalSettings(globalSettings);
