@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 
-public class ConfirmController {
+public class ConfirmController implements DialogController {
 
   private ConfirmDialog dialog;
 

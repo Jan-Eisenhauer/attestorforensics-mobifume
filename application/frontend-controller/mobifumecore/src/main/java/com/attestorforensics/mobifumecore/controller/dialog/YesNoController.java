@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 
-public class YesNoController {
+public class YesNoController implements DialogController {
 
   private YesNoDialog dialog;
 

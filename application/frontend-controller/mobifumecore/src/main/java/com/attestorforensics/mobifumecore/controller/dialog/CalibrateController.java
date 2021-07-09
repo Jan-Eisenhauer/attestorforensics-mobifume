@@ -10,7 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-public class CalibrateController {
+public class CalibrateController implements DialogController {
 
   private CalibrateDialog dialog;
 
@@ -38,24 +38,7 @@ public class CalibrateController {
 
   @FXML
   private void initialize() {
-    firstMeasurementReference.setTextFormatter(new SignedDoubleTextFormatter());
-    secondMeasurementReference.setTextFormatter(new SignedDoubleTextFormatter());
-    firstMeasurementDevice.setTextFormatter(new SignedDoubleTextFormatter());
-    secondMeasurementDevice.setTextFormatter(new SignedDoubleTextFormatter());
 
-    firstMeasurementReference.textProperty()
-        .addListener((observable, oldValue, newValue) -> checkOkButton());
-    secondMeasurementReference.textProperty()
-        .addListener((observable, oldValue, newValue) -> checkOkButton());
-    firstMeasurementDevice.textProperty()
-        .addListener((observable, oldValue, newValue) -> checkOkButton());
-    secondMeasurementDevice.textProperty()
-        .addListener((observable, oldValue, newValue) -> checkOkButton());
-
-    TabTipKeyboard.onFocus(firstMeasurementReference);
-    TabTipKeyboard.onFocus(secondMeasurementReference);
-    TabTipKeyboard.onFocus(firstMeasurementDevice);
-    TabTipKeyboard.onFocus(secondMeasurementDevice);
   }
 
   private void checkOkButton() {

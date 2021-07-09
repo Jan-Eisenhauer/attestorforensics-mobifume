@@ -8,7 +8,9 @@ import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -24,7 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
-public class GroupCalculatorController {
+public class GroupCalculatorController extends CloseableController {
 
   private static final double MAX_INPUT_VALUE = 999;
 
@@ -58,6 +60,12 @@ public class GroupCalculatorController {
   private double roomDepthValue;
   private double roomHeightValue;
   private double amountPerCmValue;
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+    Platform.runLater(() -> roomWidth.requestFocus());
+  }
 
   void setCallback(Consumer<Double> callback) {
     this.callback = callback;
@@ -343,10 +351,6 @@ public class GroupCalculatorController {
     if (callback != null) {
       callback.accept(calculateSettingsEvaporantAmount());
     }
-  }
-
-  void onShow() {
-    Platform.runLater(() -> roomWidth.requestFocus());
   }
 
   @FXML

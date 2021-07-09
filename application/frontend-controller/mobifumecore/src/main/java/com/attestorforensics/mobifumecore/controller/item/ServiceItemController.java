@@ -1,14 +1,15 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
+import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 
-public interface ServiceItemController {
+public abstract class ServiceItemController extends Controller {
 
-  Device getDevice();
+  public abstract Device getDevice();
 
-  void setDevice(Device device);
+  public abstract void setDevice(Device device);
 
-  void update();
+  public abstract void update();
 
-  void remove();
+  public abstract void remove();
 }

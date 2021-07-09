@@ -46,7 +46,7 @@ public class Base extends Device {
   }
 
   public void updateLatch(boolean open) {
-    if (open && latch == Latch.OPENED || !open && latch == Latch.CLOSED) {
+    if (open && latch == Latch.CIRCULATING || !open && latch == Latch.PURGING) {
       return;
     }
 

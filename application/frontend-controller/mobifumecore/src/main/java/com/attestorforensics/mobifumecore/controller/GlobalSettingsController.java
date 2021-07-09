@@ -8,7 +8,7 @@ import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
-import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -18,16 +18,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 
-public class GlobalSettingsController {
+public class GlobalSettingsController extends CloseableController {
 
   @FXML
   private Parent root;
@@ -64,8 +62,9 @@ public class GlobalSettingsController {
 
   private boolean lockUpdate;
 
+  @Override
   @FXML
-  public void initialize() {
+  public void initialize(URL location, ResourceBundle resources) {
     languages = new HashMap<>();
     ObservableList<String> boxItems = FXCollections.observableArrayList();
     LocaleManager.getInstance().getLanguages().forEach(locale -> {
@@ -274,27 +273,16 @@ public class GlobalSettingsController {
   private void applySettings() {
     Settings settings = Mobifume.getInstance().getModelManager().getGlobalSettings();
     settings.setHumidifyMax(getFixedValue(maxHumSlider, maxHum));
-    settings.setHeaterTemperature((int) getFixedValue(heaterTempSlider, heaterTemp));
-    settings.setHeatTimer((int) getFixedValue(heatTimeSlider, heatTime));
-    settings.setPurgeTimer((int) getFixedValue(purgeTimeSlider, purgeTime));
+    settings.setHeaterTemperature(getFixedValue(heaterTempSlider, heaterTemp));
+    settings.setHeatTimer(getFixedValue(heatTimeSlider, heatTime));
+    settings.setPurgeTimer(getFixedValue(purgeTimeSlider, purgeTime));
     Settings.saveGlobalSettings(settings);
   }
 
   @FXML
-  public void onInfo(ActionEvent event) throws IOException {
+  public void onInfo() {
     Sound.click();
-
-    Node button = (Button) event.getSource();
-
-    Scene scene = button.getScene();
-
-    ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-
-    FXMLLoader loader =
-        new FXMLLoader(getClass().getClassLoader().getResource("view/Info.fxml"), resourceBundle);
-    Parent root = loader.load();
-
-    SceneTransition.playForward(scene, root);
+    loadAndOpenView("Info.fxml");
   }
 
   @FXML
@@ -307,7 +295,7 @@ public class GlobalSettingsController {
         accepted -> {
           if (Boolean.TRUE.equals(accepted)) {
             Settings settings = Settings.create();
-            maxHumField.setText((int) settings.getHumidifyMax() + "");
+            maxHumField.setText(settings.getHumidifyMax() + "");
             heaterTempField.setText(settings.getHeaterTemperature() + "");
             heatTimeField.setText(settings.getHeatTimer() + "");
             purgeTimeField.setText(settings.getPurgeTimer() + "");

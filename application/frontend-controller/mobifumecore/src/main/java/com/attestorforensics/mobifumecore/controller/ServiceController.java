@@ -4,25 +4,21 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifumecore.controller.item.ServiceItemController;
 import com.attestorforensics.mobifumecore.controller.listener.ServiceListener;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.google.common.collect.Maps;
-import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
-public class ServiceController {
+public class ServiceController extends CloseableController {
 
   @FXML
   private Parent root;
@@ -30,12 +26,13 @@ public class ServiceController {
   @FXML
   private Pane devices;
 
-  private Map<String, ServiceItemController> serviceItemController = Maps.newHashMap();
+  private final Map<String, ServiceItemController> serviceItemControllers = Maps.newHashMap();
 
   private ServiceListener serviceListener;
 
+  @Override
   @FXML
-  public void initialize() {
+  public void initialize(URL location, ResourceBundle resources) {
     serviceListener = new ServiceListener(this);
     Mobifume.getInstance().getEventDispatcher().registerListener(serviceListener);
     Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addDevice);
@@ -48,26 +45,18 @@ public class ServiceController {
 
   public void addDevice(Device device) {
     Platform.runLater(() -> {
-      if (serviceItemController.containsKey(device.getDeviceId())) {
-        serviceItemController.get(device.getDeviceId()).setDevice(device);
+      if (serviceItemControllers.containsKey(device.getDeviceId())) {
+        serviceItemControllers.get(device.getDeviceId()).setDevice(device);
         return;
       }
 
-      try {
-        ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
-            .getResource(
-                "view/items/Service" + (device.getType() == DeviceType.BASE ? "Base" : "Hum")
-                    + "Item.fxml"), resourceBundle);
-        Parent root = loader.load();
-        ServiceItemController controller = loader.getController();
-        controller.setDevice(device);
-        root.getProperties().put("controller", controller);
-        serviceItemController.put(device.getDeviceId(), controller);
-        devices.getChildren().add(root);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      ServiceItemController serviceItemController = loadItem(
+          "Service" + (device.getType() == DeviceType.BASE ? "Base" : "Hum") + "Item.fxml");
+      Parent serviceItemRoot = serviceItemController.getRoot();
+      serviceItemController.setDevice(device);
+      serviceItemRoot.getProperties().put("controller", serviceItemController);
+      serviceItemControllers.put(device.getDeviceId(), serviceItemController);
+      devices.getChildren().add(serviceItemRoot);
     });
   }
 
@@ -77,9 +66,7 @@ public class ServiceController {
 
     Mobifume.getInstance().getEventDispatcher().unregisterListener(serviceListener);
 
-    Node button = (Node) event.getSource();
-    Scene scene = button.getScene();
-    SceneTransition.playBackward(scene, root);
+    close();
   }
 
   @FXML
@@ -98,14 +85,14 @@ public class ServiceController {
   }
 
   public void updateDevice(Device device) {
-    serviceItemController.get(device.getDeviceId()).update();
+    serviceItemControllers.get(device.getDeviceId()).update();
   }
 
   public void removeDevice(Device device) {
-    serviceItemController.get(device.getDeviceId()).remove();
+    serviceItemControllers.get(device.getDeviceId()).remove();
   }
 
   public ServiceItemController getServiceItemController(Device device) {
-    return serviceItemController.get(device.getDeviceId());
+    return serviceItemControllers.get(device.getDeviceId());
   }
 }

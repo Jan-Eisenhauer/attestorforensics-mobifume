@@ -1,14 +1,13 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.GroupController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.view.MobiApplication;
-import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -17,14 +16,13 @@ import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
-public class GroupItemController {
+public class GroupItemController extends Controller {
 
   private Group group;
 
@@ -33,9 +31,14 @@ public class GroupItemController {
   @FXML
   private Text status;
 
-  private Parent groupRoot;
+  private GroupController groupController;
 
   private ScheduledFuture<?> statusUpdateTask;
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+  }
 
   public Group getGroup() {
     return group;
@@ -52,7 +55,7 @@ public class GroupItemController {
     });
 
     statusUpdate();
-    createGroupRoot();
+    loadGroupView();
   }
 
   private void statusUpdate() {
@@ -62,20 +65,11 @@ public class GroupItemController {
             TimeUnit.SECONDS);
   }
 
-  private void createGroupRoot() {
-    ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-
-    FXMLLoader loader =
-        new FXMLLoader(getClass().getClassLoader().getResource("view/Group.fxml"), resourceBundle);
-    try {
-      groupRoot = loader.load();
-
-      GroupController groupController = loader.getController();
-      groupController.setGroup(group);
-      groupRoot.getProperties().put("controller", groupController);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  private void loadGroupView() {
+    groupController = loadView("Group.fxml");
+    Parent groupRoot = groupController.getRoot();
+    groupController.setGroup(group);
+    groupRoot.getProperties().put("controller", groupController);
   }
 
   private void updateStatus() {
@@ -132,19 +126,14 @@ public class GroupItemController {
   public void onMouseClicked(MouseEvent event) {
     if (event.getClickCount() == 2) {
       Sound.click();
-      openGroupScene();
+      openView(groupController);
     }
-  }
-
-  private void openGroupScene() {
-    SceneTransition.playForward(MobiApplication.getInstance().getPrimaryStage().getScene(),
-        groupRoot);
   }
 
   @FXML
   public void onForward() {
     Sound.click();
-    openGroupScene();
+    openView(groupController);
   }
 
   @FXML

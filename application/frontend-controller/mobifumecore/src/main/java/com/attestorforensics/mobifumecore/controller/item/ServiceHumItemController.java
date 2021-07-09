@@ -4,10 +4,12 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 
-public class ServiceHumItemController implements ServiceItemController {
+public class ServiceHumItemController extends ServiceItemController {
 
   private Humidifier hum;
 
@@ -26,6 +28,11 @@ public class ServiceHumItemController implements ServiceItemController {
   private Text led2;
   @FXML
   private Text overTemperature;
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+  }
 
   @Override
   public Device getDevice() {

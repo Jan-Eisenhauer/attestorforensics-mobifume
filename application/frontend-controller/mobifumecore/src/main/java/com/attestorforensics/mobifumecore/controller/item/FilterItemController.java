@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.dialog.AddFilterRunDialog;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
@@ -10,8 +11,10 @@ import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.NavigableMap;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,7 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
-public class FilterItemController {
+public class FilterItemController extends Controller {
 
   private Filter filter;
 
@@ -45,6 +48,11 @@ public class FilterItemController {
   private ImageView errorIcon;
 
   private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+  }
 
   public void setFilter(Filter filter) {
     this.filter = filter;

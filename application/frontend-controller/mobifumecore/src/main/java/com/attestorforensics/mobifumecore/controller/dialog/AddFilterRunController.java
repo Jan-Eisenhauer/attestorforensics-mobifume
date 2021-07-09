@@ -17,7 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-public class AddFilterRunController {
+public class AddFilterRunController implements DialogController {
 
   private AddFilterRunDialog dialog;
   private Filter filter;

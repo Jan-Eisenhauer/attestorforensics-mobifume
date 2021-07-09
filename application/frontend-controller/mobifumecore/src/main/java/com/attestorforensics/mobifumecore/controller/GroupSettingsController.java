@@ -9,6 +9,8 @@ import com.attestorforensics.mobifumecore.controller.util.textformatter.Unsigned
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -20,7 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 
-public class GroupSettingsController {
+public class GroupSettingsController extends CloseableController {
 
   @FXML
   Parent root;
@@ -55,6 +57,11 @@ public class GroupSettingsController {
   private int purgeTime;
 
   private boolean lockUpdate;
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+  }
 
   void setCallback(Consumer<?> callback) {
     this.callback = callback;

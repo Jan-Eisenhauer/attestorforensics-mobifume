@@ -5,21 +5,20 @@ import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
 import com.attestorforensics.mobifumecore.controller.dialog.YesNoDialog;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.update.Updater;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import java.io.IOException;
+import com.attestorforensics.mobifumecore.model.update.Updater;
+import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 
-public class InfoController {
+public class InfoController extends CloseableController {
 
   private static InfoController currentInstance;
 
@@ -42,8 +41,9 @@ public class InfoController {
     return Optional.ofNullable(currentInstance);
   }
 
+  @Override
   @FXML
-  public void initialize() {
+  public void initialize(URL location, ResourceBundle resources) {
     currentInstance = this;
     version.setText(LocaleManager.getInstance()
         .getString("info.version",
@@ -83,28 +83,16 @@ public class InfoController {
 
     YesNoDialog updateAvailableDialog = YesNoDialog.create(root.getScene().getWindow(),
         LocaleManager.getInstance()
-            .getString("dialog.updateavailable.title", updater.getNewVersion().get()),
-        LocaleManager.getInstance()
+            .getString("dialog.updateavailable.title", updater.getNewVersion().get()), LocaleManager
+            .getInstance()
             .getString("dialog.updateavailable.content", updater.getNewVersion().get()),
         accepted -> {
           if (accepted && updater.isUpdateAvailable() && updater.getNewVersion().isPresent()) {
-            Node button = (Button) event.getSource();
-            Scene scene = button.getScene();
-
-            ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-            FXMLLoader loader = new FXMLLoader(
-                getClass().getClassLoader().getResource("view/Update.fxml"), resourceBundle);
-            try {
-              Parent root = loader.load();
-              SceneTransition.playForward(scene, root);
-            } catch (IOException e) {
-              e.printStackTrace();
-              return;
-            }
-
+            loadAndOpenView("Update.fxml");
             updater.installUpdate();
           }
         });
+
     updateAvailableDialog.show();
   }
 
@@ -118,17 +106,8 @@ public class InfoController {
       if (!accepted) {
         return;
       }
-      Node button = (Button) event.getSource();
-      Scene scene = button.getScene();
-      ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/Service.fxml"), resourceBundle);
-      try {
-        Parent root = loader.load();
-        SceneTransition.playForward(scene, root);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+
+      loadAndOpenView("Service.fxml");
     });
   }
 

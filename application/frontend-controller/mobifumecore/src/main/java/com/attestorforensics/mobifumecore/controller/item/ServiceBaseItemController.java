@@ -2,25 +2,27 @@ package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.CalibrateDialog;
-import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
-import com.attestorforensics.mobifumecore.model.element.misc.Latch;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
+import com.attestorforensics.mobifumecore.model.element.misc.Latch;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-public class ServiceBaseItemController implements ServiceItemController {
+public class ServiceBaseItemController extends ServiceItemController {
 
   private final DecimalFormat gradientFormat = new DecimalFormat("#.####");
   private final DecimalFormat offsetFormat = new DecimalFormat("#.##");
@@ -56,6 +58,16 @@ public class ServiceBaseItemController implements ServiceItemController {
   private TextField timeField;
   @FXML
   private TextField setpointField;
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+    timeField.setTextFormatter(new SignedIntTextFormatter());
+    setpointField.setTextFormatter(new SignedIntTextFormatter());
+
+    TabTipKeyboard.onFocus(timeField);
+    TabTipKeyboard.onFocus(setpointField);
+  }
 
   @Override
   public Device getDevice() {
@@ -131,15 +143,6 @@ public class ServiceBaseItemController implements ServiceItemController {
   }
 
   @FXML
-  public void initialize() {
-    timeField.setTextFormatter(new SignedIntTextFormatter());
-    setpointField.setTextFormatter(new SignedIntTextFormatter());
-
-    TabTipKeyboard.onFocus(timeField);
-    TabTipKeyboard.onFocus(setpointField);
-  }
-
-  @FXML
   public void onReset() {
     Sound.click();
     base.reset();
@@ -180,7 +183,7 @@ public class ServiceBaseItemController implements ServiceItemController {
   public void onLatch() {
     Sound.click();
     base.updateTime(60);
-    base.updateLatch(base.getLatch() == Latch.CLOSED);
+    base.updateLatch(base.getLatch() == Latch.PURGING);
   }
 
   @FXML

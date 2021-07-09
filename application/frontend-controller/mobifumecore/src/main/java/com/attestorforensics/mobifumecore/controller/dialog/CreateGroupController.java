@@ -26,7 +26,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class CreateGroupController {
+public class CreateGroupController implements DialogController {
 
   private static int lastGroupId = 0;
 

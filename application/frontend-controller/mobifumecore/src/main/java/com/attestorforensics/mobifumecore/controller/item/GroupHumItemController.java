@@ -1,11 +1,14 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
+import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import java.net.URL;
 import java.util.NavigableMap;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,7 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class GroupHumItemController {
+public class GroupHumItemController extends Controller {
 
   private Humidifier hum;
 
@@ -26,6 +29,11 @@ public class GroupHumItemController {
   private ImageView errorIcon;
 
   private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+  }
 
   public Humidifier getHumidifier() {
     return hum;

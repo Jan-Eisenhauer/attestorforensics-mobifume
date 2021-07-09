@@ -60,16 +60,25 @@ public class BasePing implements IncomingMessage {
     Latch latch;
     switch (latchValue) {
       case 0:
-        latch = Latch.CLOSED;
+        latch = Latch.PURGING;
         break;
       case 1:
-        latch = Latch.OPENED;
+        latch = Latch.CIRCULATING;
         break;
       case -1:
         latch = Latch.MOVING;
         break;
+      case 2:
+        latch = Latch.ERROR_OTHER;
+        break;
+      case 3:
+        latch = Latch.ERROR_NOT_REACHED;
+        break;
+      case 4:
+        latch = Latch.ERROR_BLOCKED;
+        break;
       default:
-        latch = Latch.ERROR;
+        latch = Latch.UNKNOWN;
         break;
     }
 

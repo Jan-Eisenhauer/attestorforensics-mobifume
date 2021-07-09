@@ -17,7 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class CreateGroupFilterController {
+public class CreateGroupFilterController implements DialogController {
 
   private CreateGroupDialog dialog;
 

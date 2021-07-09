@@ -5,7 +5,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 
-public class InfoBoxController {
+public class InfoBoxController implements DialogController {
 
   @FXML
   private Pane fullPane;

@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-public class InputController {
+public class InputController implements DialogController {
 
   private InputDialog dialog;
   private InputValidator validator;

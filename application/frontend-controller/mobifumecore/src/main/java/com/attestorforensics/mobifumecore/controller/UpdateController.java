@@ -1,14 +1,16 @@
 package com.attestorforensics.mobifumecore.controller;
 
-import com.attestorforensics.mobifumecore.model.update.UpdatingState;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.update.UpdatingState;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.text.Text;
 
-public class UpdateController {
+public class UpdateController extends CloseableController {
 
   private static UpdateController currentInstance;
 
@@ -18,8 +20,9 @@ public class UpdateController {
   @FXML
   Text state;
 
+  @Override
   @FXML
-  public void initialize() {
+  public void initialize(URL location, ResourceBundle resources) {
     currentInstance = this;
   }
 

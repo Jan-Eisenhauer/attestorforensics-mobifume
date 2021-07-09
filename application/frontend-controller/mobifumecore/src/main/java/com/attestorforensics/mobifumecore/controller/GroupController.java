@@ -12,7 +12,7 @@ import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
-import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
@@ -22,21 +22,19 @@ import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
-public class GroupController {
+public class GroupController extends CloseableController {
 
   private static final long CHART_UPDATE_DELAY = 1000L * 60;
 
@@ -97,7 +95,6 @@ public class GroupController {
   private LineChart<Double, Double> chart;
 
   private Dialog currentDialog;
-  private Parent calculator;
 
   private int tempWrong;
   private int humWrong;
@@ -107,6 +104,11 @@ public class GroupController {
 
   private XYChart.Series<Double, Double> dataSeries;
   private long latestDataTimestamp;
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+  }
 
   public void setGroup(Group group) {
     this.group = group;
@@ -157,7 +159,6 @@ public class GroupController {
         * settings.getEvaporantAmountPerCm();
     amount = (double) Math.round(amount * 100) / 100;
     evaporantAmount.setText(LocaleManager.getInstance().getString("group.amount.gramm", amount));
-    initCalculator();
   }
 
   private void updateMaxHumidity() {
@@ -212,34 +213,6 @@ public class GroupController {
     }
   }
 
-  private void initCalculator() {
-    try {
-      ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-
-      FXMLLoader loader =
-          new FXMLLoader(getClass().getClassLoader().getResource("view/GroupCalculator.fxml"),
-              resourceBundle);
-      calculator = loader.load();
-
-      GroupCalculatorController calcController = loader.getController();
-      calcController.setCallback(amount -> {
-        Settings settings = group.getSettings();
-        evaporant.setText(
-            settings.getEvaporant().name().substring(0, 1).toUpperCase() + settings.getEvaporant()
-                .name()
-                .substring(1)
-                .toLowerCase());
-        evaporantAmount.setText(
-            LocaleManager.getInstance().getString("group.amount.gramm", amount));
-      });
-
-      calcController.setGroup(group);
-      calculator.getProperties().put("controller", calcController);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
   private void evaporateTimer() {
     timerTask = Mobifume.getInstance()
         .getScheduledExecutorService()
@@ -255,56 +228,33 @@ public class GroupController {
   }
 
   private void initBases() {
-    ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
     group.getBases().forEach(base -> {
-      try {
-        FXMLLoader loader =
-            new FXMLLoader(getClass().getClassLoader().getResource("view/items/GroupBaseItem.fxml"),
-                resourceBundle);
-        Parent root = loader.load();
-        GroupBaseItemController controller = loader.getController();
-        controller.setBase(group, base);
-        root.getProperties().put("controller", controller);
-        bases.getChildren().add(root);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      GroupBaseItemController groupBaseItemController = loadItem("GroupBaseItem.fxml");
+      Parent groupBaseItemRoot = groupBaseItemController.getRoot();
+      groupBaseItemController.setBase(group, base);
+      groupBaseItemRoot.getProperties().put("controller", groupBaseItemController);
+      bases.getChildren().add(groupBaseItemRoot);
     });
   }
 
   private void initHumidifiers() {
-    ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
     group.getHumidifiers().forEach(hum -> {
-      try {
-        FXMLLoader loader =
-            new FXMLLoader(getClass().getClassLoader().getResource("view/items/GroupHumItem.fxml"),
-                resourceBundle);
-        Parent root = loader.load();
-        GroupHumItemController controller = loader.getController();
-        controller.setHumidifier(hum);
-        root.getProperties().put("controller", controller);
-        humidifiers.getChildren().add(root);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      GroupHumItemController groupHumItemController = loadItem("GroupHumItem.fxml");
+      Parent groupHumItemRoot = groupHumItemController.getRoot();
+      groupHumItemController.setHumidifier(hum);
+      groupHumItemRoot.getProperties().put("controller", groupHumItemController);
+      humidifiers.getChildren().add(groupHumItemRoot);
     });
   }
 
   private void initFilters() {
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
     group.getFilters().forEach(filter -> {
-      try {
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getClassLoader().getResource("view/items/GroupFilterItem.fxml"),
-            resourceBundle);
-        Parent root = loader.load();
-        GroupFilterItemController controller = loader.getController();
-        controller.setFilter(filter);
-        root.getProperties().put("controller", controller);
-        filters.getChildren().add(root);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      GroupFilterItemController groupFilterItemController = loadItem("GroupFilterItem.fxml");
+      Parent groupFilterItemRoot = groupFilterItemController.getRoot();
+      groupFilterItemController.setFilter(filter);
+      groupFilterItemRoot.getProperties().put("controller", groupFilterItemController);
+      filters.getChildren().add(groupFilterItemRoot);
     });
   }
 
@@ -461,29 +411,12 @@ public class GroupController {
   }
 
   @FXML
-  public void onSettings(ActionEvent event) {
+  public void onSettings() {
     Sound.click();
 
-    Node button = (Button) event.getSource();
-
-    Scene scene = button.getScene();
-
-    ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-
-    FXMLLoader loader =
-        new FXMLLoader(getClass().getClassLoader().getResource("view/GroupSettings.fxml"),
-            resourceBundle);
-    try {
-      Parent root = loader.load();
-
-      GroupSettingsController groupSettingsController = loader.getController();
-      groupSettingsController.setGroup(group);
-      groupSettingsController.setCallback(c -> updateSettings());
-
-      SceneTransition.playForward(scene, root);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    GroupSettingsController groupSettingsController = loadAndOpenView("GroupSettings.fxml");
+    groupSettingsController.setGroup(group);
+    groupSettingsController.setCallback(c -> updateSettings());
   }
 
   private void updateSettings() {
@@ -596,17 +529,21 @@ public class GroupController {
   }
 
   @FXML
-  public void onCalculate(ActionEvent event) {
+  public void onCalculate() {
     Sound.click();
 
-    GroupCalculatorController calcController =
-        (GroupCalculatorController) calculator.getProperties().get("controller");
+    GroupCalculatorController groupCalculatorController = loadAndOpenView("GroupCalculator.fxml");
+    groupCalculatorController.setCallback(amount -> {
+      Settings settings = group.getSettings();
+      evaporant.setText(
+          settings.getEvaporant().name().substring(0, 1).toUpperCase() + settings.getEvaporant()
+              .name()
+              .substring(1)
+              .toLowerCase());
+      evaporantAmount.setText(LocaleManager.getInstance().getString("group.amount.gramm", amount));
+    });
 
-    Node button = (Node) event.getSource();
-    Scene scene = button.getScene();
-    SceneTransition.playForward(scene, calculator);
-
-    calcController.onShow();
+    groupCalculatorController.setGroup(group);
   }
 
   @FXML

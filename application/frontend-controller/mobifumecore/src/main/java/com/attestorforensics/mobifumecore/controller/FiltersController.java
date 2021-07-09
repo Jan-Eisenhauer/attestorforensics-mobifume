@@ -3,22 +3,17 @@ package com.attestorforensics.mobifumecore.controller;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.InputDialog;
 import com.attestorforensics.mobifumecore.controller.item.FilterItemController;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
-public class FiltersController {
+public class FiltersController extends CloseableController {
 
   private static FiltersController instance;
 
@@ -31,6 +26,14 @@ public class FiltersController {
     return instance;
   }
 
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+    instance = this;
+    List<Filter> filters = Mobifume.getInstance().getModelManager().getFilterPool().getAllFilters();
+    filters.forEach(this::addFilter);
+  }
+
   public void removeFilter(Filter filter) {
     filters.getChildren()
         .removeIf(
@@ -38,36 +41,19 @@ public class FiltersController {
                 == filter);
   }
 
-  @FXML
-  public void initialize() {
-    instance = this;
-    List<Filter> filters = Mobifume.getInstance().getModelManager().getFilterPool().getAllFilters();
-    filters.forEach(this::addFilter);
-  }
-
   public void addFilter(Filter filter) {
-    try {
-      ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader =
-          new FXMLLoader(getClass().getClassLoader().getResource("view/items/FilterItem.fxml"),
-              resourceBundle);
-      Parent root = loader.load();
-      FilterItemController controller = loader.getController();
-      this.filters.getChildren().add(root);
-      controller.setFilter(filter);
-      root.getProperties().put("controller", controller);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    FilterItemController filterItemController = loadItem("FilterItem.fxml");
+    Parent filterItemRoot = filterItemController.getRoot();
+    filters.getChildren().add(filterItemRoot);
+    filterItemController.setFilter(filter);
+    filterItemRoot.getProperties().put("controller", filterItemController);
   }
 
   @FXML
-  public void onBack(ActionEvent event) {
+  public void onBack() {
     Sound.click();
 
-    Node button = (Node) event.getSource();
-    Scene scene = button.getScene();
-    SceneTransition.playBackward(scene, root);
+    close();
   }
 
   @FXML

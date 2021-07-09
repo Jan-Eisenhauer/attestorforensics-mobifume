@@ -91,13 +91,17 @@ public class BasePingRoute implements MessageRoute<BasePing> {
     Latch latch = message.getLatch();
     Latch oldLatch = base.getLatch();
     base.setLatch(latch);
-    if (latch == Latch.ERROR && oldLatch != Latch.ERROR) {
+    if ((latch == Latch.ERROR_OTHER || latch == Latch.ERROR_NOT_REACHED
+        || latch == Latch.ERROR_BLOCKED) && (oldLatch != Latch.ERROR_OTHER
+        && oldLatch != Latch.ERROR_NOT_REACHED && oldLatch != Latch.ERROR_BLOCKED)) {
       Mobifume.getInstance()
           .getEventDispatcher()
           .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.LATCH));
     }
 
-    if ((latch == Latch.CLOSED || latch == Latch.OPENED) && oldLatch == Latch.ERROR) {
+    if ((latch != Latch.ERROR_OTHER && latch != Latch.ERROR_NOT_REACHED
+        && latch != Latch.ERROR_BLOCKED) && (oldLatch == Latch.ERROR_OTHER
+        || oldLatch == Latch.ERROR_NOT_REACHED || oldLatch == Latch.ERROR_BLOCKED)) {
       Mobifume.getInstance()
           .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.LATCH));

@@ -7,7 +7,6 @@ import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
@@ -19,6 +18,7 @@ import com.attestorforensics.mobifumecore.util.Kernel32;
 import com.attestorforensics.mobifumecore.util.Kernel32.SystemPowerStatus;
 import com.attestorforensics.mobifumecore.view.GroupColor;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,18 +29,18 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
-public class OverviewController {
+public class OverviewController extends Controller {
+
+  @FXML
+  private Parent root;
 
   @FXML
   private ImageView wifi;
@@ -55,8 +55,14 @@ public class OverviewController {
 
   private CreateGroupDialog createGroupDialog;
 
+  @Override
+  public void setRoot(Parent root) {
+    super.setRoot(root);
+  }
+
+  @Override
   @FXML
-  public void initialize() {
+  public void initialize(URL location, ResourceBundle resources) {
     Mobifume.getInstance()
         .getScheduledExecutorService()
         .scheduleAtFixedRate(() -> Platform.runLater(() -> {
@@ -77,44 +83,29 @@ public class OverviewController {
   }
 
   public void addNode(Device device) {
-    try {
-      ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader =
-          new FXMLLoader(getClass().getClassLoader().getResource("view/items/DeviceItem.fxml"),
-              resourceBundle);
-      Parent root = loader.load();
-      DeviceItemController controller = loader.getController();
-      controller.setDevice(device);
-      root.getProperties().put("controller", controller);
-      devices.getChildren().add(root);
-      updateDeviceOrder();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    DeviceItemController deviceItemController = loadItem("DeviceItem.fxml");
+    Parent deviceItemRoot = deviceItemController.getRoot();
+    deviceItemController.setDevice(device);
+    deviceItemRoot.getProperties().put("controller", deviceItemController);
+    devices.getChildren().add(deviceItemRoot);
+    updateDeviceOrder();
   }
 
   public void addGroup(Group group) {
-    try {
-      ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader =
-          new FXMLLoader(getClass().getClassLoader().getResource("view/items/GroupItem.fxml"),
-              resourceBundle);
-      Parent root = loader.load();
-      String groupColor = GroupColor.getNextColor();
-      GroupItemController controller = loader.getController();
-      controller.setGroup(group, groupColor);
-      root.getProperties().put("controller", controller);
-      groups.getPanes().add((TitledPane) root);
-      ObservableList<Node> deviceChildren = devices.getChildren();
-      deviceChildren.filtered(node -> group.containsDevice(
-          ((DeviceItemController) node.getProperties().get("controller")).getDevice()))
-          .forEach(node -> ((DeviceItemController) node.getProperties().get("controller")).setGroup(
-              group, groupColor));
-      updateOrder();
-      ((TitledPane) root).setExpanded(true);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    GroupItemController groupItemController = loadItem("GroupItem.fxml");
+    TitledPane groupItemRoot = (TitledPane) groupItemController.getRoot();
+    String groupColor = GroupColor.getNextColor();
+    groupItemController.setGroup(group, groupColor);
+    groupItemRoot.getProperties().put("controller", groupItemController);
+    groups.getPanes().add(groupItemRoot);
+    ObservableList<Node> deviceChildren = devices.getChildren();
+    deviceChildren.filtered(node -> group.containsDevice(
+        ((DeviceItemController) node.getProperties().get("controller")).getDevice()))
+        .forEach(
+            node -> ((DeviceItemController) node.getProperties().get("controller")).setGroup(group,
+                groupColor));
+    updateOrder();
+    groupItemRoot.setExpanded(true);
   }
 
   private void updateDeviceOrder() {
@@ -258,38 +249,16 @@ public class OverviewController {
   }
 
   @FXML
-  public void onSettings(ActionEvent event) throws IOException {
+  public void onSettings() {
     Sound.click();
-
-    Node button = (Button) event.getSource();
-
-    Scene scene = button.getScene();
-
-    ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-
-    FXMLLoader loader =
-        new FXMLLoader(getClass().getClassLoader().getResource("view/GlobalSettings.fxml"),
-            resourceBundle);
-    Parent root = loader.load();
-
-    SceneTransition.playForward(scene, root);
+    loadAndOpenView("GlobalSettings.fxml");
   }
 
   @FXML
   public void onFilters(ActionEvent event) throws IOException {
     Sound.click();
 
-    Node button = (Button) event.getSource();
-
-    Scene scene = button.getScene();
-
-    ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-
-    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/Filters.fxml"),
-        resourceBundle);
-    Parent root = loader.load();
-
-    SceneTransition.playForward(scene, root);
+    loadAndOpenView("Filters.fxml");
   }
 
   @FXML

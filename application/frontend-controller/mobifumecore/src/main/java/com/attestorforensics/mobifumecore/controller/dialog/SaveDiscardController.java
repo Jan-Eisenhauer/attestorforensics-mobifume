@@ -5,7 +5,7 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 
-public class SaveDiscardController {
+public class SaveDiscardController implements DialogController {
 
   private SaveDiscardDialog dialog;
 
