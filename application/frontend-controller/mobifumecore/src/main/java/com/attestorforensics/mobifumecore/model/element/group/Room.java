@@ -51,7 +51,7 @@ public class Room implements Group {
     this.devices = devices;
     if (getBases().size() != filters.size()) {
       throw new IllegalArgumentException(
-          "The count of filters is not the same as the count of " + "bases!");
+          "The count of filters is not the same as the count of bases!");
     }
     this.filters = filters;
     this.settings = settings;

@@ -1,25 +1,28 @@
 package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.humidifier.HumidifierOffline;
-import com.attestorforensics.mobifumecore.model.element.group.Room;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
+import java.util.Optional;
 
 public class HumidifierOfflineRoute implements MessageRoute<HumidifierOffline> {
 
-  private final ModelManager modelManager;
+  private final DevicePool devicePool;
+  private final GroupPool groupPool;
 
-  private HumidifierOfflineRoute(ModelManager modelManager) {
-    this.modelManager = modelManager;
+  private HumidifierOfflineRoute(DevicePool devicePool, GroupPool groupPool) {
+    this.devicePool = devicePool;
+    this.groupPool = groupPool;
   }
 
-  public static HumidifierOfflineRoute create(ModelManager modelManager) {
-    return new HumidifierOfflineRoute(modelManager);
+  public static HumidifierOfflineRoute create(DevicePool devicePool, GroupPool groupPool) {
+    return new HumidifierOfflineRoute(devicePool, groupPool);
   }
-
 
   @Override
   public Class<HumidifierOffline> type() {
@@ -28,27 +31,28 @@ public class HumidifierOfflineRoute implements MessageRoute<HumidifierOffline> {
 
   @Override
   public void onReceived(HumidifierOffline message) {
-    Device device = modelManager.getDevice(message.getDeviceId());
-    if (device == null) {
+    Optional<Humidifier> optionalHumidifier = devicePool.getHumidifier(message.getDeviceId());
+    if (!optionalHumidifier.isPresent()) {
       return;
     }
-    if (modelManager.getGroup(device) != null) {
-      CustomLogger.info(modelManager.getGroup(device), "DISCONNECT", device.getDeviceId());
-    }
-    CustomLogger.info("Device disconnect: " + device.getDeviceId());
 
-    Room group = (Room) modelManager.getGroup(device);
-    if (group == null) {
+    Humidifier humidifier = optionalHumidifier.get();
+    CustomLogger.info("Humidifier disconnect: " + humidifier.getDeviceId());
+    Optional<Group> optionalGroup = groupPool.getGroupOfHumidifier(humidifier);
+    if (optionalGroup.isPresent()) {
+      Group group = optionalGroup.get();
+      CustomLogger.info(group, "DISCONNECT", humidifier.getDeviceId());
+      humidifier.setRssi(-100);
+      humidifier.setOffline(true);
       Mobifume.getInstance()
           .getEventDispatcher()
-          .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
-      modelManager.getDevices().remove(device);
+          .call(new DeviceConnectionEvent(humidifier, DeviceConnectionEvent.DeviceStatus.LOST));
+    } else {
+      Mobifume.getInstance()
+          .getEventDispatcher()
+          .call(new DeviceConnectionEvent(humidifier,
+              DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
+      devicePool.removeHumidifier(humidifier);
     }
-
-    device.setRssi(-100);
-    device.setOffline(true);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.LOST));
   }
 }

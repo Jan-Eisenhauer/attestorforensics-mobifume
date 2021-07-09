@@ -3,10 +3,10 @@ package com.attestorforensics.mobifumecore.controller.dialog;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -112,10 +112,11 @@ public class CreateGroupController {
     List<Filter> inOtherGroup = new ArrayList<>();
     Mobifume.getInstance()
         .getModelManager()
-        .getGroups()
+        .getGroupPool()
+        .getAllGroups()
         .forEach(group -> inOtherGroup.addAll(group.getFilters()));
     List<Filter> allFilters =
-        new ArrayList<>(Mobifume.getInstance().getModelManager().getFilters());
+        new ArrayList<>(Mobifume.getInstance().getModelManager().getFilterPool().getAllFilters());
     allFilters.removeAll(inOtherGroup);
     allFilters.forEach(filter -> filterMap.put(filter.getId(), filter));
 
@@ -209,7 +210,7 @@ public class CreateGroupController {
     do {
       defaultName =
           LocaleManager.getInstance().getString("dialog.group.create.name.default", defaultId);
-      for (Group group : Mobifume.getInstance().getModelManager().getGroups()) {
+      for (Group group : Mobifume.getInstance().getModelManager().getGroupPool().getAllGroups()) {
         if (group.getName().equals(defaultName)) {
           defaultId++;
           continue loop;

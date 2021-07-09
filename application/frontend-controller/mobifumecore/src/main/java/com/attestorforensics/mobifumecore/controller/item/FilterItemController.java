@@ -123,7 +123,8 @@ public class FilterItemController {
         LocaleManager.getInstance().getString("dialog.filter.change.content", filter.getId()), true,
         accepted -> {
           if (Boolean.TRUE.equals(accepted)) {
-            Mobifume.getInstance().getModelManager().removeFilter(filter);
+            filter.setRemoved();
+            Mobifume.getInstance().getModelManager().getFilterPool().removeFilter(filter);
           }
         });
   }

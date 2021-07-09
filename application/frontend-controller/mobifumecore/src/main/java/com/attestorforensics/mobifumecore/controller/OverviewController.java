@@ -9,9 +9,13 @@ import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
+import com.attestorforensics.mobifumecore.model.element.group.CreateGroupException;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.event.GroupEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.Kernel32;
 import com.attestorforensics.mobifumecore.util.Kernel32.SystemPowerStatus;
@@ -19,6 +23,7 @@ import com.attestorforensics.mobifumecore.view.GroupColor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -64,8 +69,13 @@ public class OverviewController {
   }
 
   public void load() {
-    Mobifume.getInstance().getModelManager().getDevices().forEach(this::addNode);
-    Mobifume.getInstance().getModelManager().getGroups().forEach(this::addGroup);
+    Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addNode);
+    Mobifume.getInstance()
+        .getModelManager()
+        .getDevicePool()
+        .getAllHumidifier()
+        .forEach(this::addNode);
+    Mobifume.getInstance().getModelManager().getGroupPool().getAllGroups().forEach(this::addGroup);
   }
 
   public void addNode(Device device) {
@@ -115,12 +125,27 @@ public class OverviewController {
       DeviceItemController deviceController1 =
           ((DeviceItemController) n1.getProperties().get("controller"));
       Device device1 = deviceController1.getDevice();
-      Group group1 = Mobifume.getInstance().getModelManager().getGroup(device1);
+      Optional<Group> optionalGroup1 = device1.getType() == DeviceType.BASE ? Mobifume.getInstance()
+          .getModelManager()
+          .getGroupPool()
+          .getGroupOfBase((Base) device1) : Mobifume.getInstance()
+          .getModelManager()
+          .getGroupPool()
+          .getGroupOfHumidifier((Humidifier) device1);
+
       DeviceItemController deviceController2 =
           ((DeviceItemController) n2.getProperties().get("controller"));
       Device device2 = deviceController2.getDevice();
-      Group group2 = Mobifume.getInstance().getModelManager().getGroup(device2);
-      if (group1 != null && group2 != null) {
+      Optional<Group> optionalGroup2 = device2.getType() == DeviceType.BASE ? Mobifume.getInstance()
+          .getModelManager()
+          .getGroupPool()
+          .getGroupOfBase((Base) device2) : Mobifume.getInstance()
+          .getModelManager()
+          .getGroupPool()
+          .getGroupOfHumidifier((Humidifier) device2);
+      if (optionalGroup1.isPresent() && optionalGroup2.isPresent()) {
+        Group group1 = optionalGroup1.get();
+        Group group2 = optionalGroup2.get();
         String name1 = group1.getName();
         String name2 = group2.getName();
         if (name1.length() > name2.length()) {
@@ -132,10 +157,10 @@ public class OverviewController {
         return name1.compareTo(name2);
       }
 
-      if (group1 != null) {
+      if (optionalGroup1.isPresent()) {
         return 1;
       }
-      if (group2 != null) {
+      if (optionalGroup2.isPresent()) {
         return -1;
       }
 
@@ -343,9 +368,17 @@ public class OverviewController {
       if (groupData == null) {
         return;
       }
-      Mobifume.getInstance()
-          .getModelManager()
-          .createGroup(groupData.getName(), groupData.getDevices(), groupData.getFilters());
+
+      try {
+        Group group = Mobifume.getInstance()
+            .getModelManager()
+            .getGroupFactory()
+            .createGroup(groupData.getName(), groupData.getDevices(), groupData.getFilters());
+        Mobifume.getInstance().getModelManager().getGroupPool().addGroup(group);
+      } catch (CreateGroupException e) {
+        // not reachable yet
+        e.printStackTrace();
+      }
     });
   }
 

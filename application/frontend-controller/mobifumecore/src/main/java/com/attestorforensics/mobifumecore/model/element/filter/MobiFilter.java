@@ -102,12 +102,13 @@ public class MobiFilter implements Filter {
     return removed;
   }
 
-  public void setFileHandler(FilterFileHandler fileHandler) {
-    this.fileHandler = fileHandler;
-  }
-
+  @Override
   public void setRemoved() {
     removed = true;
     fileHandler.saveFilter(this);
+  }
+
+  public void setFileHandler(FilterFileHandler fileHandler) {
+    this.fileHandler = fileHandler;
   }
 }

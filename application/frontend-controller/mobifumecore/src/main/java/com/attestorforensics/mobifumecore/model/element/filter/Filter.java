@@ -26,4 +26,6 @@ public interface Filter {
   boolean isUsable();
 
   boolean isRemoved();
+
+  void setRemoved();
 }

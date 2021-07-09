@@ -1,10 +1,11 @@
 package com.attestorforensics.mobifumecore.model.connection.broker;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageRouter;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
 import com.attestorforensics.mobifumecore.model.connection.message.MqttMessageRouter;
+import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
@@ -17,15 +18,15 @@ class MqttBrokerCallback implements MqttCallback {
   private final MqttBrokerConnector mqttBrokerConnector;
   private final MessageRouter messageRouter;
 
-  private MqttBrokerCallback(MqttBrokerConnector mqttBrokerConnector, ModelManager modelManager,
-      MessageSender messageSender) {
+  private MqttBrokerCallback(MqttBrokerConnector mqttBrokerConnector, DevicePool devicePool,
+      GroupPool groupPool, MessageSender messageSender) {
     this.mqttBrokerConnector = mqttBrokerConnector;
-    this.messageRouter = MqttMessageRouter.create(modelManager, messageSender);
+    this.messageRouter = MqttMessageRouter.create(devicePool, groupPool, messageSender);
   }
 
-  static MqttCallback create(MqttBrokerConnector mqttBrokerConnector, ModelManager modelManager,
-      MessageSender messageSender) {
-    return new MqttBrokerCallback(mqttBrokerConnector, modelManager, messageSender);
+  static MqttCallback create(MqttBrokerConnector mqttBrokerConnector, DevicePool devicePool,
+      GroupPool groupPool, MessageSender messageSender) {
+    return new MqttBrokerCallback(mqttBrokerConnector, devicePool, groupPool, messageSender);
   }
 
   @Override

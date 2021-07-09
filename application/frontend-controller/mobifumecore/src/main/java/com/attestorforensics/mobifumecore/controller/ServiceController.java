@@ -38,7 +38,12 @@ public class ServiceController {
   public void initialize() {
     serviceListener = new ServiceListener(this);
     Mobifume.getInstance().getEventDispatcher().registerListener(serviceListener);
-    Mobifume.getInstance().getModelManager().getDevices().forEach(this::addDevice);
+    Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addDevice);
+    Mobifume.getInstance()
+        .getModelManager()
+        .getDevicePool()
+        .getAllHumidifier()
+        .forEach(this::addDevice);
   }
 
   public void addDevice(Device device) {

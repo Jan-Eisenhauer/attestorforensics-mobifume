@@ -164,7 +164,7 @@ public class GroupItemController {
         statusUpdateTask.cancel(false);
       }
 
-      Mobifume.getInstance().getModelManager().removeGroup(group);
+      Mobifume.getInstance().getModelManager().getGroupPool().removeGroup(group);
     });
   }
 }

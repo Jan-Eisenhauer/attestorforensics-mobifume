@@ -1,9 +1,10 @@
 package com.attestorforensics.mobifumecore.model.connection.broker;
 
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
 import com.attestorforensics.mobifumecore.model.connection.message.MqttMessageSender;
 import com.attestorforensics.mobifumecore.model.connection.wifi.WifiConnection;
+import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +20,7 @@ public class MqttBrokerConnection implements BrokerConnection {
   private final MessageSender messageSender;
 
   private MqttBrokerConnection(Properties config, ExecutorService executorService,
-      ModelManager modelManager, WifiConnection wifiConnection) {
+      DevicePool devicePool, GroupPool groupPool, WifiConnection wifiConnection) {
     String appId = MqttClient.generateClientId();
     try {
       mqttClient = createMqttClient(appId, config);
@@ -29,16 +30,16 @@ public class MqttBrokerConnection implements BrokerConnection {
     }
 
     mqttBrokerConnector =
-        MqttBrokerConnector.create(config, mqttClient, executorService, modelManager,
+        MqttBrokerConnector.create(config, mqttClient, executorService, devicePool, groupPool,
             wifiConnection);
     messageSender = MqttMessageSender.create(mqttClient, executorService);
     mqttClient.setCallback(
-        MqttBrokerCallback.create(mqttBrokerConnector, modelManager, messageSender));
+        MqttBrokerCallback.create(mqttBrokerConnector, devicePool, groupPool, messageSender));
   }
 
   public static BrokerConnection create(Properties config, ExecutorService executorService,
-      ModelManager modelManager, WifiConnection wifiConnection) {
-    return new MqttBrokerConnection(config, executorService, modelManager, wifiConnection);
+      DevicePool devicePool, GroupPool groupPool, WifiConnection wifiConnection) {
+    return new MqttBrokerConnection(config, executorService, devicePool, groupPool, wifiConnection);
   }
 
   @Override

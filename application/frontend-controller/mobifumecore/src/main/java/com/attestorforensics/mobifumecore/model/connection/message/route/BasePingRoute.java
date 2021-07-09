@@ -1,30 +1,31 @@
 package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.base.BasePing;
-import com.attestorforensics.mobifumecore.model.element.group.Room;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent;
 import com.attestorforensics.mobifumecore.model.event.BaseErrorResolvedEvent;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
+import java.util.Optional;
 
 public class BasePingRoute implements MessageRoute<BasePing> {
 
-  private final ModelManager modelManager;
+  private final DevicePool devicePool;
+  private final GroupPool groupPool;
 
-  private BasePingRoute(ModelManager modelManager) {
-    this.modelManager = modelManager;
+  private BasePingRoute(DevicePool devicePool, GroupPool groupPool) {
+    this.devicePool = devicePool;
+    this.groupPool = groupPool;
   }
 
-  public static BasePingRoute create(ModelManager modelManager) {
-    return new BasePingRoute(modelManager);
+  public static BasePingRoute create(DevicePool devicePool, GroupPool groupPool) {
+    return new BasePingRoute(devicePool, groupPool);
   }
-
 
   @Override
   public Class<BasePing> type() {
@@ -33,14 +34,12 @@ public class BasePingRoute implements MessageRoute<BasePing> {
 
   @Override
   public void onReceived(BasePing message) {
-    Device device = modelManager.getDevice(message.getDeviceId());
-    if (device == null) {
+    Optional<Base> optionalBase = devicePool.getBase(message.getDeviceId());
+    if (!optionalBase.isPresent()) {
       return;
     }
-    if (device.getType() != DeviceType.BASE) {
-      return;
-    }
-    Base base = (Base) device;
+
+    Base base = optionalBase.get();
     base.setRssi(message.getRssi());
 
     double temperature = message.getTemperature();
@@ -106,14 +105,13 @@ public class BasePingRoute implements MessageRoute<BasePing> {
 
     Mobifume.getInstance()
         .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
+        .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
 
-    Room group = (Room) modelManager.getGroup(base);
-    if (group == null) {
-      return;
+    Optional<Group> optionalGroup = groupPool.getGroupOfBase(base);
+    if (optionalGroup.isPresent()) {
+      Group group = optionalGroup.get();
+      CustomLogger.logGroupBase(group, base);
+      group.updateHumidify();
     }
-
-    CustomLogger.logGroupBase(group, base);
-    group.updateHumidify();
   }
 }

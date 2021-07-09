@@ -1,27 +1,31 @@
 package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.base.BaseOnline;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
+import java.util.Optional;
 
 public class BaseOnlineRoute implements MessageRoute<BaseOnline> {
 
-  private final ModelManager modelManager;
+  private final DevicePool devicePool;
+  private final GroupPool groupPool;
   private final MessageSender messageSender;
 
-  private BaseOnlineRoute(ModelManager modelManager, MessageSender messageSender) {
-    this.modelManager = modelManager;
+  private BaseOnlineRoute(DevicePool devicePool, GroupPool groupPool, MessageSender messageSender) {
+    this.devicePool = devicePool;
+    this.groupPool = groupPool;
     this.messageSender = messageSender;
   }
 
-  public static BaseOnlineRoute create(ModelManager modelManager, MessageSender messageSender) {
-    return new BaseOnlineRoute(modelManager, messageSender);
+  public static BaseOnlineRoute create(DevicePool devicePool, GroupPool groupPool,
+      MessageSender messageSender) {
+    return new BaseOnlineRoute(devicePool, groupPool, messageSender);
   }
 
   @Override
@@ -31,40 +35,40 @@ public class BaseOnlineRoute implements MessageRoute<BaseOnline> {
 
   @Override
   public void onReceived(BaseOnline message) {
-    if (existsDevice(message.getDeviceId())) {
-      Device device = modelManager.getDevice(message.getDeviceId());
-      device.setVersion(message.getVersion());
-      updateDeviceState(device);
-      ((Base) device).requestCalibrationData();
+    Optional<Base> optionalBase = devicePool.getBase(message.getDeviceId());
+    if (optionalBase.isPresent()) {
+      Base base = optionalBase.get();
+      base.setVersion(message.getVersion());
+      updateDeviceState(base);
+      base.requestCalibrationData();
       return;
     }
 
     Base base = new Base(messageSender, message.getDeviceId(), message.getVersion());
+    devicePool.addBase(base);
     deviceOnline(base);
     base.requestCalibrationData();
   }
 
-  private boolean existsDevice(String deviceId) {
-    return modelManager.getDevices().stream().anyMatch(n -> n.getDeviceId().equals(deviceId));
+  private void updateDeviceState(Base base) {
+    base.setOffline(false);
+    Optional<Group> optionalGroup = groupPool.getGroupOfBase(base);
+    if (optionalGroup.isPresent()) {
+      Group group = optionalGroup.get();
+      CustomLogger.info(group, "RECONNECT", base.getDeviceId());
+      CustomLogger.info("Reconnect " + base.getDeviceId());
+      group.sendState(base);
+      Mobifume.getInstance()
+          .getEventDispatcher()
+          .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.RECONNECT));
+    }
   }
 
-  private void updateDeviceState(Device device) {
-    device.setOffline(false);
-    Group group = modelManager.getGroup(device);
-    CustomLogger.info(group, "RECONNECT", device.getDeviceId());
-    CustomLogger.info("Reconnect " + device.getDeviceId());
-    group.sendState(device);
+  private void deviceOnline(Base base) {
+    base.setOffline(false);
     Mobifume.getInstance()
         .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.RECONNECT));
-  }
-
-  private void deviceOnline(Device device) {
-    device.setOffline(false);
-    modelManager.getDevices().add(device);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.CONNECTED));
-    CustomLogger.info("Device online : " + device.getDeviceId());
+        .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.CONNECTED));
+    CustomLogger.info("Base online : " + base.getDeviceId());
   }
 }

@@ -1,27 +1,28 @@
 package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.humidifier.HumidifierPing;
-import com.attestorforensics.mobifumecore.model.element.group.Room;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
+import java.util.Optional;
 
 public class HumidifierPingRoute implements MessageRoute<HumidifierPing> {
 
-  private final ModelManager modelManager;
+  private final DevicePool devicePool;
+  private final GroupPool groupPool;
 
-  private HumidifierPingRoute(ModelManager modelManager) {
-    this.modelManager = modelManager;
+  private HumidifierPingRoute(DevicePool devicePool, GroupPool groupPool) {
+    this.devicePool = devicePool;
+    this.groupPool = groupPool;
   }
 
-  public static HumidifierPingRoute create(ModelManager modelManager) {
-    return new HumidifierPingRoute(modelManager);
+  public static HumidifierPingRoute create(DevicePool devicePool, GroupPool groupPool) {
+    return new HumidifierPingRoute(devicePool, groupPool);
   }
-
 
   @Override
   public Class<HumidifierPing> type() {
@@ -30,31 +31,27 @@ public class HumidifierPingRoute implements MessageRoute<HumidifierPing> {
 
   @Override
   public void onReceived(HumidifierPing message) {
-    Device device = modelManager.getDevice(message.getDeviceId());
-    if (device == null) {
+    Optional<Humidifier> optionalHumidifier = devicePool.getHumidifier(message.getDeviceId());
+    if (!optionalHumidifier.isPresent()) {
       return;
     }
 
-    if (device.getType() != DeviceType.HUMIDIFIER) {
-      return;
-    }
-
-    Humidifier hum = (Humidifier) device;
-    hum.setRssi(message.getRssi());
-    hum.setHumidify(message.isHumidifying());
-    hum.setLed1(message.getLed1());
-    hum.setLed2(message.getLed2());
-    hum.setOverHeated(message.isOverHeated());
+    Humidifier humidifier = optionalHumidifier.get();
+    humidifier.setRssi(message.getRssi());
+    humidifier.setHumidify(message.isHumidifying());
+    humidifier.setLed1(message.getLed1());
+    humidifier.setLed2(message.getLed2());
+    humidifier.setOverHeated(message.isOverHeated());
 
     Mobifume.getInstance()
         .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
+        .call(new DeviceConnectionEvent(humidifier,
+            DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
 
-    Room group = (Room) modelManager.getGroup(hum);
-    if (group == null) {
-      return;
+    Optional<Group> optionalGroup = groupPool.getGroupOfHumidifier(humidifier);
+    if (optionalGroup.isPresent()) {
+      Group group = optionalGroup.get();
+      CustomLogger.logGroupHum(group, humidifier);
     }
-
-    CustomLogger.logGroupHum(group, hum);
   }
 }

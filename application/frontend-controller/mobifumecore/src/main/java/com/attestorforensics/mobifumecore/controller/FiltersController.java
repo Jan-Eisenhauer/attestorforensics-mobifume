@@ -41,15 +41,16 @@ public class FiltersController {
   @FXML
   public void initialize() {
     instance = this;
-    List<Filter> filters = Mobifume.getInstance().getModelManager().getFilters();
+    List<Filter> filters = Mobifume.getInstance().getModelManager().getFilterPool().getAllFilters();
     filters.forEach(this::addFilter);
   }
 
   public void addFilter(Filter filter) {
     try {
       ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getClassLoader().getResource("view/items/FilterItem.fxml"), resourceBundle);
+      FXMLLoader loader =
+          new FXMLLoader(getClass().getClassLoader().getResource("view/items/FilterItem.fxml"),
+              resourceBundle);
       Parent root = loader.load();
       FilterItemController controller = loader.getController();
       this.filters.getChildren().add(root);
@@ -87,20 +88,17 @@ public class FiltersController {
             return;
           }
 
-          String filterId =
-              Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
+          String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
 
-          Mobifume.getInstance().getModelManager().addFilter(filterId);
+          Filter newFilter =
+              Mobifume.getInstance().getModelManager().getFilterFactory().createFilter(filterId);
+          Mobifume.getInstance().getModelManager().getFilterPool().addFilter(newFilter);
         });
   }
 
   private boolean isFilterIdValid(String value) {
     String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
-    if (Mobifume.getInstance()
-        .getModelManager()
-        .getFilters()
-        .stream()
-        .anyMatch(filter -> filter.getId().equals(filterId))) {
+    if (Mobifume.getInstance().getModelManager().getFilterPool().getFilter(filterId).isPresent()) {
       return false;
     }
     return filterId.matches(

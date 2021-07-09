@@ -11,7 +11,7 @@ import java.util.List;
 
 public class FilterFileHandler {
 
-  private File filterFolder;
+  private final File filterFolder;
 
   public FilterFileHandler() {
     filterFolder = new File(FileManager.getInstance().getDataFolder(), "filter");

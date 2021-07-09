@@ -1,13 +1,15 @@
 package com.attestorforensics.mobifumecore.model.connection.broker;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.wifi.WifiConnection;
-import com.attestorforensics.mobifumecore.model.element.group.Room;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -26,7 +28,8 @@ class MqttBrokerConnector {
 
   private final MqttClient mqttClient;
   private final ExecutorService executorService;
-  private final ModelManager modelManager;
+  private final DevicePool devicePool;
+  private final GroupPool groupPool;
   private final WifiConnection wifiConnection;
   private final MqttConnectOptions connectOptions;
   private final String channel;
@@ -34,10 +37,12 @@ class MqttBrokerConnector {
   private CompletableFuture<Void> connectTask;
 
   private MqttBrokerConnector(Properties config, MqttClient mqttClient,
-      ExecutorService executorService, ModelManager modelManager, WifiConnection wifiConnection) {
+      ExecutorService executorService, DevicePool devicePool, GroupPool groupPool,
+      WifiConnection wifiConnection) {
     this.mqttClient = mqttClient;
     this.executorService = executorService;
-    this.modelManager = modelManager;
+    this.devicePool = devicePool;
+    this.groupPool = groupPool;
     this.wifiConnection = wifiConnection;
 
     connectOptions = createConnectOptions(config, mqttClient.getClientId());
@@ -45,8 +50,9 @@ class MqttBrokerConnector {
   }
 
   static MqttBrokerConnector create(Properties config, MqttClient mqttClient,
-      ExecutorService executorService, ModelManager modelManager, WifiConnection wifiConnection) {
-    return new MqttBrokerConnector(config, mqttClient, executorService, modelManager,
+      ExecutorService executorService, DevicePool devicePool, GroupPool groupPool,
+      WifiConnection wifiConnection) {
+    return new MqttBrokerConnector(config, mqttClient, executorService, devicePool, groupPool,
         wifiConnection);
   }
 
@@ -115,21 +121,37 @@ class MqttBrokerConnector {
   }
 
   private void onBrokerConnectTimeout() {
-    modelManager.getDevices().forEach(device -> {
-      Room group = (Room) modelManager.getGroup(device);
-      if (group == null) {
+    devicePool.getAllBases().forEach(base -> {
+      Optional<Group> optionalGroup = groupPool.getGroupOfBase(base);
+      if (!optionalGroup.isPresent()) {
         Mobifume.getInstance()
             .getEventDispatcher()
-            .call(
-                new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
-        modelManager.getDevices().remove(device);
+            .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
+        devicePool.removeBase(base);
       }
 
-      device.setRssi(-100);
-      device.setOffline(true);
+      base.setRssi(-100);
+      base.setOffline(true);
       Mobifume.getInstance()
           .getEventDispatcher()
-          .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.LOST));
+          .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.LOST));
+    });
+
+    devicePool.getAllHumidifier().forEach(humidifier -> {
+      Optional<Group> optionalGroup = groupPool.getGroupOfHumidifier(humidifier);
+      if (!optionalGroup.isPresent()) {
+        Mobifume.getInstance()
+            .getEventDispatcher()
+            .call(new DeviceConnectionEvent(humidifier,
+                DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
+        devicePool.removeHumidifier(humidifier);
+      }
+
+      humidifier.setRssi(-100);
+      humidifier.setOffline(true);
+      Mobifume.getInstance()
+          .getEventDispatcher()
+          .call(new DeviceConnectionEvent(humidifier, DeviceConnectionEvent.DeviceStatus.LOST));
     });
 
     Mobifume.getInstance()

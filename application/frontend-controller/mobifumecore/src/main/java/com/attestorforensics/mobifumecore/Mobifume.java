@@ -100,7 +100,8 @@ public class Mobifume {
     wifiConnection = WindowsWifiConnection.create(scheduledExecutorService);
 
     brokerConnection = MqttBrokerConnection.create(Mobifume.getInstance().getConfig(),
-        Mobifume.getInstance().getScheduledExecutorService(), modelManager, wifiConnection);
+        Mobifume.getInstance().getScheduledExecutorService(), modelManager.getDevicePool(),
+        modelManager.getGroupPool(), wifiConnection);
   }
 
   /**

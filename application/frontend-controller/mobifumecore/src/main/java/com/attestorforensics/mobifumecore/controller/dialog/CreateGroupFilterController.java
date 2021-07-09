@@ -107,10 +107,11 @@ public class CreateGroupFilterController {
             return;
           }
 
-          String filterId =
-              Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
+          String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
 
-          Filter newFilter = Mobifume.getInstance().getModelManager().addFilter(filterId);
+          Filter newFilter =
+              Mobifume.getInstance().getModelManager().getFilterFactory().createFilter(filterId);
+          Mobifume.getInstance().getModelManager().getFilterPool().addFilter(newFilter);
           parentController.addedFilter(filterId, newFilter);
           filter.getSelectionModel().select(filterId);
         });
@@ -136,13 +137,10 @@ public class CreateGroupFilterController {
 
   private boolean isFilterIdValid(String value) {
     String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
-    if (Mobifume.getInstance()
-        .getModelManager()
-        .getFilters()
-        .stream()
-        .anyMatch(filter -> filter.getId().equals(filterId))) {
+    if (Mobifume.getInstance().getModelManager().getFilterPool().getFilter(filterId).isPresent()) {
       return false;
     }
+
     return filterId.matches(
         Mobifume.getInstance().getConfig().getProperty("filter.prefix") + "[0-9]{4}");
   }

@@ -1,9 +1,10 @@
 package com.attestorforensics.mobifumecore.model.log;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.element.group.Room;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class CustomLogger {
     return logger;
   }
 
-  public static Logger createGroupLogger(Room group) {
+  public static Logger createGroupLogger(Group group) {
     Logger logger = Logger.getLogger(group.getSettings().getCycleCount() + "-" + group.getName());
 
     try {
@@ -64,7 +65,7 @@ public class CustomLogger {
     return logger;
   }
 
-  public static void logGroupHeader(Room group) {
+  public static void logGroupHeader(Group group) {
     group.getLogger()
         .trace(join("HEAD", version(), group.getSettings().getCycleCount(), group.getName()));
   }
@@ -83,23 +84,23 @@ public class CustomLogger {
         + Mobifume.getInstance().getProjectProperties().getProperty("version");
   }
 
-  public static void logGroupSettings(Room group) {
+  public static void logGroupSettings(Group group) {
     Settings settings = group.getSettings();
     info(group, "SETTINGS", settings.getHumidifyMax(), settings.getHumidifyPuffer(),
         settings.getHeaterTemperature(), settings.getHeatTimer(), settings.getPurgeTimer());
   }
 
-  public static void info(Room group, Object... elements) {
+  public static void info(Group group, Object... elements) {
     String info = join(elements);
     group.getLogger().info(info);
     System.out.println(info);
   }
 
-  public static void logGroupState(Room group) {
+  public static void logGroupState(Group group) {
     info(group, "STATE", group.getStatus(), group.isHumidifying(), group.isHumidifyMaxReached());
   }
 
-  public static void logGroupDevices(Room group) {
+  public static void logGroupDevices(Group group) {
     List<String> nodeList = group.getDevices()
         .stream()
         .map(mapper -> mapper.getDeviceId() + "," + mapper.getType())
@@ -108,16 +109,16 @@ public class CustomLogger {
     info(group, nodeList.toArray());
   }
 
-  public static void logGroupBase(Room group, Base base) {
+  public static void logGroupBase(Group group, Base base) {
     info(group, "BASE", base.getDeviceId(), base.getRssi(), base.getTemperature(), base.getHumidity(),
         base.getHeaterSetpoint(), base.getHeaterTemperature(), base.getLatch());
   }
 
-  public static void logGroupHum(Room group, Humidifier hum) {
+  public static void logGroupHum(Group group, Humidifier hum) {
     info(group, "HUM", hum.getDeviceId(), hum.getRssi(), hum.isHumidify(), hum.getLed1(), hum.getLed2());
   }
 
-  public static void logGroupRemove(Room group) {
+  public static void logGroupRemove(Group group) {
     info(group, "DESTROY");
   }
 

@@ -1,23 +1,22 @@
 package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.base.BaseCalibrationData;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import java.util.Optional;
 
 public class BaseCalibrationDataRoute implements MessageRoute<BaseCalibrationData> {
 
-  private final ModelManager modelManager;
+  private final DevicePool devicePool;
 
-  private BaseCalibrationDataRoute(ModelManager modelManager) {
-    this.modelManager = modelManager;
+  private BaseCalibrationDataRoute(DevicePool devicePool) {
+    this.devicePool = devicePool;
   }
 
-  public static BaseCalibrationDataRoute create(ModelManager modelManager) {
-    return new BaseCalibrationDataRoute(modelManager);
+  public static BaseCalibrationDataRoute create(DevicePool devicePool) {
+    return new BaseCalibrationDataRoute(devicePool);
   }
 
 
@@ -28,23 +27,19 @@ public class BaseCalibrationDataRoute implements MessageRoute<BaseCalibrationDat
 
   @Override
   public void onReceived(BaseCalibrationData message) {
-    Device device = modelManager.getDevice(message.getDeviceId());
-    if (device == null) {
+    Optional<Base> optionalBase = devicePool.getBase(message.getDeviceId());
+    if (!optionalBase.isPresent()) {
       return;
     }
 
-    if (device.getType() != DeviceType.BASE) {
-      return;
-    }
-
-    Base base = (Base) device;
+    Base base = optionalBase.get();
     base.setCalibration(message.getHumidityCalibration().getGradient(),
         message.getHumidityCalibration().getOffset(),
         message.getTemperatureCalibration().getGradient(),
         message.getTemperatureCalibration().getOffset());
     Mobifume.getInstance()
         .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device,
+        .call(new DeviceConnectionEvent(base,
             DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
   }
 }

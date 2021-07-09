@@ -1,28 +1,32 @@
 package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.humidifier.HumidifierOnline;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
+import java.util.Optional;
 
 public class HumidifierOnlineRoute implements MessageRoute<HumidifierOnline> {
 
-  private final ModelManager modelManager;
+  private final DevicePool devicePool;
+  private final GroupPool groupPool;
   private final MessageSender messageSender;
 
-  private HumidifierOnlineRoute(ModelManager modelManager, MessageSender messageSender) {
-    this.modelManager = modelManager;
+  private HumidifierOnlineRoute(DevicePool devicePool, GroupPool groupPool,
+      MessageSender messageSender) {
+    this.devicePool = devicePool;
+    this.groupPool = groupPool;
     this.messageSender = messageSender;
   }
 
-  public static HumidifierOnlineRoute create(ModelManager modelManager,
+  public static HumidifierOnlineRoute create(DevicePool devicePool, GroupPool groupPool,
       MessageSender messageSender) {
-    return new HumidifierOnlineRoute(modelManager, messageSender);
+    return new HumidifierOnlineRoute(devicePool, groupPool, messageSender);
   }
 
   @Override
@@ -32,39 +36,40 @@ public class HumidifierOnlineRoute implements MessageRoute<HumidifierOnline> {
 
   @Override
   public void onReceived(HumidifierOnline message) {
-    if (existsDevice(message.getDeviceId())) {
-      Device device = modelManager.getDevice(message.getDeviceId());
-      device.setVersion(message.getVersion());
-      updateDeviceState(device);
+    Optional<Humidifier> optionalHumidifier = devicePool.getHumidifier(message.getDeviceId());
+    if (optionalHumidifier.isPresent()) {
+      Humidifier humidifier = optionalHumidifier.get();
+      humidifier.setVersion(message.getVersion());
+      updateDeviceState(humidifier);
       return;
     }
 
     Humidifier humidifier =
         new Humidifier(messageSender, message.getDeviceId(), message.getVersion());
+    devicePool.addHumidifier(humidifier);
     deviceOnline(humidifier);
   }
 
-  private boolean existsDevice(String deviceId) {
-    return modelManager.getDevices().stream().anyMatch(n -> n.getDeviceId().equals(deviceId));
+  private void updateDeviceState(Humidifier humidifier) {
+    humidifier.setOffline(false);
+    Optional<Group> optionalGroup = groupPool.getGroupOfHumidifier(humidifier);
+    if (optionalGroup.isPresent()) {
+      Group group = optionalGroup.get();
+      CustomLogger.info(group, "RECONNECT", humidifier.getDeviceId());
+      CustomLogger.info("Reconnect " + humidifier.getDeviceId());
+      group.sendState(humidifier);
+      Mobifume.getInstance()
+          .getEventDispatcher()
+          .call(
+              new DeviceConnectionEvent(humidifier, DeviceConnectionEvent.DeviceStatus.RECONNECT));
+    }
   }
 
-  private void updateDeviceState(Device device) {
-    device.setOffline(false);
-    Group group = modelManager.getGroup(device);
-    CustomLogger.info(group, "RECONNECT", device.getDeviceId());
-    CustomLogger.info("Reconnect " + device.getDeviceId());
-    group.sendState(device);
+  private void deviceOnline(Humidifier humidifier) {
+    humidifier.setOffline(false);
     Mobifume.getInstance()
         .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.RECONNECT));
-  }
-
-  private void deviceOnline(Device device) {
-    device.setOffline(false);
-    modelManager.getDevices().add(device);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.CONNECTED));
-    CustomLogger.info("Device online : " + device.getDeviceId());
+        .call(new DeviceConnectionEvent(humidifier, DeviceConnectionEvent.DeviceStatus.CONNECTED));
+    CustomLogger.info("Humidifier online : " + humidifier.getDeviceId());
   }
 }
