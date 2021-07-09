@@ -44,7 +44,7 @@ public class HumidifierPingRoute implements MessageRoute<HumidifierPing> {
     hum.setHumidify(message.isHumidifying());
     hum.setLed1(message.getLed1());
     hum.setLed2(message.getLed2());
-    hum.setOverTemperature(message.isOverHeated());
+    hum.setOverHeated(message.isOverHeated());
 
     Mobifume.getInstance()
         .getEventDispatcher()

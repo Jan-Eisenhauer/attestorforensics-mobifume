@@ -4,6 +4,7 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.ModelManager;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.base.BasePing;
 import com.attestorforensics.mobifumecore.model.element.group.Room;
+import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
@@ -88,16 +89,16 @@ public class BasePingRoute implements MessageRoute<BasePing> {
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.HEATER));
     }
 
-    int latch = message.getLatch();
-    int oldLatch = base.getLatch();
+    Latch latch = message.getLatch();
+    Latch oldLatch = base.getLatch();
     base.setLatch(latch);
-    if ((latch == 3 || latch == 4) && (oldLatch != 3 && oldLatch != 4)) {
+    if (latch == Latch.ERROR && oldLatch != Latch.ERROR) {
       Mobifume.getInstance()
           .getEventDispatcher()
           .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.LATCH));
     }
 
-    if ((latch == 0 || latch == 1) && (oldLatch == 3 || oldLatch == 4)) {
+    if ((latch == Latch.CLOSED || latch == Latch.OPENED) && oldLatch == Latch.ERROR) {
       Mobifume.getInstance()
           .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.LATCH));

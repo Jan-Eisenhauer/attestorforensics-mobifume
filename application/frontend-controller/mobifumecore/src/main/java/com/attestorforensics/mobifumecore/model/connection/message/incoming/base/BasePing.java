@@ -1,9 +1,10 @@
 package com.attestorforensics.mobifumecore.model.connection.message.incoming.base;
 
 import com.attestorforensics.mobifumecore.model.connection.message.InvalidMessageArgumentException;
-import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
 import com.attestorforensics.mobifumecore.model.connection.message.MessagePattern;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessage;
+import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
+import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import java.util.Optional;
 
 public class BasePing implements IncomingMessage {
@@ -17,10 +18,10 @@ public class BasePing implements IncomingMessage {
   private final double humidity;
   private final double heaterSetpoint;
   private final double heaterTemperature;
-  private final int latch;
+  private final Latch latch;
 
   private BasePing(String deviceId, int rssi, double temperature, double humidity,
-      double heaterSetpoint, double heaterTemperature, int latch) {
+      double heaterSetpoint, double heaterTemperature, Latch latch) {
     this.deviceId = deviceId;
     this.rssi = rssi;
     this.temperature = temperature;
@@ -43,7 +44,7 @@ public class BasePing implements IncomingMessage {
     double humidity;
     double heaterSetpoint;
     double heaterTemperature;
-    int latch;
+    int latchValue;
 
     try {
       rssi = Integer.parseInt(arguments[1]);
@@ -51,10 +52,25 @@ public class BasePing implements IncomingMessage {
       humidity = Double.parseDouble(arguments[3]);
       heaterSetpoint = Double.parseDouble(arguments[4]);
       heaterTemperature = Double.parseDouble(arguments[5]);
-      latch = Integer.parseInt(arguments[6]);
-      // TODO - enum for latch state
+      latchValue = Integer.parseInt(arguments[6]);
     } catch (NumberFormatException e) {
       throw new InvalidMessageArgumentException("Cannot convert arguments to base ping");
+    }
+
+    Latch latch;
+    switch (latchValue) {
+      case 0:
+        latch = Latch.CLOSED;
+        break;
+      case 1:
+        latch = Latch.OPENED;
+        break;
+      case -1:
+        latch = Latch.MOVING;
+        break;
+      default:
+        latch = Latch.ERROR;
+        break;
     }
 
     return new BasePing(deviceId, rssi, temperature, humidity, heaterSetpoint, heaterTemperature,
@@ -62,7 +78,7 @@ public class BasePing implements IncomingMessage {
   }
 
   public static BasePing create(String deviceId, int rssi, double temperature, double humidity,
-      double heaterSetpoint, double heaterTemperature, int latch) {
+      double heaterSetpoint, double heaterTemperature, Latch latch) {
     return new BasePing(deviceId, rssi, temperature, humidity, heaterSetpoint, heaterTemperature,
         latch);
   }
@@ -91,7 +107,7 @@ public class BasePing implements IncomingMessage {
     return heaterTemperature;
   }
 
-  public int getLatch() {
+  public Latch getLatch() {
     return latch;
   }
 

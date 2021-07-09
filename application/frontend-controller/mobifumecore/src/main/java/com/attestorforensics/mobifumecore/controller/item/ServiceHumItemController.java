@@ -52,7 +52,7 @@ public class ServiceHumItemController implements ServiceItemController {
         .getString("support.status.humidify.value", hum.isHumidify() ? 1 : 0));
     led1.setText(LocaleManager.getInstance().getString("support.status.led.value", hum.getLed1()));
     led2.setText(LocaleManager.getInstance().getString("support.status.led.value", hum.getLed2()));
-    overTemperature.setText(hum.isOverTemperature() ? LocaleManager.getInstance()
+    overTemperature.setText(hum.isOverHeated() ? LocaleManager.getInstance()
         .getString("support.status.overtemperature") : "");
   }
 

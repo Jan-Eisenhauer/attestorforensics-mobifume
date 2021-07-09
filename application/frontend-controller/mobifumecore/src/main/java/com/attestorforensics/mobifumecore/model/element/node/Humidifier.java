@@ -4,16 +4,16 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierEnable;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierReset;
+import com.attestorforensics.mobifumecore.model.element.misc.Led;
 import com.attestorforensics.mobifumecore.model.event.WaterErrorEvent;
 
 public class Humidifier extends Device {
 
   private boolean humidify;
 
-  // led status: 0->off; 1->on; 2->blinking
-  private int led1;
-  private int led2;
-  private boolean overTemperature;
+  private Led led1;
+  private Led led2;
+  private boolean overHeated;
 
   private int waterState;
   private boolean waterEmpty;
@@ -39,11 +39,11 @@ public class Humidifier extends Device {
     messageSender.send(HumidifierEnable.create(deviceId, humidifying));
   }
 
-  public void setLed1(int led1) {
+  public void setLed1(Led led1) {
     this.led1 = led1;
 
     // wait for 5 water empty signals
-    if (waterState < 5 && led1 == 2) {
+    if (waterState < 5 && led1 == Led.BLINKING) {
       waterState++;
       if (waterState == 5 && !waterEmpty) {
         waterEmpty = true;
@@ -70,24 +70,24 @@ public class Humidifier extends Device {
     this.humidify = humidify;
   }
 
-  public int getLed1() {
+  public Led getLed1() {
     return led1;
   }
 
-  public int getLed2() {
+  public Led getLed2() {
     return led2;
   }
 
-  public void setLed2(int led2) {
+  public void setLed2(Led led2) {
     this.led2 = led2;
   }
 
-  public boolean isOverTemperature() {
-    return overTemperature;
+  public boolean isOverHeated() {
+    return overHeated;
   }
 
-  public void setOverTemperature(boolean overTemperature) {
-    this.overTemperature = overTemperature;
+  public void setOverHeated(boolean overHeated) {
+    this.overHeated = overHeated;
   }
 
   public int getWaterState() {

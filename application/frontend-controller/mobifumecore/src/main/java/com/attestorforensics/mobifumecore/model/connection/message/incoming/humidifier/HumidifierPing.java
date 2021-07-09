@@ -4,6 +4,7 @@ import com.attestorforensics.mobifumecore.model.connection.message.InvalidMessag
 import com.attestorforensics.mobifumecore.model.connection.message.MessagePattern;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessage;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
+import com.attestorforensics.mobifumecore.model.element.misc.Led;
 import java.util.Optional;
 
 public class HumidifierPing implements IncomingMessage {
@@ -14,11 +15,11 @@ public class HumidifierPing implements IncomingMessage {
   private final String deviceId;
   private final int rssi;
   private final boolean humidifying;
-  private final int led1;
-  private final int led2;
+  private final Led led1;
+  private final Led led2;
   private final boolean overHeated;
 
-  private HumidifierPing(String deviceId, int rssi, boolean humidifying, int led1, int led2,
+  private HumidifierPing(String deviceId, int rssi, boolean humidifying, Led led1, Led led2,
       boolean overHeated) {
     this.deviceId = deviceId;
     this.rssi = rssi;
@@ -38,27 +39,40 @@ public class HumidifierPing implements IncomingMessage {
 
     int rssi;
     boolean humidifying;
-    int led1;
-    int led2;
+    int led1Value;
+    int led2Value;
     boolean overHeated;
 
     try {
       rssi = Integer.parseInt(arguments[1]);
       humidifying = Integer.parseInt(arguments[2]) == 1;
-      led1 = Integer.parseInt(arguments[3]);
-      led2 = Integer.parseInt(arguments[4]);
-      // TODO - enum for led state
+      led1Value = Integer.parseInt(arguments[3]);
+      led2Value = Integer.parseInt(arguments[4]);
       overHeated = arguments.length >= 6 && Boolean.parseBoolean(arguments[5]);
     } catch (NumberFormatException e) {
       throw new InvalidMessageArgumentException("Cannot convert arguments to base ping");
     }
 
+    Led led1 = convertLedValue(led1Value);
+    Led led2 = convertLedValue(led2Value);
+
     return new HumidifierPing(deviceId, rssi, humidifying, led1, led2, overHeated);
   }
 
-  public static HumidifierPing create(String deviceId, int rssi, boolean humidifying, int led1,
-      int led2, boolean overHeated) {
+  public static HumidifierPing create(String deviceId, int rssi, boolean humidifying, Led led1,
+      Led led2, boolean overHeated) {
     return new HumidifierPing(deviceId, rssi, humidifying, led1, led2, overHeated);
+  }
+
+  private static Led convertLedValue(int ledValue) {
+    switch (ledValue) {
+      case 0:
+        return Led.OFF;
+      case 1:
+        return Led.ON;
+      default:
+        return Led.BLINKING;
+    }
   }
 
   public String getDeviceId() {
@@ -73,11 +87,11 @@ public class HumidifierPing implements IncomingMessage {
     return humidifying;
   }
 
-  public int getLed1() {
+  public Led getLed1() {
     return led1;
   }
 
-  public int getLed2() {
+  public Led getLed2() {
     return led2;
   }
 

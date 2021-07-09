@@ -5,6 +5,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.CalibrateDialog;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
+import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
@@ -179,7 +180,7 @@ public class ServiceBaseItemController implements ServiceItemController {
   public void onLatch() {
     Sound.click();
     base.updateTime(60);
-    base.updateLatch(base.getLatch() == 0);
+    base.updateLatch(base.getLatch() == Latch.CLOSED);
   }
 
   @FXML

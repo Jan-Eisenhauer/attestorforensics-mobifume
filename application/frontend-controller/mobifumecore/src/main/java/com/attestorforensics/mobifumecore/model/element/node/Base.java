@@ -11,6 +11,7 @@ import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseTemperatureGradient;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseTemperatureOffset;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
+import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import java.util.Optional;
 
 public class Base extends Device {
@@ -19,7 +20,7 @@ public class Base extends Device {
   private double humidity = -128;
   private double heaterSetpoint = -128;
   private double heaterTemperature = -128;
-  private int latch;
+  private Latch latch;
   private Calibration humidityCalibration;
   private Calibration temperatureCalibration;
 
@@ -45,7 +46,7 @@ public class Base extends Device {
   }
 
   public void updateLatch(boolean open) {
-    if (open && latch == 1 || !open && latch == 0) {
+    if (open && latch == Latch.OPENED || !open && latch == Latch.CLOSED) {
       return;
     }
 
@@ -127,11 +128,11 @@ public class Base extends Device {
     this.heaterTemperature = heaterTemperature;
   }
 
-  public int getLatch() {
+  public Latch getLatch() {
     return latch;
   }
 
-  public void setLatch(int latch) {
+  public void setLatch(Latch latch) {
     this.latch = latch;
   }
 }
