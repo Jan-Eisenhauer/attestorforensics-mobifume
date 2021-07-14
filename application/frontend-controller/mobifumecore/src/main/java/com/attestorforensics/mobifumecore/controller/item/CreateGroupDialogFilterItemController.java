@@ -1,11 +1,11 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
+import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
-import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
 import com.attestorforensics.mobifumecore.controller.dialog.InputDialogController;
-import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
@@ -17,7 +17,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
@@ -181,8 +180,12 @@ public class CreateGroupDialogFilterItemController extends DialogController {
 
   @FXML
   public void onErrorInfo(ActionEvent event) {
-    new InfoBoxDialog(((Node) event.getSource()).getScene().getWindow(), errorIcon,
-        new ErrorWarning(errorText, errorType), nill -> {
-    });
+    if (errorType) {
+      this.<ErrorDetailBoxController>loadAndShowDetailBox("ErrorDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setErrorMessage(errorText));
+    } else {
+      this.<WarningDetailBoxController>loadAndShowDetailBox("WarningDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setWarningMessage(errorText));
+    }
   }
 }

@@ -14,6 +14,7 @@ import com.attestorforensics.mobifumecore.controller.listener.UpdateListener;
 import com.attestorforensics.mobifumecore.controller.listener.UpdatingListener;
 import com.attestorforensics.mobifumecore.controller.listener.WaterErrorListener;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ResourceBundle;
 import javafx.application.Application;
@@ -30,15 +31,8 @@ import javafx.stage.StageStyle;
  */
 public class MobiApplication extends Application {
 
-  /**
-   * Gets the singleton instance of this class.
-   */
-  private static MobiApplication instance;
-
-  /**
-   * Gets the primary stage of the application.
-   */
-  private Stage primaryStage;
+  private static final int DEFAULT_WIDTH = 800;
+  private static final int DEFAULT_HEIGHT = 1201;
 
   /**
    * Launches the application window. This is not the actual main method. JavaFX needs this method
@@ -50,72 +44,76 @@ public class MobiApplication extends Application {
     launch(args);
   }
 
-  public static MobiApplication getInstance() {
-    return instance;
-  }
-
   @Override
   public void init() {
-    instance = this;
-
-    Font.loadFont(getClass().getClassLoader().getResourceAsStream("font/Roboto-Regular.ttf"), 10);
-    Font.loadFont(
-        getClass().getClassLoader().getResourceAsStream("font/RobotoCondensed-Regular.ttf"), 10);
+    loadFonts();
   }
 
   @Override
   public void start(Stage primaryStage) throws Exception {
-    this.primaryStage = primaryStage;
-
-    InputStream in = getClass().getClassLoader().getResourceAsStream("images/MOBIfume_Icon.png");
-    if (in != null) {
-      primaryStage.getIcons().add(new Image(in));
-    }
+    loadIcon(primaryStage);
 
     ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
     FXMLLoader loader =
         new FXMLLoader(getClass().getClassLoader().getResource("view/Overview.fxml"),
             resourceBundle);
     Parent root = loader.load();
-    double width1 = 800;
-    double height1 = 1201;
-    Scene scene = new Scene(root, width1, height1);
+
+    Scene scene = new Scene(root, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    primaryStage.setScene(scene);
+
     OverviewController controller = loader.getController();
     controller.setRoot(root);
-    primaryStage.setScene(scene);
+
     registerListener(primaryStage, controller);
-    controller.load();
 
-    primaryStage.setTitle(LocaleManager.getInstance().getString("app.name"));
-    primaryStage.setFullScreen(true);
-    primaryStage.setFullScreenExitHint("");
-    primaryStage.initStyle(StageStyle.UNDECORATED);
-    primaryStage.show();
-    double width = primaryStage.getWidth();
-    double height = primaryStage.getHeight();
-    primaryStage.setFullScreen(false);
-    primaryStage.setWidth(width);
-    primaryStage.setHeight(height);
-    primaryStage.setX(0);
-    primaryStage.setY(0);
+    setupStage(primaryStage);
 
-    Mobifume.getInstance().getWifiConnection().connect();
     Mobifume.getInstance().getBrokerConnection().connect();
   }
 
-  @Override
-  public void stop() {
-    System.exit(0);
+  private void loadFonts() {
+    Font.loadFont(getClass().getClassLoader().getResourceAsStream("font/Roboto-Regular.ttf"), 10);
+    Font.loadFont(
+        getClass().getClassLoader().getResourceAsStream("font/RobotoCondensed-Regular.ttf"), 10);
   }
 
-  private void registerListener(Stage primaryStage, OverviewController overviewController) {
+  private void loadIcon(Stage stage) {
+    try (InputStream inputStream = getClass().getClassLoader()
+        .getResourceAsStream("images/MOBIfume_Icon.png")) {
+      if (inputStream != null) {
+        stage.getIcons().add(new Image(inputStream));
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void setupStage(Stage stage) {
+    stage.setTitle(LocaleManager.getInstance().getString("app.name"));
+
+    stage.initStyle(StageStyle.UNDECORATED);
+    stage.setFullScreen(true);
+    stage.setFullScreenExitHint("");
+    stage.show();
+
+    double fullScreenWidth = stage.getWidth();
+    double fullScreenHeight = stage.getHeight();
+    stage.setFullScreen(false);
+    stage.setWidth(fullScreenWidth);
+    stage.setHeight(fullScreenHeight);
+    stage.setX(0);
+    stage.setY(0);
+  }
+
+  private void registerListener(Stage stage, OverviewController overviewController) {
     BaseErrorListener baseErrorListener = new BaseErrorListener();
     Mobifume.getInstance().getEventDispatcher().registerListener(baseErrorListener);
     WaterErrorListener waterErrorListener = new WaterErrorListener();
     Mobifume.getInstance().getEventDispatcher().registerListener(waterErrorListener);
     Mobifume.getInstance()
         .getEventDispatcher()
-        .registerListener(new ConnectionListener(primaryStage, overviewController));
+        .registerListener(new ConnectionListener(stage, overviewController));
     Mobifume.getInstance().getEventDispatcher().registerListener(new EvaporateListener());
     Mobifume.getInstance().getEventDispatcher().registerListener(new FilterListener());
     Mobifume.getInstance()
@@ -129,9 +127,5 @@ public class MobiApplication extends Application {
     Mobifume.getInstance().getEventDispatcher().registerListener(new PurgeListener());
     Mobifume.getInstance().getEventDispatcher().registerListener(UpdateListener.create());
     Mobifume.getInstance().getEventDispatcher().registerListener(UpdatingListener.create());
-  }
-
-  public Stage getPrimaryStage() {
-    return primaryStage;
   }
 }
