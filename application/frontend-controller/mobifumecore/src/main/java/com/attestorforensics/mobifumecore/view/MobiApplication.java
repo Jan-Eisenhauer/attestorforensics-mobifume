@@ -72,6 +72,11 @@ public class MobiApplication extends Application {
     Mobifume.getInstance().getBrokerConnection().connect();
   }
 
+  @Override
+  public void stop() {
+    System.exit(0);
+  }
+
   private void loadFonts() {
     Font.loadFont(getClass().getClassLoader().getResourceAsStream("font/Roboto-Regular.ttf"), 10);
     Font.loadFont(
