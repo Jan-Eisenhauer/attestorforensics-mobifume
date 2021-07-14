@@ -1,12 +1,12 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
 import com.attestorforensics.mobifumecore.controller.util.Sound;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 
-public class YesNoController implements DialogController {
-
-  private YesNoDialog dialog;
+public class InfoDialogController extends DialogController {
 
   @FXML
   private Text title;
@@ -21,19 +21,14 @@ public class YesNoController implements DialogController {
     this.content.setText(content);
   }
 
+  @Override
   @FXML
-  public void onYes() {
-    Sound.click();
-    dialog.yes();
+  public void initialize(URL location, ResourceBundle resources) {
   }
 
   @FXML
-  public void onNo() {
+  private void onOk() {
     Sound.click();
-    dialog.no();
-  }
-
-  public void setDialog(YesNoDialog dialog) {
-    this.dialog = dialog;
+    close();
   }
 }

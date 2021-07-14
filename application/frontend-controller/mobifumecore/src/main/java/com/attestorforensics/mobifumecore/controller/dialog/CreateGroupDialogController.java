@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.item.CreateGroupDialogFilterItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
@@ -8,29 +9,31 @@ import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
-public class CreateGroupController implements DialogController {
+public class CreateGroupDialogController extends DialogController {
 
   private static int lastGroupId = 0;
 
-  private CreateGroupDialog dialog;
+  private Consumer<CreateGroupResult> callback;
+
   private List<Device> devices;
 
   private String defaultName;
@@ -64,6 +67,33 @@ public class CreateGroupController implements DialogController {
     createFilterBoxes((int) bases);
   }
 
+  public void setCallback(Consumer<CreateGroupResult> callback) {
+    this.callback = callback;
+  }
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+    groupName.setText(getNextGroup());
+    groupName.textProperty().addListener((observableValue, oldText, newText) -> {
+      groupNameError.setVisible(false);
+      groupNameError.setManaged(false);
+      checkOkButton();
+    });
+    groupName.focusedProperty().addListener((observableValue, oldState, focused) -> {
+      if (focused != null && focused) {
+        Platform.runLater(groupName::selectAll);
+      }
+    });
+    TabTipKeyboard.onFocus(groupName);
+  }
+
+  @Override
+  public CompletableFuture<Void> close() {
+    callback.accept(CreateGroupResult.empty());
+    return super.close();
+  }
+
   private void displayDeviceCounts() {
     long bases = devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
     baseCount.setText(
@@ -82,27 +112,24 @@ public class CreateGroupController implements DialogController {
   private void createFilterBoxes(int count) {
     filtersPane.getChildren().clear();
     filterNodes = new ArrayList<>();
+
+    CompletableFuture<CreateGroupDialogFilterItemController> loadFilterItems =
+        CompletableFuture.completedFuture(null);
     for (int i = 0; i < count; i++) {
-      try {
-        ResourceBundle resourceBundle = LocaleManager.getInstance().getResourceBundle();
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getClassLoader().getResource("view/dialog/CreateGroupFilter.fxml"),
-            resourceBundle);
-        Parent root = loader.load();
-        CreateGroupFilterController controller = loader.getController();
-        controller.setDialog(dialog);
+      loadFilterItems.thenCompose(ignored -> this.<CreateGroupDialogFilterItemController>loadItem(
+          "CreateGroupDialogFilterItem.fxml").thenAccept(controller -> {
         controller.init(this);
-        root.getProperties().put("controller", controller);
-        filtersPane.getChildren().add(root);
-        filterNodes.add(root);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+        Parent createGroupDialogFilterItemRoot = controller.getRoot();
+        createGroupDialogFilterItemRoot.getProperties().put("controller", controller);
+        filtersPane.getChildren().add(createGroupDialogFilterItemRoot);
+        filterNodes.add(createGroupDialogFilterItemRoot);
+      }));
     }
-    updateFilters();
+
+    loadFilterItems.thenRun(this::updateFilters);
   }
 
-  void updateFilters() {
+  public void updateFilters() {
     if (updatingFilters) {
       return;
     }
@@ -123,9 +150,9 @@ public class CreateGroupController implements DialogController {
     List<String> filters = new ArrayList<>(filterMap.keySet());
     filters.sort(Comparator.naturalOrder());
     List<String> selectedFilters = getSelectedFilters();
-    filterNodes.forEach(
-        node -> ((CreateGroupFilterController) node.getProperties().get("controller")).updateItems(
-            new ArrayList<>(filters), new ArrayList<>(selectedFilters)));
+    filterNodes.forEach(node -> ((CreateGroupDialogFilterItemController) node.getProperties()
+        .get("controller")).updateItems(new ArrayList<>(filters),
+        new ArrayList<>(selectedFilters)));
     checkOkButton();
 
     updatingFilters = false;
@@ -134,8 +161,8 @@ public class CreateGroupController implements DialogController {
   private List<String> getSelectedFilters() {
     List<String> selectedFilters = new ArrayList<>();
     for (Node filterNode : filterNodes) {
-      CreateGroupFilterController controller =
-          (CreateGroupFilterController) filterNode.getProperties().get("controller");
+      CreateGroupDialogFilterItemController controller =
+          (CreateGroupDialogFilterItemController) filterNode.getProperties().get("controller");
       String selected = controller.getSelected();
       if (selected != null && !selected.isEmpty()) {
         selectedFilters.add(selected);
@@ -158,8 +185,8 @@ public class CreateGroupController implements DialogController {
     }
 
     for (Node filterNode : filterNodes) {
-      CreateGroupFilterController controller =
-          (CreateGroupFilterController) filterNode.getProperties().get("controller");
+      CreateGroupDialogFilterItemController controller =
+          (CreateGroupDialogFilterItemController) filterNode.getProperties().get("controller");
       if (controller.getSelected() == null || controller.getSelected().isEmpty()) {
         return;
       }
@@ -172,11 +199,11 @@ public class CreateGroupController implements DialogController {
     ok.disableProperty().setValue(false);
   }
 
-  void addedFilter(String filterId, Filter newFilter) {
+  public void addedFilter(String filterId, Filter newFilter) {
     filterMap.put(filterId, newFilter);
   }
 
-  void removeDevice(Device device) {
+  public void removeDevice(Device device) {
     devices.remove(device);
     displayDeviceCounts();
 
@@ -185,22 +212,6 @@ public class CreateGroupController implements DialogController {
       createFilterBoxes((int) bases);
     }
     checkOkButton();
-  }
-
-  @FXML
-  public void initialize() {
-    groupName.setText(getNextGroup());
-    groupName.textProperty().addListener((observableValue, oldText, newText) -> {
-      groupNameError.setVisible(false);
-      groupNameError.setManaged(false);
-      checkOkButton();
-    });
-    groupName.focusedProperty().addListener((observableValue, oldState, focused) -> {
-      if (Boolean.TRUE.equals(focused)) {
-        Platform.runLater(groupName::selectAll);
-      }
-    });
-    TabTipKeyboard.onFocus(groupName);
   }
 
   private String getNextGroup() {
@@ -227,10 +238,10 @@ public class CreateGroupController implements DialogController {
 
     if (groupName.getText() == null || groupName.getText().isEmpty()) {
       groupNameError.setManaged(true);
-      Stage stage = dialog.getStage();
-      double width = stage.getWidth();
-      stage.sizeToScene();
-      stage.setWidth(width);
+      //      Stage stage = dialog.getStage();
+      //      double width = stage.getWidth();
+      //      stage.sizeToScene();
+      //      stage.setWidth(width);
       groupNameError.setVisible(true);
       return;
     }
@@ -238,8 +249,8 @@ public class CreateGroupController implements DialogController {
     List<Filter> filters = new ArrayList<>();
 
     filterNodes.forEach(node -> {
-      CreateGroupFilterController controller =
-          (CreateGroupFilterController) node.getProperties().get("controller");
+      CreateGroupDialogFilterItemController controller =
+          (CreateGroupDialogFilterItemController) node.getProperties().get("controller");
       String selected = controller.getSelected();
       if (selected == null || selected.isEmpty()) {
         return;
@@ -263,9 +274,9 @@ public class CreateGroupController implements DialogController {
       return;
     }
 
-    CreateGroupDialog.GroupData groupData =
-        new CreateGroupDialog.GroupData(groupName.getText(), devices, filters);
-    dialog.closeWithGroupData(groupData);
+    GroupData groupData = GroupData.create(groupName.getText(), devices, filters);
+    callback.accept(CreateGroupResult.create(groupData));
+    super.close();
     if (groupName.getText().equals(defaultName)) {
       lastGroupId = defaultId;
     }
@@ -274,14 +285,65 @@ public class CreateGroupController implements DialogController {
   @FXML
   public void onCancel() {
     Sound.click();
-    dialog.close();
+    callback.accept(CreateGroupResult.empty());
+    super.close();
   }
 
   public Map<String, Filter> getFilterMap() {
     return filterMap;
   }
 
-  public void setDialog(CreateGroupDialog dialog) {
-    this.dialog = dialog;
+  public static class GroupData {
+
+    private final String name;
+    private final List<Device> devices;
+    private final List<Filter> filters;
+
+    private GroupData(String name, List<Device> devices, List<Filter> filters) {
+      this.name = name;
+      this.devices = devices;
+      this.filters = filters;
+    }
+
+    public static GroupData create(String name, List<Device> devices, List<Filter> filters) {
+      return new GroupData(name, devices, filters);
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public List<Device> getDevices() {
+      return devices;
+    }
+
+    public List<Filter> getFilters() {
+      return filters;
+    }
+  }
+
+  public static class CreateGroupResult {
+
+    private final GroupData groupData;
+
+    private CreateGroupResult(GroupData groupData) {
+      this.groupData = groupData;
+    }
+
+    private CreateGroupResult() {
+      this(null);
+    }
+
+    private static CreateGroupResult empty() {
+      return new CreateGroupResult();
+    }
+
+    private static CreateGroupResult create(GroupData groupData) {
+      return new CreateGroupResult(groupData);
+    }
+
+    public Optional<GroupData> getGroupData() {
+      return Optional.ofNullable(groupData);
+    }
   }
 }

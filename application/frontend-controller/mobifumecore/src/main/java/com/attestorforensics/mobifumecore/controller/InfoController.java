@@ -1,9 +1,10 @@
 package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
-import com.attestorforensics.mobifumecore.controller.dialog.YesNoDialog;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
+import com.attestorforensics.mobifumecore.controller.dialog.YesNoDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.YesNoDialogController.YesNoResult;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.update.Updater;
@@ -12,9 +13,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 
@@ -63,12 +62,10 @@ public class InfoController extends CloseableController {
   }
 
   @FXML
-  public void onBack(ActionEvent event) {
+  public void onBack() {
     Sound.click();
 
-    Node button = (Node) event.getSource();
-    Scene scene = button.getScene();
-    SceneTransition.playBackward(scene, root);
+    close();
   }
 
   @FXML
@@ -81,33 +78,35 @@ public class InfoController extends CloseableController {
       return;
     }
 
-    YesNoDialog updateAvailableDialog = YesNoDialog.create(root.getScene().getWindow(),
-        LocaleManager.getInstance()
-            .getString("dialog.updateavailable.title", updater.getNewVersion().get()), LocaleManager
-            .getInstance()
-            .getString("dialog.updateavailable.content", updater.getNewVersion().get()),
-        accepted -> {
-          if (accepted && updater.isUpdateAvailable() && updater.getNewVersion().isPresent()) {
-            loadAndOpenView("Update.fxml");
-            updater.installUpdate();
-          }
-        });
+    this.<YesNoDialogController>loadAndOpenDialog("YesNoDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(yesNoResult -> {
+        if (yesNoResult == YesNoResult.YES && updater.isUpdateAvailable() && updater.getNewVersion()
+            .isPresent()) {
+          loadAndOpenView("Update.fxml");
+          updater.installUpdate();
+        }
+      });
 
-    updateAvailableDialog.show();
+      controller.setTitle(LocaleManager.getInstance()
+          .getString("dialog.updateavailable.title", updater.getNewVersion().get()));
+      controller.setContent(LocaleManager.getInstance()
+          .getString("dialog.updateavailable.content", updater.getNewVersion().get()));
+    });
   }
 
   @FXML
-  public void onService(ActionEvent event) {
+  public void onService() {
     Sound.click();
 
-    new ConfirmDialog(root.getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.support.title"),
-        LocaleManager.getInstance().getString("dialog.support.content"), true, accepted -> {
-      if (!accepted) {
-        return;
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(confirmResult -> {
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          loadAndOpenView("Service.fxml");
+        }
+      });
 
-      loadAndOpenView("Service.fxml");
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.support.title"));
+      controller.setContent(LocaleManager.getInstance().getString("dialog.support.content"));
     });
   }
 

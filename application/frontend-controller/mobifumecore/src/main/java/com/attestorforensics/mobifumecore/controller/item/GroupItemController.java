@@ -3,7 +3,8 @@ package com.attestorforensics.mobifumecore.controller.item;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.GroupController;
-import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
@@ -148,20 +149,22 @@ public class GroupItemController extends Controller {
   public void onRemove(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.group.remove.title", group.getName()),
-        LocaleManager.getInstance()
-            .getString("dialog.group.remove.content",
-                group.getName() + " - " + group.getSettings().getCycleCount()), true, accepted -> {
-      if (Boolean.FALSE.equals(accepted)) {
-        return;
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(confirmResult -> {
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          if (Objects.nonNull(statusUpdateTask) && !statusUpdateTask.isDone()) {
+            statusUpdateTask.cancel(false);
+          }
 
-      if (Objects.nonNull(statusUpdateTask) && !statusUpdateTask.isDone()) {
-        statusUpdateTask.cancel(false);
-      }
+          Mobifume.getInstance().getModelManager().getGroupPool().removeGroup(group);
+        }
+      });
 
-      Mobifume.getInstance().getModelManager().getGroupPool().removeGroup(group);
+      controller.setTitle(
+          LocaleManager.getInstance().getString("dialog.group.remove.title", group.getName()));
+      controller.setContent(LocaleManager.getInstance()
+          .getString("dialog.group.remove.content",
+              group.getName() + " - " + group.getSettings().getCycleCount()));
     });
   }
 }

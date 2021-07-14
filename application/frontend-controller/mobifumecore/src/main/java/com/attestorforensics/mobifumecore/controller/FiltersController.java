@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.dialog.InputDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.InputDialogController;
 import com.attestorforensics.mobifumecore.controller.item.FilterItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
@@ -61,26 +61,31 @@ public class FiltersController extends CloseableController {
   public void onFilterAdd() {
     Sound.click();
 
-    new InputDialog(root.getScene().getWindow(), true,
-        LocaleManager.getInstance().getString("dialog.filter.add.title"),
-        LocaleManager.getInstance()
-            .getString("dialog.filter.add.content",
-                Mobifume.getInstance().getConfig().getProperty("filter.prefix")),
-        LocaleManager.getInstance().getString("dialog.filter.add.error"), this::isFilterIdValid,
-        value -> {
-          if (value == null) {
-            return;
-          }
-          if (!isFilterIdValid(value)) {
-            return;
-          }
+    this.<InputDialogController>loadAndOpenDialog("InputDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(inputResult -> {
+        if (!inputResult.getInput().isPresent()) {
+          return;
+        }
 
-          String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
+        String input = inputResult.getInput().get();
+        if (!isFilterIdValid(input)) {
+          return;
+        }
 
-          Filter newFilter =
-              Mobifume.getInstance().getModelManager().getFilterFactory().createFilter(filterId);
-          Mobifume.getInstance().getModelManager().getFilterPool().addFilter(newFilter);
-        });
+        String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + input;
+
+        Filter newFilter =
+            Mobifume.getInstance().getModelManager().getFilterFactory().createFilter(filterId);
+        Mobifume.getInstance().getModelManager().getFilterPool().addFilter(newFilter);
+      });
+
+      controller.setValidator(this::isFilterIdValid);
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.filter.add.title"));
+      controller.setContent(LocaleManager.getInstance()
+          .getString("dialog.filter.add.content",
+              Mobifume.getInstance().getConfig().getProperty("filter.prefix")));
+      controller.setError(LocaleManager.getInstance().getString("dialog.filter.add.error"));
+    });
   }
 
   private boolean isFilterIdValid(String value) {
@@ -88,6 +93,7 @@ public class FiltersController extends CloseableController {
     if (Mobifume.getInstance().getModelManager().getFilterPool().getFilter(filterId).isPresent()) {
       return false;
     }
+
     return filterId.matches(
         Mobifume.getInstance().getConfig().getProperty("filter.prefix") + "[0-9]{4}");
   }

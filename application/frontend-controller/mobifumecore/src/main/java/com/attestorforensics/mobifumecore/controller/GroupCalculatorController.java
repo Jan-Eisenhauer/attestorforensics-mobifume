@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.controller;
 
-import com.attestorforensics.mobifumecore.controller.dialog.SaveDiscardDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.SaveDiscardCancelDialogController;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedFloatTextFormatter;
@@ -362,23 +362,28 @@ public class GroupCalculatorController extends CloseableController {
       return;
     }
 
-    SaveDiscardDialog saveDiscardDialog = SaveDiscardDialog.create(root.getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.calculator.save.title"),
-        LocaleManager.getInstance().getString("dialog.calculator.save.content"), action -> {
-          switch (action) {
-            case SAVE:
-              applySettings();
-              closeCalculator();
-              break;
-            case DISCARD:
-              resetSettings();
-              closeCalculator();
-              break;
-            default:
-              break;
-          }
+    this.<SaveDiscardCancelDialogController>loadAndOpenDialog("SaveDiscardCancelDialog.fxml")
+        .thenAccept(controller -> {
+          controller.setCallback(saveDiscardCancelResult -> {
+            switch (saveDiscardCancelResult) {
+              case SAVE:
+                applySettings();
+                closeCalculator();
+                break;
+              case DISCARD:
+                resetSettings();
+                closeCalculator();
+                break;
+              default:
+                break;
+            }
+          });
+
+          controller.setTitle(
+              LocaleManager.getInstance().getString("dialog.calculator.save.title"));
+          controller.setContent(
+              LocaleManager.getInstance().getString("dialog.calculator.save.content"));
         });
-    saveDiscardDialog.show();
   }
 
   @FXML

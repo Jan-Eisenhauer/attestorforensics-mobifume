@@ -1,11 +1,13 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 
-public class InfoBoxController implements DialogController {
+public class InfoBoxController extends DialogController {
 
   @FXML
   private Pane fullPane;
@@ -19,6 +21,12 @@ public class InfoBoxController implements DialogController {
 
   public void setContent(String content) {
     this.content.setText(content);
+  }
+
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
+
   }
 
   void setErrorType(boolean errorType) {

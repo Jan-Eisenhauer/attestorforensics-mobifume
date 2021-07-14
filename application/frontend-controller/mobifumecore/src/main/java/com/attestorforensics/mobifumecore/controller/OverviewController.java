@@ -1,8 +1,11 @@
 package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
-import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
+import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController.GroupData;
+import com.attestorforensics.mobifumecore.controller.dialog.InfoDialogController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
@@ -53,7 +56,7 @@ public class OverviewController extends Controller {
   @FXML
   private Text battery;
 
-  private CreateGroupDialog createGroupDialog;
+  private CreateGroupDialogController createGroupDialog;
 
   @Override
   public void setRoot(Parent root) {
@@ -256,7 +259,7 @@ public class OverviewController extends Controller {
   }
 
   @FXML
-  public void onFilters(ActionEvent event) throws IOException {
+  public void onFilters() {
     Sound.click();
 
     loadAndOpenView("Filters.fxml");
@@ -281,20 +284,20 @@ public class OverviewController extends Controller {
   public void onShutdown(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.shutdown.title"),
-        LocaleManager.getInstance().getString("dialog.shutdown.content"), true, accepted -> {
-      if (Boolean.FALSE.equals(accepted)) {
-        return;
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(confirmResult -> {
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          try {
+            Runtime.getRuntime().exec("shutdown -s -t 0");
+            System.exit(0);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      });
 
-      try {
-        Runtime.getRuntime().exec("shutdown -s -t 0");
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-      System.exit(0);
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.shutdown.title"));
+      controller.setContent(LocaleManager.getInstance().getString("dialog.shutdown.content"));
     });
   }
 
@@ -331,34 +334,41 @@ public class OverviewController extends Controller {
     List<Device> devices =
         selectedDevices.stream().map(DeviceItemController::getDevice).collect(Collectors.toList());
 
-    createGroupDialog = new CreateGroupDialog(groups.getScene().getWindow(), devices, groupData -> {
-      createGroupDialog = null;
-      if (groupData == null) {
-        return;
-      }
+    this.<CreateGroupDialogController>loadAndOpenDialog("CreateGroupDialog.fxml")
+        .thenAccept(controller -> {
+          controller.setDevices(devices);
+          controller.setCallback(createGroupResult -> {
+            if (!createGroupResult.getGroupData().isPresent()) {
+              return;
+            }
 
-      List<Base> bases = groupData.getDevices()
-          .stream()
-          .filter(device -> device.getType() == DeviceType.BASE)
-          .map(Base.class::cast)
-          .collect(Collectors.toList());
-      List<Humidifier> humidifiers = groupData.getDevices()
-          .stream()
-          .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
-          .map(Humidifier.class::cast)
-          .collect(Collectors.toList());
+            GroupData groupData = createGroupResult.getGroupData().get();
+            List<Base> bases = groupData.getDevices()
+                .stream()
+                .filter(device -> device.getType() == DeviceType.BASE)
+                .map(Base.class::cast)
+                .collect(Collectors.toList());
+            List<Humidifier> humidifiers = groupData.getDevices()
+                .stream()
+                .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
+                .map(Humidifier.class::cast)
+                .collect(Collectors.toList());
 
-      Group group = Mobifume.getInstance()
-          .getModelManager()
-          .getGroupFactory()
-          .createGroup(groupData.getName(), bases, humidifiers, groupData.getFilters());
-      Mobifume.getInstance().getModelManager().getGroupPool().addGroup(group);
-    });
+            Group group = Mobifume.getInstance()
+                .getModelManager()
+                .getGroupFactory()
+                .createGroup(groupData.getName(), bases, humidifiers, groupData.getFilters());
+            Mobifume.getInstance().getModelManager().getGroupPool().addGroup(group);
+          });
+        });
   }
 
   private void createGroupError() {
-    new ConfirmDialog(groups.getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.group.create.failed.title"),
-        LocaleManager.getInstance().getString("dialog.group.create.failed.content"), false, null);
+    this.<InfoDialogController>loadAndOpenDialog("InfoDialog.fxml").thenAccept(controller -> {
+      controller.setTitle(
+          LocaleManager.getInstance().getString("dialog.group.create.failed.title"));
+      controller.setContent(
+          LocaleManager.getInstance().getString("dialog.group.create.failed.content"));
+    });
   }
 }

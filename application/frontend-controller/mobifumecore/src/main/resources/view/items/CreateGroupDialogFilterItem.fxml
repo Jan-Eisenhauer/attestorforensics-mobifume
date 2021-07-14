@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" xmlns="http://javafx.com/javafx/8.0.191"
-      fx:controller="com.attestorforensics.mobifumecore.controller.dialog.CreateGroupFilterController">
+      fx:controller="com.attestorforensics.mobifumecore.controller.item.CreateGroupDialogFilterItemController">
     <children>
         <ComboBox fx:id="filter" prefWidth="300.0" styleClass="dialogContent" AnchorPane.leftAnchor="0.0"
                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>

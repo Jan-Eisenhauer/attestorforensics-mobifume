@@ -1,14 +1,17 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedDoubleTextFormatter;
-import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
-import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
+import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedDoubleTextFormatter;
+import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,14 +20,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-public class AddFilterRunController implements DialogController {
+public class AddFilterRunDialogController extends DialogController {
 
-  private AddFilterRunDialog dialog;
+  private Runnable callback;
   private Filter filter;
 
   @FXML
   private Text title;
-
   @FXML
   private TextField cycle;
   @FXML
@@ -43,8 +45,13 @@ public class AddFilterRunController implements DialogController {
         LocaleManager.getInstance().getString("dialog.addfilterrun.title", filter.getId()));
   }
 
+  public void setCallback(Runnable callback) {
+    this.callback = callback;
+  }
+
+  @Override
   @FXML
-  private void initialize() {
+  public void initialize(URL location, ResourceBundle resources) {
     cycle.setTextFormatter(new SignedIntTextFormatter());
     amount.setTextFormatter(new SignedDoubleTextFormatter());
     total.setTextFormatter(new SignedIntTextFormatter());
@@ -54,10 +61,8 @@ public class AddFilterRunController implements DialogController {
         .forEach(evapo -> evaporants.add(
             evapo.name().substring(0, 1).toUpperCase() + evapo.name().substring(1).toLowerCase()));
     evaporant.setItems(evaporants);
-    Evaporant selected = Mobifume.getInstance()
-        .getModelManager()
-        .getGlobalSettings()
-        .getEvaporant();
+    Evaporant selected =
+        Mobifume.getInstance().getModelManager().getGlobalSettings().getEvaporant();
     evaporant.getSelectionModel()
         .select(selected.name().substring(0, 1).toUpperCase() + selected.name()
             .substring(1)
@@ -70,6 +75,12 @@ public class AddFilterRunController implements DialogController {
     TabTipKeyboard.onFocus(cycle);
     TabTipKeyboard.onFocus(amount);
     TabTipKeyboard.onFocus(total);
+  }
+
+  @Override
+  public CompletableFuture<Void> close() {
+    callback.run();
+    return super.close();
   }
 
   private void checkOkButton() {
@@ -95,16 +106,12 @@ public class AddFilterRunController implements DialogController {
     filter.addRun(Integer.parseInt(cycle.getText()),
         Evaporant.valueOf(evaporant.getSelectionModel().getSelectedItem().toUpperCase()),
         Double.parseDouble(amount.getText()), Integer.parseInt(total.getText()));
-    dialog.close();
+    close();
   }
 
   @FXML
   public void onCancel() {
     Sound.click();
-    dialog.close();
-  }
-
-  public void setDialog(AddFilterRunDialog dialog) {
-    this.dialog = dialog;
+    close();
   }
 }

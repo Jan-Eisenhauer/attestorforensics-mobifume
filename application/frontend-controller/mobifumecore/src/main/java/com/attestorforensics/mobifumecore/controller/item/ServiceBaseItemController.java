@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.dialog.CalibrateDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.CalibrateDialogController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
@@ -13,12 +13,10 @@ import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
@@ -190,33 +188,41 @@ public class ServiceBaseItemController extends ServiceItemController {
   public void onTemperatureCalibrate(ActionEvent event) {
     Sound.click();
 
-    new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), calibration -> {
-      if (Objects.isNull(calibration)) {
-        return;
-      }
+    this.<CalibrateDialogController>loadAndOpenDialog("CalibrateDialog.fxml")
+        .thenAccept(controller -> {
+          controller.setCallback(calibrateResult -> {
+            if (calibrateResult.getCalibration().isPresent()) {
+              Calibration calibration = calibrateResult.getCalibration().get();
+              base.updateTemperatureCalibration(calibration);
+              Mobifume.getInstance()
+                  .getEventDispatcher()
+                  .call(new DeviceConnectionEvent(base,
+                      DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
+            }
+          });
 
-      base.updateTemperatureCalibration(calibration);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new DeviceConnectionEvent(base,
-              DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
-    }, "temperature");
+          controller.setCalibrationName("temperature");
+        });
   }
 
   @FXML
   public void onHumidityCalibrate(ActionEvent event) {
     Sound.click();
 
-    new CalibrateDialog(((Node) event.getSource()).getScene().getWindow(), calibration -> {
-      if (Objects.isNull(calibration)) {
-        return;
-      }
+    this.<CalibrateDialogController>loadAndOpenDialog("CalibrateDialog.fxml")
+        .thenAccept(controller -> {
+          controller.setCallback(calibrateResult -> {
+            if (calibrateResult.getCalibration().isPresent()) {
+              Calibration calibration = calibrateResult.getCalibration().get();
+              base.updateHumidityCalibration(calibration);
+              Mobifume.getInstance()
+                  .getEventDispatcher()
+                  .call(new DeviceConnectionEvent(base,
+                      DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
+            }
+          });
 
-      base.updateHumidityCalibration(calibration);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new DeviceConnectionEvent(base,
-              DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
-    }, "humidity");
+          controller.setCalibrationName("humidity");
+        });
   }
 }

@@ -1,8 +1,9 @@
 package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
-import com.attestorforensics.mobifumecore.controller.dialog.Dialog;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
+import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
 import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupFilterItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
@@ -94,7 +95,7 @@ public class GroupController extends CloseableController {
   @FXML
   private LineChart<Double, Double> chart;
 
-  private Dialog currentDialog;
+  private DialogController currentDialog;
 
   private int tempWrong;
   private int humWrong;
@@ -439,19 +440,21 @@ public class GroupController extends CloseableController {
     Sound.click();
 
     closeCurrentDialog();
-    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.next.humidity.title"),
-        LocaleManager.getInstance().getString("dialog.next.humidity.content"), true, accepted -> {
-      currentDialog = null;
-      if (Boolean.FALSE.equals(accepted)) {
-        return;
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      currentDialog = controller;
+      controller.setCallback(confirmResult -> {
+        currentDialog = null;
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          if (group.getHumidity() != -128) {
+            group.getSettings().setHumidifyMax(Math.round((float) group.getHumidity()));
+          }
 
-      if (group.getHumidity() != -128) {
-        group.getSettings().setHumidifyMax(Math.round((float) group.getHumidity()));
-      }
+          group.startEvaporate();
+        }
+      });
 
-      group.startEvaporate();
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.next.humidity.title"));
+      controller.setContent(LocaleManager.getInstance().getString("dialog.next.humidity.content"));
     });
   }
 
@@ -460,15 +463,19 @@ public class GroupController extends CloseableController {
     Sound.click();
 
     closeCurrentDialog();
-    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.cancel.humidity.title"),
-        LocaleManager.getInstance().getString("dialog.cancel.humidity" + ".content"), true,
-        accepted -> {
-          currentDialog = null;
-          if (Boolean.TRUE.equals(accepted)) {
-            group.cancel();
-          }
-        });
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      currentDialog = controller;
+      controller.setCallback(confirmResult -> {
+        currentDialog = null;
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          group.cancel();
+        }
+      });
+
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.cancel.humidity.title"));
+      controller.setContent(
+          LocaleManager.getInstance().getString("dialog.cancel.humidity.content"));
+    });
   }
 
   @FXML
@@ -476,13 +483,17 @@ public class GroupController extends CloseableController {
     Sound.click();
 
     closeCurrentDialog();
-    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.next.evaporate.title"),
-        LocaleManager.getInstance().getString("dialog.next.evaporate.content"), true, accepted -> {
-      currentDialog = null;
-      if (Boolean.TRUE.equals(accepted)) {
-        group.startPurge();
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      currentDialog = controller;
+      controller.setCallback(confirmResult -> {
+        currentDialog = null;
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          group.startPurge();
+        }
+      });
+
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.next.evaporate.title"));
+      controller.setContent(LocaleManager.getInstance().getString("dialog.next.evaporate.content"));
     });
   }
 
@@ -491,15 +502,19 @@ public class GroupController extends CloseableController {
     Sound.click();
 
     closeCurrentDialog();
-    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.cancel.evaporate.title"),
-        LocaleManager.getInstance().getString("dialog.cancel.evaporate.content"), true,
-        accepted -> {
-          currentDialog = null;
-          if (Boolean.TRUE.equals(accepted)) {
-            group.cancel();
-          }
-        });
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      currentDialog = controller;
+      controller.setCallback(confirmResult -> {
+        currentDialog = null;
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          group.cancel();
+        }
+      });
+
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.cancel.evaporate.title"));
+      controller.setContent(
+          LocaleManager.getInstance().getString("dialog.cancel.evaporate.content"));
+    });
   }
 
   @FXML
@@ -507,13 +522,17 @@ public class GroupController extends CloseableController {
     Sound.click();
 
     closeCurrentDialog();
-    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.cancel.purge.title"),
-        LocaleManager.getInstance().getString("dialog.cancel.purge.content"), true, accepted -> {
-      currentDialog = null;
-      if (Boolean.TRUE.equals(accepted)) {
-        group.cancel();
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      currentDialog = controller;
+      controller.setCallback(confirmResult -> {
+        currentDialog = null;
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          group.cancel();
+        }
+      });
+
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.cancel.purge.title"));
+      controller.setContent(LocaleManager.getInstance().getString("dialog.cancel.purge.content"));
     });
   }
 
@@ -522,13 +541,17 @@ public class GroupController extends CloseableController {
     Sound.click();
 
     closeCurrentDialog();
-    currentDialog = new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.again.purge.title"),
-        LocaleManager.getInstance().getString("dialog.again.purge.content"), true, accepted -> {
-      currentDialog = null;
-      if (Boolean.TRUE.equals(accepted)) {
-        group.startPurge();
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      currentDialog = controller;
+      controller.setCallback(confirmResult -> {
+        currentDialog = null;
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          group.startPurge();
+        }
+      });
+
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.again.purge.title"));
+      controller.setContent(LocaleManager.getInstance().getString("dialog.again.purge.content"));
     });
   }
 

@@ -13,7 +13,7 @@ public class TabTipKeyboard {
 
   public static void onFocus(TextField field) {
     field.focusedProperty().addListener((observable, oldValue, focus) -> {
-      if (Boolean.TRUE.equals(focus)) {
+      if (focus != null && focus) {
         open();
       } else {
         close();

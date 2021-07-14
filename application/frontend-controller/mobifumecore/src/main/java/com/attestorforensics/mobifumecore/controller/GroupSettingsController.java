@@ -1,7 +1,8 @@
 package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
@@ -285,21 +286,22 @@ public class GroupSettingsController extends CloseableController {
   public void onRestore(ActionEvent event) {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.settings.restore.title"),
-        LocaleManager.getInstance().getString("dialog.settings.restore.content"), true,
-        accepted -> {
-          if (Boolean.FALSE.equals(accepted)) {
-            return;
-          }
-
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(confirmResult -> {
+        if (confirmResult == ConfirmResult.CONFIRM) {
           Settings settings = Mobifume.getInstance().getModelManager().getGlobalSettings();
-          maxHumField.setText((int) settings.getHumidifyMax() + "");
+          maxHumField.setText(settings.getHumidifyMax() + "");
           heaterTempField.setText(settings.getHeaterTemperature() + "");
           heatTimeField.setText(settings.getHeatTimer() + "");
           purgeTimeField.setText(settings.getPurgeTimer() + "");
 
           applySettings();
-        });
+        }
+      });
+
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.settings.restore.title"));
+      controller.setContent(
+          LocaleManager.getInstance().getString("dialog.settings.restore.content"));
+    });
   }
 }

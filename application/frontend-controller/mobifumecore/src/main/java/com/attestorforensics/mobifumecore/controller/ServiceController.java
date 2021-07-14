@@ -1,7 +1,8 @@
 package com.attestorforensics.mobifumecore.controller;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.item.ServiceItemController;
 import com.attestorforensics.mobifumecore.controller.listener.ServiceListener;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
@@ -74,14 +75,15 @@ public class ServiceController extends CloseableController {
   public void onExit() {
     Sound.click();
 
-    new ConfirmDialog(root.getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.exit.title"),
-        LocaleManager.getInstance().getString("dialog.exit.content"), true, accepted -> {
-      if (Boolean.FALSE.equals(accepted)) {
-        return;
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(confirmResult -> {
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          System.exit(0);
+        }
+      });
 
-      System.exit(0);
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.exit.title"));
+      controller.setContent(LocaleManager.getInstance().getString("dialog.exit.content"));
     });
   }
 

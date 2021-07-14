@@ -1,12 +1,18 @@
-package com.attestorforensics.mobifumecore.controller.dialog;
+package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
+import com.attestorforensics.mobifumecore.controller.dialog.InputDialogController;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,9 +23,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class CreateGroupFilterController implements DialogController {
-
-  private CreateGroupDialog dialog;
+public class CreateGroupDialogFilterItemController extends DialogController {
 
   private String addFilter;
 
@@ -36,8 +40,13 @@ public class CreateGroupFilterController implements DialogController {
   private String errorText;
   private boolean errorType;
 
-  void init(CreateGroupController parentController) {
+  @Override
+  @FXML
+  public void initialize(URL location, ResourceBundle resources) {
 
+  }
+
+  public void init(CreateGroupDialogController parentController) {
     addFilter = LocaleManager.getInstance().getString("dialog.group.create.filter.add");
 
     filter.getSelectionModel()
@@ -77,6 +86,7 @@ public class CreateGroupFilterController implements DialogController {
               hideError();
             }
           }
+
           parentController.updateFilters();
         });
   }
@@ -89,32 +99,34 @@ public class CreateGroupFilterController implements DialogController {
     errorButton.setManaged(false);
   }
 
-  private void openAddFilterDialog(CreateGroupController parentController) {
-    dialog.setLockClosing(true);
+  private void openAddFilterDialog(CreateGroupDialogController parentController) {
+    this.<InputDialogController>loadAndOpenDialog("InputDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(inputResult -> {
+        if (!inputResult.getInput().isPresent()) {
+          return;
+        }
 
-    new InputDialog(dialog.getStage(), true,
-        LocaleManager.getInstance().getString("dialog.filter.add.title"),
-        LocaleManager.getInstance()
-            .getString("dialog.filter.add.content",
-                Mobifume.getInstance().getConfig().getProperty("filter.prefix")),
-        LocaleManager.getInstance().getString("dialog.filter.add.error"), this::isFilterIdValid,
-        value -> {
-          dialog.setLockClosing(false);
-          if (value == null) {
-            return;
-          }
-          if (!isFilterIdValid(value)) {
-            return;
-          }
+        String input = inputResult.getInput().get();
+        if (!isFilterIdValid(input)) {
+          return;
+        }
 
-          String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + value;
+        String filterId = Mobifume.getInstance().getConfig().getProperty("filter.prefix") + input;
 
-          Filter newFilter =
-              Mobifume.getInstance().getModelManager().getFilterFactory().createFilter(filterId);
-          Mobifume.getInstance().getModelManager().getFilterPool().addFilter(newFilter);
-          parentController.addedFilter(filterId, newFilter);
-          filter.getSelectionModel().select(filterId);
-        });
+        Filter newFilter =
+            Mobifume.getInstance().getModelManager().getFilterFactory().createFilter(filterId);
+        Mobifume.getInstance().getModelManager().getFilterPool().addFilter(newFilter);
+        parentController.addedFilter(filterId, newFilter);
+        filter.getSelectionModel().select(filterId);
+      });
+
+      controller.setValidator(this::isFilterIdValid);
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.filter.add.title"));
+      controller.setContent(LocaleManager.getInstance()
+          .getString("dialog.filter.add.content",
+              Mobifume.getInstance().getConfig().getProperty("filter.prefix")));
+      controller.setError(LocaleManager.getInstance().getString("dialog.filter.add.error"));
+    });
   }
 
   private void showError(String errorMessage) {
@@ -145,7 +157,7 @@ public class CreateGroupFilterController implements DialogController {
         Mobifume.getInstance().getConfig().getProperty("filter.prefix") + "[0-9]{4}");
   }
 
-  void updateItems(List<String> filters, List<String> selected) {
+  public void updateItems(List<String> filters, List<String> selected) {
     String selectedItem = getSelected();
 
     ObservableList<String> boxItems = FXCollections.observableArrayList(addFilter);
@@ -159,7 +171,7 @@ public class CreateGroupFilterController implements DialogController {
     }
   }
 
-  String getSelected() {
+  public String getSelected() {
     String selected = filter.getSelectionModel().getSelectedItem();
     if (selected != null && selected.equals(addFilter)) {
       return null;
@@ -169,12 +181,8 @@ public class CreateGroupFilterController implements DialogController {
 
   @FXML
   public void onErrorInfo(ActionEvent event) {
-    dialog.setLockClosing(true);
     new InfoBoxDialog(((Node) event.getSource()).getScene().getWindow(), errorIcon,
-        new ErrorWarning(errorText, errorType), nill -> dialog.setLockClosing(false));
-  }
-
-  public void setDialog(CreateGroupDialog dialog) {
-    this.dialog = dialog;
+        new ErrorWarning(errorText, errorType), nill -> {
+    });
   }
 }
