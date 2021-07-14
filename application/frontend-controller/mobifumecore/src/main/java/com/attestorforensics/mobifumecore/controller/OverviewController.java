@@ -7,7 +7,9 @@ import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogCon
 import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController.GroupData;
 import com.attestorforensics.mobifumecore.controller.dialog.InfoDialogController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
+import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
+import com.attestorforensics.mobifumecore.controller.listener.ConnectionListener;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
@@ -27,11 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -68,6 +70,7 @@ public class OverviewController extends Controller {
         .getAllHumidifier()
         .forEach(this::addNode);
     Mobifume.getInstance().getModelManager().getGroupPool().getAllGroups().forEach(this::addGroup);
+    Mobifume.getInstance().getEventDispatcher().registerListener(ConnectionListener.create(this));
   }
 
   @Override
@@ -85,6 +88,42 @@ public class OverviewController extends Controller {
     });
   }
 
+  public void removeNode(Device device) {
+    if (createGroupDialogController != null) {
+      createGroupDialogController.removeDevice(device);
+    }
+
+    Platform.runLater(() -> {
+      ObservableList<Node> children = devices.getChildren();
+      children.removeIf(node -> {
+        DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
+        if (controller.getDevice() != device) {
+          return false;
+        }
+
+        nodeDeviceItemControllerPool.remove(node);
+        return true;
+      });
+
+      DeviceItemControllerHolder.getInstance().removeController(device);
+      updateDeviceOrder();
+    });
+  }
+
+  public void updateNode(Device device) {
+    Platform.runLater(() -> {
+      ObservableList<Node> children = devices.getChildren();
+      children.forEach(node -> {
+        DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
+        if (controller.getDevice() != device) {
+          return;
+        }
+
+        controller.updateConnection();
+      });
+    });
+  }
+
   public void addGroup(Group group) {
     this.<GroupItemController>loadItem("GroupItem.fxml").thenAccept(controller -> {
       TitledPane groupItemRoot = (TitledPane) controller.getRoot();
@@ -99,6 +138,58 @@ public class OverviewController extends Controller {
       updateOrder();
       groupItemRoot.setExpanded(true);
     });
+  }
+
+  public void removeGroup(Group group) {
+    ObservableList<TitledPane> groupChildren = groups.getPanes();
+    groupChildren.removeIf(node -> {
+      GroupItemController controller = nodeGroupItemControllerPool.get(node);
+      if (controller.getGroup() != group) {
+        return false;
+      }
+
+      nodeGroupItemControllerPool.remove(node);
+      return true;
+    });
+
+    ObservableList<Node> deviceChildren = devices.getChildren();
+    deviceChildren.filtered(
+        node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
+        .forEach(node -> nodeDeviceItemControllerPool.get(node).clearGroup());
+
+    updateOrder();
+  }
+
+  public void updateConnection() {
+    String wifiImageName = Mobifume.getInstance().getWifiConnection().isEnabled() ? "Wifi" : "Lan";
+    if (!Mobifume.getInstance().getBrokerConnection().isConnected()) {
+      wifiImageName += "_Error";
+    }
+
+    setWifiImage(wifiImageName);
+  }
+
+  public CompletableFuture<InfoDialogController> notifyBrokerLost() {
+    return this.<InfoDialogController>loadAndOpenDialog("InfoDialog.fxml").thenApply(controller -> {
+      controller.setTitle(LocaleManager.getInstance().getString("dialog.connectionlost.title"));
+      controller.setContent(LocaleManager.getInstance().getString("dialog.connectionlost.content"));
+      return controller;
+    });
+  }
+
+  private void startBatteryUpdateTask() {
+    Mobifume.getInstance()
+        .getScheduledExecutorService()
+        .scheduleAtFixedRate(() -> Platform.runLater(() -> {
+          SystemPowerStatus batteryStatus = new SystemPowerStatus();
+          Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
+          battery.setText(batteryStatus.getBatteryLifePercent());
+        }), 0L, 10L, TimeUnit.SECONDS);
+  }
+
+  private void updateOrder() {
+    updateDeviceOrder();
+    updateGroupOrder();
   }
 
   private void updateDeviceOrder() {
@@ -157,11 +248,6 @@ public class OverviewController extends Controller {
     devices.getChildren().addAll(deviceElements);
   }
 
-  private void updateOrder() {
-    updateDeviceOrder();
-    updateGroupOrder();
-  }
-
   private void updateGroupOrder() {
     List<TitledPane> groupListElements = new ArrayList<>(groups.getPanes());
     groupListElements.sort((n1, n2) -> {
@@ -182,84 +268,9 @@ public class OverviewController extends Controller {
     groups.getPanes().addAll(groupListElements);
   }
 
-  public void updateConnection() {
-    if (Mobifume.getInstance().getWifiConnection().isEnabled()) {
-      setWifiImage(
-          Mobifume.getInstance().getBrokerConnection().isConnected() ? "Wifi" : "Wifi_Error");
-    } else {
-      setWifiImage(
-          Mobifume.getInstance().getBrokerConnection().isConnected() ? "Lan" : "Lan_Error");
-    }
-  }
-
   private void setWifiImage(String image) {
     String resource = "images/" + image + ".png";
     wifi.setImage(ImageHolder.getInstance().getImage(resource));
-  }
-
-  public void removeNode(Device device) {
-    if (createGroupDialogController != null) {
-      createGroupDialogController.removeDevice(device);
-    }
-
-    Platform.runLater(() -> {
-      ObservableList<Node> children = devices.getChildren();
-      children.removeIf(node -> {
-        DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
-        if (controller == null || controller.getDevice() != device) {
-          return false;
-        }
-
-        nodeDeviceItemControllerPool.remove(node);
-        return true;
-      });
-
-      updateDeviceOrder();
-    });
-
-    //    deviceItemControllerPool.remove(device);
-  }
-
-  public void updateNode(Device device) {
-    Platform.runLater(() -> {
-      ObservableList<Node> children = devices.getChildren();
-      children.forEach(node -> {
-        DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
-        if (controller == null || controller.getDevice() != device) {
-          return;
-        }
-        controller.updateConnection();
-      });
-    });
-  }
-
-  public void removeGroup(Group group) {
-    ObservableList<TitledPane> groupChildren = groups.getPanes();
-    groupChildren.removeIf(node -> {
-      GroupItemController controller = nodeGroupItemControllerPool.get(node);
-      if (controller == null || controller.getGroup() != group) {
-        return false;
-      }
-
-      nodeGroupItemControllerPool.remove(node);
-      return true;
-    });
-
-    ObservableList<Node> deviceChildren = devices.getChildren();
-    deviceChildren.filtered(
-        node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
-        .forEach(node -> nodeDeviceItemControllerPool.get(node).setGroup(null, null));
-    updateOrder();
-  }
-
-  private void startBatteryUpdateTask() {
-    Mobifume.getInstance()
-        .getScheduledExecutorService()
-        .scheduleAtFixedRate(() -> Platform.runLater(() -> {
-          SystemPowerStatus batteryStatus = new SystemPowerStatus();
-          Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
-          battery.setText(batteryStatus.getBatteryLifePercent());
-        }), 0L, 10L, TimeUnit.SECONDS);
   }
 
   @FXML
@@ -271,14 +282,12 @@ public class OverviewController extends Controller {
   @FXML
   private void onFilters() {
     Sound.click();
-
     loadAndOpenView("Filters.fxml");
   }
 
   @FXML
   private void onWifi() {
     Sound.click();
-
     if (Mobifume.getInstance().getWifiConnection().isInProcess()) {
       return;
     }
@@ -291,9 +300,8 @@ public class OverviewController extends Controller {
   }
 
   @FXML
-  private void onShutdown(ActionEvent event) {
+  private void onShutdown() {
     Sound.click();
-
     this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
       controller.setCallback(confirmResult -> {
         if (confirmResult == ConfirmResult.CONFIRM) {
@@ -312,9 +320,8 @@ public class OverviewController extends Controller {
   }
 
   @FXML
-  private void onGroupAdd() {
+  private void onGroupCreate() {
     Sound.click();
-
     ObservableList<Node> devicesChildren = devices.getChildren();
     List<DeviceItemController> selectedDevices = devicesChildren.stream()
         .map(nodeDeviceItemControllerPool::get)
@@ -334,6 +341,7 @@ public class OverviewController extends Controller {
       createGroupError();
       return;
     }
+
     if (selectedDevices.stream()
         .noneMatch(controller -> controller.getDevice().getType() == DeviceType.HUMIDIFIER)) {
       // no hum selected

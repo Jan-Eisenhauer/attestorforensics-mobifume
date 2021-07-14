@@ -6,42 +6,41 @@ import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import javafx.application.Platform;
-import javafx.stage.Window;
 
 public class ConnectionListener implements Listener {
 
-  private final Window window;
   private final OverviewController overviewController;
-  private InfoDialogController connectionLostDialog;
+  private InfoDialogController connectionLostDialogController;
 
-  public ConnectionListener(Window window, OverviewController overviewController) {
-    this.window = window;
+  private ConnectionListener(OverviewController overviewController) {
     this.overviewController = overviewController;
   }
+
+  public static ConnectionListener create(OverviewController overviewController) {
+    return new ConnectionListener(overviewController);
+  }
+
 
   @EventHandler
   public void onConnection(ConnectionEvent event) {
     Platform.runLater(() -> {
       switch (event.getStatus()) {
         case BROKER_CONNECTED:
-          if (connectionLostDialog != null) {
-            connectionLostDialog.close();
-            connectionLostDialog = null;
+          if (connectionLostDialogController != null) {
+            connectionLostDialogController.close();
+            connectionLostDialogController = null;
           }
 
           break;
         case WIFI_CONNECT_ERROR:
         case BROKER_CONNECT_TIMEOUT:
         case BROKER_CONNECTION_LOST:
-          if (connectionLostDialog != null) {
+          if (connectionLostDialogController != null) {
             break;
           }
 
-          // TODO - open info dialog
-          //          connectionLostDialog = new ConfirmDialog(window,
-          //              LocaleManager.getInstance().getString("dialog.connectionlost.title"),
-          //              LocaleManager.getInstance().getString("dialog.connectionlost.content"),
-          //              false, null);
+          overviewController.notifyBrokerLost()
+              .thenAccept(controller -> connectionLostDialogController = controller);
           break;
         default:
           break;

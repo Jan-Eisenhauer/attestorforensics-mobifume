@@ -23,6 +23,8 @@ import javafx.scene.text.Text;
 
 public class DeviceItemController extends Controller {
 
+  private final NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+
   private Device device;
   private String currentStrength;
   private boolean selected;
@@ -39,7 +41,6 @@ public class DeviceItemController extends Controller {
   @FXML
   private ImageView errorIcon;
 
-  private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
 
   @Override
   @FXML
@@ -131,14 +132,14 @@ public class DeviceItemController extends Controller {
 
   public void setGroup(Group group, String color) {
     this.group = group;
-    selected = group == null;
-    if (group != null) {
-      deviceItem.setStyle("-fx-background-color: " + color);
-      setSelected(false);
-    } else {
-      deviceItem.setStyle("");
-      setSelected(true);
-    }
+    deviceItem.setStyle("-fx-background-color: " + color);
+    setSelected(false);
+  }
+
+  public void clearGroup() {
+    group = null;
+    deviceItem.setStyle("");
+    setSelected(true);
   }
 
   public void showError(String errorMessage, boolean isError, ItemErrorType errorType) {

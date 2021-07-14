@@ -3,7 +3,6 @@ package com.attestorforensics.mobifumecore.view;
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.OverviewController;
 import com.attestorforensics.mobifumecore.controller.listener.BaseErrorListener;
-import com.attestorforensics.mobifumecore.controller.listener.ConnectionListener;
 import com.attestorforensics.mobifumecore.controller.listener.DeviceConnectionListener;
 import com.attestorforensics.mobifumecore.controller.listener.EvaporateListener;
 import com.attestorforensics.mobifumecore.controller.listener.FilterListener;
@@ -69,6 +68,7 @@ public class MobiApplication extends Application {
 
     setupStage(primaryStage);
 
+    Mobifume.getInstance().getWifiConnection().connect();
     Mobifume.getInstance().getBrokerConnection().connect();
   }
 
@@ -116,9 +116,6 @@ public class MobiApplication extends Application {
     Mobifume.getInstance().getEventDispatcher().registerListener(baseErrorListener);
     WaterErrorListener waterErrorListener = new WaterErrorListener();
     Mobifume.getInstance().getEventDispatcher().registerListener(waterErrorListener);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .registerListener(new ConnectionListener(stage, overviewController));
     Mobifume.getInstance().getEventDispatcher().registerListener(new EvaporateListener());
     Mobifume.getInstance().getEventDispatcher().registerListener(new FilterListener());
     Mobifume.getInstance()
