@@ -4,10 +4,10 @@ import com.attestorforensics.mobifumecore.controller.GroupController;
 import com.attestorforensics.mobifumecore.controller.GroupControllerHolder;
 import com.attestorforensics.mobifumecore.controller.OverviewController;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
+import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
 import javafx.application.Platform;
 
 public class GroupListener implements Listener {
@@ -34,8 +34,8 @@ public class GroupListener implements Listener {
           break;
         case REMOVED:
           controller.removeGroup(event.getGroup());
-          GroupController groupController = GroupControllerHolder.getInstance()
-              .getController(event.getGroup());
+          GroupController groupController =
+              GroupControllerHolder.getInstance().getController(event.getGroup());
           groupController.destroy();
           GroupControllerHolder.getInstance().removeController(event.getGroup());
           GroupItemControllerHolder.getInstance().removeGroupItems(event.getGroup());
@@ -69,6 +69,10 @@ public class GroupListener implements Listener {
 
   private void onGroupSetupStart(Group group) {
     GroupController groupController = GroupControllerHolder.getInstance().getController(group);
+    if (groupController == null) {
+      return;
+    }
+
     groupController.clearActionPane();
     groupController.getStartupPane().setVisible(true);
     groupController.getEvaporantPane().setVisible(true);

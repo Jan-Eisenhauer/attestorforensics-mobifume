@@ -67,11 +67,11 @@ public class GroupItemController extends ItemController {
   }
 
   private void loadGroupView() {
-    this.<GroupController>loadView("Group.fxml").thenAccept(groupController -> {
-      this.groupController = groupController;
-      Parent groupRoot = groupController.getRoot();
-      groupController.setGroup(group);
-      groupRoot.getProperties().put("controller", groupController);
+    this.<GroupController>loadView("Group.fxml").thenAccept(controller -> {
+      this.groupController = controller;
+      Parent groupRoot = controller.getRoot();
+      controller.setGroup(group);
+      groupRoot.getProperties().put("controller", controller);
     });
   }
 
