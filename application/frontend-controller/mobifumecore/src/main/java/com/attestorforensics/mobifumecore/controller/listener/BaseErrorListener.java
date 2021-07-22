@@ -5,32 +5,43 @@ import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHo
 import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent;
+import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent.ErrorType;
 import com.attestorforensics.mobifumecore.model.event.BaseErrorResolvedEvent;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import java.util.HashMap;
-import java.util.HashSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 import javafx.application.Platform;
 
 public class BaseErrorListener implements Listener {
 
-  private Map<Device, Set<BaseErrorEvent.ErrorType>> errors;
-
-  public BaseErrorListener() {
-    errors = new HashMap<>();
-  }
+  private final Map<Device, Set<BaseErrorEvent.ErrorType>> errors = Maps.newHashMap();
 
   @EventHandler
   public void onBaseError(BaseErrorEvent event) {
-    if (!errors.containsKey(event.getBase())) {
-      errors.put(event.getBase(), new HashSet<>());
+    Set<ErrorType> errorTypes =
+        errors.computeIfAbsent(event.getBase(), device -> Sets.newHashSet());
+    errorTypes.add(event.getError());
+    updateErrors(event.getBase());
+  }
+
+  @EventHandler
+  public void onBaseErrorResolved(BaseErrorResolvedEvent event) {
+    Set<BaseErrorEvent.ErrorType> deviceErrors = errors.get(event.getBase());
+    if (deviceErrors == null) {
+      return;
     }
-    errors.get(event.getBase()).add(event.getError());
+
+    deviceErrors.remove(event.getResolved());
+    if (deviceErrors.isEmpty()) {
+      errors.remove(event.getBase());
+    }
+
     updateErrors(event.getBase());
   }
 
@@ -67,14 +78,14 @@ public class BaseErrorListener implements Listener {
   }
 
   private void showDeviceItemError(Device base, String message, ItemErrorType errorType) {
-    DeviceItemController deviceController = DeviceItemControllerHolder.getInstance()
-        .getController(base);
+    DeviceItemController deviceController =
+        DeviceItemControllerHolder.getInstance().getController(base);
     deviceController.showError(message, true, errorType);
   }
 
   private void showGroupBaseItemError(Device base, String message, ItemErrorType errorType) {
-    GroupBaseItemController baseController = GroupItemControllerHolder.getInstance()
-        .getBaseController(base);
+    GroupBaseItemController baseController =
+        GroupItemControllerHolder.getInstance().getBaseController(base);
     if (baseController == null) {
       return;
     }
@@ -82,30 +93,17 @@ public class BaseErrorListener implements Listener {
   }
 
   private void hideDeviceItemError(Device base) {
-    DeviceItemController deviceController = DeviceItemControllerHolder.getInstance()
-        .getController(base);
+    DeviceItemController deviceController =
+        DeviceItemControllerHolder.getInstance().getController(base);
     deviceController.hideAllError();
   }
 
   private void hideGroupBaseItemError(Device base) {
-    GroupBaseItemController baseController = GroupItemControllerHolder.getInstance()
-        .getBaseController(base);
+    GroupBaseItemController baseController =
+        GroupItemControllerHolder.getInstance().getBaseController(base);
     if (baseController == null) {
       return;
     }
     baseController.hideAllError();
-  }
-
-  @EventHandler
-  public void onBaseErrorResolved(BaseErrorResolvedEvent event) {
-    Set<BaseErrorEvent.ErrorType> deviceErrors = errors.get(event.getBase());
-    if (deviceErrors == null) {
-      return;
-    }
-    deviceErrors.remove(event.getResolved());
-    if (deviceErrors.isEmpty()) {
-      errors.remove(event.getBase());
-    }
-    updateErrors(event.getBase());
   }
 }

@@ -9,6 +9,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.InfoDialogController
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
+import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.listener.ConnectionListener;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
@@ -83,6 +84,7 @@ public class OverviewController extends Controller {
       Parent deviceItemRoot = controller.getRoot();
       controller.setDevice(device);
       nodeDeviceItemControllerPool.put(deviceItemRoot, controller);
+      DeviceItemControllerHolder.getInstance().addController(device, controller);
       devices.getChildren().add(deviceItemRoot);
       updateDeviceOrder();
     });
@@ -160,20 +162,24 @@ public class OverviewController extends Controller {
     updateOrder();
   }
 
-  public void updateConnection() {
-    String wifiImageName = Mobifume.getInstance().getWifiConnection().isEnabled() ? "Wifi" : "Lan";
-    if (!Mobifume.getInstance().getBrokerConnection().isConnected()) {
-      wifiImageName += "_Error";
-    }
-
-    setWifiImage(wifiImageName);
-  }
-
   public CompletableFuture<InfoDialogController> notifyBrokerLost() {
     return this.<InfoDialogController>loadAndOpenDialog("InfoDialog.fxml").thenApply(controller -> {
       controller.setTitle(LocaleManager.getInstance().getString("dialog.connectionlost.title"));
       controller.setContent(LocaleManager.getInstance().getString("dialog.connectionlost.content"));
       return controller;
+    });
+  }
+
+  public void updateConnection() {
+    Platform.runLater(() -> {
+      String wifiImageName =
+          Mobifume.getInstance().getWifiConnection().isEnabled() ? "Wifi" : "Lan";
+      if (!Mobifume.getInstance().getBrokerConnection().isConnected()) {
+        wifiImageName += "_Error";
+      }
+
+      String resource = "images/" + wifiImageName + ".png";
+      wifi.setImage(ImageHolder.getInstance().getImage(resource));
     });
   }
 
@@ -266,11 +272,6 @@ public class OverviewController extends Controller {
 
     groups.getPanes().clear();
     groups.getPanes().addAll(groupListElements);
-  }
-
-  private void setWifiImage(String image) {
-    String resource = "images/" + image + ".png";
-    wifi.setImage(ImageHolder.getInstance().getImage(resource));
   }
 
   @FXML

@@ -9,8 +9,8 @@ public class GroupItemControllerHolder {
 
   private static GroupItemControllerHolder instance;
 
-  private Map<Device, GroupBaseItemController> baseControllers = Maps.newHashMap();
-  private Map<Device, GroupHumItemController> humControllers = Maps.newHashMap();
+  private final Map<Device, GroupBaseItemController> baseControllers = Maps.newHashMap();
+  private final Map<Device, GroupHumItemController> humControllers = Maps.newHashMap();
 
   private GroupItemControllerHolder() {
   }
@@ -35,7 +35,7 @@ public class GroupItemControllerHolder {
     return humControllers.get(hum);
   }
 
-  void addHumController(Device hum, GroupHumItemController controller) {
+  public void addHumController(Device hum, GroupHumItemController controller) {
     humControllers.put(hum, controller);
   }
 
