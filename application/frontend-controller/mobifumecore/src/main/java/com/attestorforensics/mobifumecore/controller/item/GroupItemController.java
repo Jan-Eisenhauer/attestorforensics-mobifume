@@ -23,7 +23,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
-public class GroupItemController extends Controller {
+public class GroupItemController extends ItemController {
 
   private Group group;
 

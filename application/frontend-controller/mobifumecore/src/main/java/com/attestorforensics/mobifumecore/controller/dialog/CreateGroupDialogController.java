@@ -57,7 +57,6 @@ public class CreateGroupDialogController extends DialogController {
 
   private Map<String, Filter> filterMap;
   private List<Node> filterNodes;
-  private boolean updatingFilters;
 
   public void setDevices(List<Device> devices) {
     this.devices = devices;
@@ -94,6 +93,11 @@ public class CreateGroupDialogController extends DialogController {
     return super.close();
   }
 
+  @Override
+  protected void onOpen() {
+    getStage().setWidth(getStage().getOwner().getWidth() * 0.9);
+  }
+
   private void displayDeviceCounts() {
     long bases = devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
     baseCount.setText(
@@ -113,28 +117,24 @@ public class CreateGroupDialogController extends DialogController {
     filtersPane.getChildren().clear();
     filterNodes = new ArrayList<>();
 
-    CompletableFuture<CreateGroupDialogFilterItemController> loadFilterItems =
-        CompletableFuture.completedFuture(null);
+    //    CompletableFuture<CreateGroupDialogFilterItemController> loadFilterItems =
+    //        CompletableFuture.completedFuture(null);
     for (int i = 0; i < count; i++) {
-      loadFilterItems.thenCompose(ignored -> this.<CreateGroupDialogFilterItemController>loadItem(
-          "CreateGroupDialogFilterItem.fxml").thenAccept(controller -> {
-        controller.init(this);
-        Parent createGroupDialogFilterItemRoot = controller.getRoot();
-        createGroupDialogFilterItemRoot.getProperties().put("controller", controller);
-        filtersPane.getChildren().add(createGroupDialogFilterItemRoot);
-        filterNodes.add(createGroupDialogFilterItemRoot);
-      }));
+      this.<CreateGroupDialogFilterItemController>loadItem("CreateGroupDialogFilterItem.fxml")
+          .thenAccept(controller -> {
+            controller.init(this);
+            Parent createGroupDialogFilterItemRoot = controller.getRoot();
+            createGroupDialogFilterItemRoot.getProperties().put("controller", controller);
+            filtersPane.getChildren().add(createGroupDialogFilterItemRoot);
+            filterNodes.add(createGroupDialogFilterItemRoot);
+            updateFilters();
+          });
     }
 
-    loadFilterItems.thenRun(this::updateFilters);
+//    loadFilterItems.thenRun(this::updateFilters);
   }
 
-  public void updateFilters() {
-    if (updatingFilters) {
-      return;
-    }
-    updatingFilters = true;
-
+  public synchronized void updateFilters() {
     filterMap = new HashMap<>();
     List<Filter> inOtherGroup = new ArrayList<>();
     Mobifume.getInstance()
@@ -154,8 +154,6 @@ public class CreateGroupDialogController extends DialogController {
         .get("controller")).updateItems(new ArrayList<>(filters),
         new ArrayList<>(selectedFilters)));
     checkOkButton();
-
-    updatingFilters = false;
   }
 
   private List<String> getSelectedFilters() {

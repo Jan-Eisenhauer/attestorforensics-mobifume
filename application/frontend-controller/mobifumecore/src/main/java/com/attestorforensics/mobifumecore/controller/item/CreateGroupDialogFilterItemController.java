@@ -22,7 +22,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class CreateGroupDialogFilterItemController extends DialogController {
+public class CreateGroupDialogFilterItemController extends ItemController {
 
   private String addFilter;
 

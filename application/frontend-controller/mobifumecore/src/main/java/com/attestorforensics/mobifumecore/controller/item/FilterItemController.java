@@ -26,7 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
-public class FilterItemController extends Controller {
+public class FilterItemController extends ItemController {
 
   private Filter filter;
 

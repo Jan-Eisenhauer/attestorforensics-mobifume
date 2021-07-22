@@ -3,7 +3,7 @@ package com.attestorforensics.mobifumecore.controller.item;
 import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 
-public abstract class ServiceItemController extends Controller {
+public abstract class ServiceItemController extends ItemController {
 
   public abstract Device getDevice();
 

@@ -21,7 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public class DeviceItemController extends Controller {
+public class DeviceItemController extends ItemController {
 
   private final NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
 

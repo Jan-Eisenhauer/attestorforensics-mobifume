@@ -18,7 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class GroupHumItemController extends Controller {
+public class GroupHumItemController extends ItemController {
 
   private Humidifier hum;
 

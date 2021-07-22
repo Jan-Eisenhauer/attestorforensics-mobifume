@@ -18,7 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class GroupFilterItemController extends Controller {
+public class GroupFilterItemController extends ItemController {
 
   @FXML
   private Text filterId;

@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.attestorforensics.mobifumecore.controller.detailbox.DetailBoxController;
 import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
+import com.attestorforensics.mobifumecore.controller.item.ItemController;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
@@ -69,37 +70,38 @@ public abstract class Controller implements Initializable {
     return completableFuture;
   }
 
-  protected <T extends Controller> CompletableFuture<T> loadItem(String itemResource) {
+  protected <T extends ItemController> CompletableFuture<T> loadItem(String itemResource) {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
       T controller = loadResource(VIEW_RESOURCE + "items/" + itemResource);
+      controller.setParent(this);
       completableFuture.complete(controller);
     });
 
     return completableFuture;
   }
 
-  protected <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
-      String dialogResource) {
+
+  public <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(String dialogResource) {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
       T controller = loadResource("view/dialog/" + dialogResource);
       Stage stage = createStage(controller);
       completableFuture.complete(controller);
-      openDialog(stage);
+      openDialog(controller, stage);
     });
 
     return completableFuture;
   }
 
-  protected <T extends DetailBoxController> CompletableFuture<T> loadAndShowDetailBox(
-      String detailBoxResource, Node parent) {
+  public <T extends DetailBoxController> CompletableFuture<T> loadAndShowDetailBox(
+      String detailBoxResource, Node node) {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
       T controller = loadResource("view/detailbox/" + detailBoxResource);
       Stage stage = createStage(controller);
 
-      Bounds bounds = parent.localToScreen(parent.getBoundsInLocal());
+      Bounds bounds = node.localToScreen(node.getBoundsInLocal());
       stage.setX(bounds.getMaxX());
       stage.setY((bounds.getMaxY() + bounds.getMinY()) * 0.5D - 28);
 
@@ -126,14 +128,14 @@ public abstract class Controller implements Initializable {
     return resourceController;
   }
 
-  private void openDialog(Stage stage) {
-    stage.sizeToScene();
-    stage.centerOnScreen();
+  private void openDialog(ChildController controller, Stage stage) {
+    controller.onOpen();
     stage.show();
     root.getScene().getRoot().setEffect(new ColorAdjust(0, 0, -0.3, 0));
   }
 
   private void showDetailBox(DetailBoxController controller, Stage stage, Bounds bounds) {
+    controller.onOpen();
     stage.show();
 
     // flip stage if out of screen
@@ -150,7 +152,7 @@ public abstract class Controller implements Initializable {
     stage.initStyle(StageStyle.TRANSPARENT);
     stage.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
       if (newFocus != null && !newFocus) {
-        controller.close();
+        controller.focusLost();
       }
     });
 

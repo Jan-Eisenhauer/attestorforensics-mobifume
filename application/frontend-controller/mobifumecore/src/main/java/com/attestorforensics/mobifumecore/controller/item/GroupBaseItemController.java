@@ -21,7 +21,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class GroupBaseItemController extends Controller {
+public class GroupBaseItemController extends ItemController {
 
   private Group group;
   private Base base;
