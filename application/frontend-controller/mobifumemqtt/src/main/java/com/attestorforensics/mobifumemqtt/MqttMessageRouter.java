@@ -6,19 +6,16 @@ import java.util.Set;
 
 public class MqttMessageRouter implements MessageRouter {
 
-  private final MessageSender messageSender;
   private final ClientConnection clientConnection;
 
   private final Set<MessageRoute> routes = Sets.newHashSet();
 
-  private MqttMessageRouter(MessageSender messageSender, ClientConnection clientConnection) {
-    this.messageSender = messageSender;
+  private MqttMessageRouter(ClientConnection clientConnection) {
     this.clientConnection = clientConnection;
   }
 
-  public static MessageRouter create(MessageSender messageSender,
-      ClientConnection clientConnection) {
-    return new MqttMessageRouter(messageSender, clientConnection);
+  public static MessageRouter create(ClientConnection clientConnection) {
+    return new MqttMessageRouter(clientConnection);
   }
 
   @Override

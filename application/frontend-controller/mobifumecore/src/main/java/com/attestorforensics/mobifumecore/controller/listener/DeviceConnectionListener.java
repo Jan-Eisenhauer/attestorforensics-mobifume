@@ -7,12 +7,12 @@ import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemControlle
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
-import com.attestorforensics.mobifumecore.model.listener.EventHandler;
-import com.attestorforensics.mobifumecore.model.listener.Listener;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.listener.EventHandler;
+import com.attestorforensics.mobifumecore.model.listener.Listener;
 import javafx.application.Platform;
 
 public class DeviceConnectionListener implements Listener {
@@ -54,22 +54,22 @@ public class DeviceConnectionListener implements Listener {
     String message = LocaleManager.getInstance().getString("device.error.connection");
 
     // overview error
-    DeviceItemController deviceController = DeviceItemControllerHolder.getInstance()
-        .getController(device);
+    DeviceItemController deviceController =
+        DeviceItemControllerHolder.getInstance().getController(device);
     if (deviceController != null) {
       deviceController.showError(message, true, ItemErrorType.DEVICE_CONNECTION_LOST);
     }
 
     // group error
     if (device.getType() == DeviceType.BASE) {
-      GroupBaseItemController baseController = GroupItemControllerHolder.getInstance()
-          .getBaseController(device);
+      GroupBaseItemController baseController =
+          GroupItemControllerHolder.getInstance().getBaseController(device);
       if (baseController != null) {
         baseController.showError(message, true, ItemErrorType.DEVICE_CONNECTION_LOST);
       }
     } else if (device.getType() == DeviceType.HUMIDIFIER) {
-      GroupHumItemController humController = GroupItemControllerHolder.getInstance()
-          .getHumController(device);
+      GroupHumItemController humController =
+          GroupItemControllerHolder.getInstance().getHumController(device);
       if (humController != null) {
         humController.showError(message, true, ItemErrorType.DEVICE_CONNECTION_LOST);
       }
@@ -78,22 +78,22 @@ public class DeviceConnectionListener implements Listener {
 
   private void hideLostError(Device device) {
     // overview error
-    DeviceItemController deviceController = DeviceItemControllerHolder.getInstance()
-        .getController(device);
+    DeviceItemController deviceController =
+        DeviceItemControllerHolder.getInstance().getController(device);
     if (deviceController != null) {
       deviceController.hideError(ItemErrorType.DEVICE_CONNECTION_LOST);
     }
 
     // group error
     if (device.getType() == DeviceType.BASE) {
-      GroupBaseItemController baseController = GroupItemControllerHolder.getInstance()
-          .getBaseController(device);
+      GroupBaseItemController baseController =
+          GroupItemControllerHolder.getInstance().getBaseController(device);
       if (baseController != null) {
         baseController.hideError(ItemErrorType.DEVICE_CONNECTION_LOST);
       }
     } else if (device.getType() == DeviceType.HUMIDIFIER) {
-      GroupHumItemController humController = GroupItemControllerHolder.getInstance()
-          .getHumController(device);
+      GroupHumItemController humController =
+          GroupItemControllerHolder.getInstance().getHumController(device);
       if (humController != null) {
         humController.hideError(ItemErrorType.DEVICE_CONNECTION_LOST);
       }

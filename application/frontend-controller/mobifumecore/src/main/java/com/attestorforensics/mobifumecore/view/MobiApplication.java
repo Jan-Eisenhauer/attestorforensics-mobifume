@@ -64,7 +64,7 @@ public class MobiApplication extends Application {
     OverviewController controller = loader.getController();
     controller.setRoot(root);
 
-    registerListener(primaryStage, controller);
+    registerListener(controller);
 
     setupStage(primaryStage);
 
@@ -111,7 +111,7 @@ public class MobiApplication extends Application {
     stage.setY(0);
   }
 
-  private void registerListener(Stage stage, OverviewController overviewController) {
+  private void registerListener(OverviewController overviewController) {
     BaseErrorListener baseErrorListener = new BaseErrorListener();
     Mobifume.getInstance().getEventDispatcher().registerListener(baseErrorListener);
     WaterErrorListener waterErrorListener = new WaterErrorListener();

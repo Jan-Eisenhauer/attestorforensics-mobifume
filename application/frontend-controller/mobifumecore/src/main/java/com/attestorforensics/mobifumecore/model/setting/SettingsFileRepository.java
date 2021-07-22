@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Writer;
+import java.nio.file.Files;
 
 /**
  * Stores the global settings to file.
@@ -68,10 +69,10 @@ class SettingsFileRepository implements SettingsRepository {
         Settings settings = (Settings) object;
         save(settings);
       }
+
+      Files.delete(oldSettingsFile.toPath());
     } catch (IOException | ClassNotFoundException e) {
       // settings file is empty
     }
-
-    oldSettingsFile.delete();
   }
 }

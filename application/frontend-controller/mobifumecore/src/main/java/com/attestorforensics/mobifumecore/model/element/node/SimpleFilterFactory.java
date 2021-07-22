@@ -1,10 +1,8 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
-import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.filter.FilterFileHandler;
 import com.attestorforensics.mobifumecore.model.element.filter.MobiFilter;
-import com.attestorforensics.mobifumecore.model.event.FilterEvent;
 
 public class SimpleFilterFactory implements FilterFactory {
 

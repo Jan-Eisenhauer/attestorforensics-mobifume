@@ -109,6 +109,7 @@ public class GroupController extends CloseableController {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   public void setGroup(Group group) {
@@ -164,7 +165,7 @@ public class GroupController extends CloseableController {
 
   private void updateMaxHumidity() {
     humidify.setText(LocaleManager.getInstance()
-        .getString("group.humidify.wait", (int) group.getSettings().getHumidifyMax()));
+        .getString("group.humidify.wait", group.getSettings().getHumidifyMax()));
   }
 
   public void clearActionPane() {

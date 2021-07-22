@@ -1,8 +1,8 @@
 package com.attestorforensics.mobifumecore.model.connection.message.incoming.base;
 
-import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
 import com.attestorforensics.mobifumecore.model.connection.message.MessagePattern;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessage;
+import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
 import java.util.Optional;
 
 public class BaseOffline implements IncomingMessage {
@@ -16,7 +16,7 @@ public class BaseOffline implements IncomingMessage {
     this.deviceId = deviceId;
   }
 
-  public static BaseOffline createFromPayload(String topic, String[] arguments) {
+  public static BaseOffline createFromPayload(String topic) {
     String deviceId = topic.substring(TOPIC_PREFIX.length());
     return new BaseOffline(deviceId);
   }
@@ -41,7 +41,7 @@ public class BaseOffline implements IncomingMessage {
     @Override
     public Optional<BaseOffline> create(String topic, String[] arguments) {
       if (messagePattern.matches(topic, arguments)) {
-        return Optional.of(BaseOffline.createFromPayload(topic, arguments));
+        return Optional.of(BaseOffline.createFromPayload(topic));
       }
 
       return Optional.empty();

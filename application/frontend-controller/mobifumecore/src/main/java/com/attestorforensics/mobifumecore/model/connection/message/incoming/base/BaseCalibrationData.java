@@ -1,9 +1,9 @@
 package com.attestorforensics.mobifumecore.model.connection.message.incoming.base;
 
 import com.attestorforensics.mobifumecore.model.connection.message.InvalidMessageArgumentException;
-import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
 import com.attestorforensics.mobifumecore.model.connection.message.MessagePattern;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessage;
+import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import java.util.Optional;
 

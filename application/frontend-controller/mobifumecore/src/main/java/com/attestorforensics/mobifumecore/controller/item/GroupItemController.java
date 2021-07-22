@@ -1,7 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.GroupController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
@@ -39,6 +38,7 @@ public class GroupItemController extends ItemController {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   public Group getGroup() {
@@ -84,7 +84,7 @@ public class GroupItemController extends ItemController {
         int humidity = (int) group.getHumidity();
         status.setText(LocaleManager.getInstance()
             .getString("group.status.humidify", humidity >= 0 ? humidity : "-",
-                (int) group.getSettings().getHumidifyMax()));
+                group.getSettings().getHumidifyMax()));
         break;
       case EVAPORATE:
         long timePassedEvaporate = System.currentTimeMillis() - group.getEvaporateStartTime();

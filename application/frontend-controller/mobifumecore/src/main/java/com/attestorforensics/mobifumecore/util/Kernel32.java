@@ -19,10 +19,11 @@ public interface Kernel32 extends StdCallLibrary {
    * Fill the structure.
    */
   // Method must match the native library name
+  @SuppressWarnings("checkstyle:MethodName")
   int GetSystemPowerStatus(SystemPowerStatus result);
 
   /**
-   * @see http://msdn2.microsoft.com/en-us/library/aa373232.aspx
+   * @see <a>http://msdn2.microsoft.com/en-us/library/aa373232.aspx</a>
    */
   class SystemPowerStatus extends Structure {
 
@@ -35,7 +36,7 @@ public interface Kernel32 extends StdCallLibrary {
     public int batteryFullLifeTime;
 
     /**
-     * The percentage of full battery charge remaining
+     * The percentage of full battery charge remaining.
      */
     public String getBatteryLifePercent() {
       return (batteryLifePercent == (byte) 255) ? "-" : batteryLifePercent + "%";

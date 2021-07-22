@@ -32,7 +32,7 @@ public class MqttMessageCallback implements MqttCallback {
   }
 
   @Override
-  public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+  public void deliveryComplete(IMqttDeliveryToken mqttDeliveryToken) {
     // nothing to do on delivery completed
   }
 }

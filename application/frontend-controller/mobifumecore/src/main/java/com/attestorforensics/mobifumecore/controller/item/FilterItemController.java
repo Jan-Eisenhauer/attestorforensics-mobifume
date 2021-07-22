@@ -1,7 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.dialog.AddFilterRunDialogController;
@@ -53,6 +52,7 @@ public class FilterItemController extends ItemController {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   public void setFilter(Filter filter) {

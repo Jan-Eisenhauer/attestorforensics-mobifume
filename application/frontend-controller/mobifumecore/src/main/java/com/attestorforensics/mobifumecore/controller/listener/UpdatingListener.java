@@ -1,9 +1,9 @@
 package com.attestorforensics.mobifumecore.controller.listener;
 
 import com.attestorforensics.mobifumecore.controller.UpdateController;
+import com.attestorforensics.mobifumecore.model.event.UpdatingEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import com.attestorforensics.mobifumecore.model.event.UpdatingEvent;
 
 public class UpdatingListener implements Listener {
 

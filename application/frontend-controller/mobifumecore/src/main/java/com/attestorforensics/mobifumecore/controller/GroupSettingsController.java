@@ -62,6 +62,7 @@ public class GroupSettingsController extends CloseableController {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   void setCallback(Consumer<?> callback) {
@@ -88,9 +89,9 @@ public class GroupSettingsController extends CloseableController {
     maxHumField.focusedProperty()
         .addListener(
             (observableValue, oldState, focused) -> onFocus(maxHumField, maxHumSlider, focused));
-    maxHumField.setText((int) maxHum + "");
+    maxHumField.setText(maxHum + "");
     maxHumSlider.valueProperty().addListener((observableValue, number, t1) -> onMaxHumSlider());
-    maxHumSlider.setValue((int) maxHum);
+    maxHumSlider.setValue(maxHum);
 
     heaterTempField.setTextFormatter(new UnsignedIntTextFormatter());
     heaterTempField.textProperty()
@@ -265,7 +266,7 @@ public class GroupSettingsController extends CloseableController {
       group.updateHumidify();
     }
 
-    int heaterTemperature = (int) getFixedValue(heaterTempSlider, heaterTemp);
+    int heaterTemperature = getFixedValue(heaterTempSlider, heaterTemp);
     if (heaterTemperature != settings.getHeaterTemperature()) {
       settings.setHeaterTemperature(heaterTemperature);
       group.updateHeaterSetpoint();

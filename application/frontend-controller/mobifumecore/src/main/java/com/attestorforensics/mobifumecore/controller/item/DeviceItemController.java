@@ -1,6 +1,5 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
-import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;

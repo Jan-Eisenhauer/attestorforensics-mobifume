@@ -4,7 +4,6 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController;
-import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.InputDialogController;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
@@ -42,7 +41,7 @@ public class CreateGroupDialogFilterItemController extends ItemController {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
-
+    // nothing to initialize
   }
 
   public void init(CreateGroupDialogController parentController) {

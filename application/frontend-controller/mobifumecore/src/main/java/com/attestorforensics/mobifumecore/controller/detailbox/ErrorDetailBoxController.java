@@ -17,6 +17,7 @@ public class ErrorDetailBoxController extends DetailBoxController {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   @Override

@@ -117,8 +117,6 @@ public class CreateGroupDialogController extends DialogController {
     filtersPane.getChildren().clear();
     filterNodes = new ArrayList<>();
 
-    //    CompletableFuture<CreateGroupDialogFilterItemController> loadFilterItems =
-    //        CompletableFuture.completedFuture(null);
     for (int i = 0; i < count; i++) {
       this.<CreateGroupDialogFilterItemController>loadItem("CreateGroupDialogFilterItem.fxml")
           .thenAccept(controller -> {
@@ -130,8 +128,6 @@ public class CreateGroupDialogController extends DialogController {
             updateFilters();
           });
     }
-
-//    loadFilterItems.thenRun(this::updateFilters);
   }
 
   public synchronized void updateFilters() {
@@ -215,19 +211,28 @@ public class CreateGroupDialogController extends DialogController {
   private String getNextGroup() {
     defaultId = lastGroupId + 1;
 
-    loop:
-    do {
+    boolean validNameFound = false;
+    while (!validNameFound) {
       defaultName =
           LocaleManager.getInstance().getString("dialog.group.create.name.default", defaultId);
-      for (Group group : Mobifume.getInstance().getModelManager().getGroupPool().getAllGroups()) {
-        if (group.getName().equals(defaultName)) {
-          defaultId++;
-          continue loop;
-        }
+      if (existsGroupWithName(defaultName)) {
+        defaultId++;
+      } else {
+        validNameFound = true;
       }
-      break;
-    } while (true);
+    }
+
     return defaultName;
+  }
+
+  private boolean existsGroupWithName(String name) {
+    for (Group group : Mobifume.getInstance().getModelManager().getGroupPool().getAllGroups()) {
+      if (group.getName().equals(name)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @FXML
@@ -236,10 +241,6 @@ public class CreateGroupDialogController extends DialogController {
 
     if (groupName.getText() == null || groupName.getText().isEmpty()) {
       groupNameError.setManaged(true);
-      //      Stage stage = dialog.getStage();
-      //      double width = stage.getWidth();
-      //      stage.sizeToScene();
-      //      stage.setWidth(width);
       groupNameError.setVisible(true);
       return;
     }

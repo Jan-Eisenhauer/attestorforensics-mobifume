@@ -188,11 +188,7 @@ public class GroupCalculatorController extends CloseableController {
       // value invalid
     }
 
-    if (evaporantValue != settings.getEvaporant()) {
-      return true;
-    }
-
-    return false;
+    return evaporantValue != settings.getEvaporant();
   }
 
   private void applySettings() {

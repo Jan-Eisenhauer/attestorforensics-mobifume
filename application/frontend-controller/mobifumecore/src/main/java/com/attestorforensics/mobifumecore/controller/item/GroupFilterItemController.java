@@ -1,6 +1,5 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
-import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
@@ -28,11 +27,12 @@ public class GroupFilterItemController extends ItemController {
   @FXML
   private ImageView errorIcon;
 
-  private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+  private final NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
 
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   public void setFilter(Filter filter) {

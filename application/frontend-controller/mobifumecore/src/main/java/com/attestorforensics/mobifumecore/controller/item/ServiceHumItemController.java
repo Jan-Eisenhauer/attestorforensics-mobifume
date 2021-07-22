@@ -32,6 +32,7 @@ public class ServiceHumItemController extends ServiceItemController {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   @Override

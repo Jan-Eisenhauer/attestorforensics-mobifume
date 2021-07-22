@@ -35,6 +35,7 @@ public class ConfirmDialogController extends DialogController {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   @Override
