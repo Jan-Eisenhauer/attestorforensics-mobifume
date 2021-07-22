@@ -1,7 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.listener;
 
 import com.attestorforensics.mobifumecore.controller.OverviewController;
-import com.attestorforensics.mobifumecore.controller.dialog.InfoDialogController;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
@@ -9,7 +8,6 @@ import com.attestorforensics.mobifumecore.model.listener.Listener;
 public class ConnectionListener implements Listener {
 
   private final OverviewController overviewController;
-  private InfoDialogController connectionLostDialogController;
 
   private ConnectionListener(OverviewController overviewController) {
     this.overviewController = overviewController;
@@ -23,21 +21,12 @@ public class ConnectionListener implements Listener {
   public void onConnection(ConnectionEvent event) {
     switch (event.getStatus()) {
       case BROKER_CONNECTED:
-        if (connectionLostDialogController != null) {
-          connectionLostDialogController.close();
-          connectionLostDialogController = null;
-        }
-
+        overviewController.onBrokerConnected();
         break;
       case WIFI_CONNECT_ERROR:
       case BROKER_CONNECT_TIMEOUT:
       case BROKER_CONNECTION_LOST:
-        if (connectionLostDialogController != null) {
-          break;
-        }
-
-        overviewController.notifyBrokerLost()
-            .thenAccept(controller -> connectionLostDialogController = controller);
+        overviewController.onBrokerLost();
         break;
       default:
         break;

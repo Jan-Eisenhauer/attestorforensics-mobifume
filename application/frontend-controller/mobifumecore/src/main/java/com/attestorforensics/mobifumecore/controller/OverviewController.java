@@ -9,7 +9,6 @@ import com.attestorforensics.mobifumecore.controller.dialog.InfoDialogController
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
-import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.listener.ConnectionListener;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -49,6 +47,7 @@ public class OverviewController extends Controller {
   private final Map<Node, DeviceItemController> nodeDeviceItemControllerPool = Maps.newHashMap();
   private final Map<Node, GroupItemController> nodeGroupItemControllerPool = Maps.newHashMap();
 
+  private InfoDialogController connectionLostDialogController;
   private CreateGroupDialogController createGroupDialogController;
 
   @FXML
@@ -162,11 +161,22 @@ public class OverviewController extends Controller {
     updateOrder();
   }
 
-  public CompletableFuture<InfoDialogController> notifyBrokerLost() {
-    return this.<InfoDialogController>loadAndOpenDialog("InfoDialog.fxml").thenApply(controller -> {
+  public void onBrokerConnected() {
+    if (connectionLostDialogController != null) {
+      connectionLostDialogController.close();
+      connectionLostDialogController = null;
+    }
+  }
+
+  public void onBrokerLost() {
+    if (connectionLostDialogController == null) {
+      return;
+    }
+
+    this.<InfoDialogController>loadAndOpenDialog("InfoDialog.fxml").thenAccept(controller -> {
       controller.setTitle(LocaleManager.getInstance().getString("dialog.connectionlost.title"));
       controller.setContent(LocaleManager.getInstance().getString("dialog.connectionlost.content"));
-      return controller;
+      connectionLostDialogController = controller;
     });
   }
 
