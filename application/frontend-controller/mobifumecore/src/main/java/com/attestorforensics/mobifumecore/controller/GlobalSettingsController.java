@@ -264,14 +264,10 @@ public class GlobalSettingsController extends CloseableController {
   }
 
   @FXML
-  public void onBack(ActionEvent event) {
+  public void onBack() {
     Sound.click();
-
     applySettings();
-
-    Node button = (Node) event.getSource();
-    Scene scene = button.getScene();
-    SceneTransition.playBackward(scene, root);
+    close();
   }
 
   private void applySettings() {
@@ -290,7 +286,7 @@ public class GlobalSettingsController extends CloseableController {
   }
 
   @FXML
-  public void onRestore(ActionEvent event) {
+  public void onRestore() {
     Sound.click();
 
     this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {

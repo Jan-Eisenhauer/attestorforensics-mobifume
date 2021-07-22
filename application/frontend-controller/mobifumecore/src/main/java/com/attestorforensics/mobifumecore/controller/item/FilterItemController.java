@@ -118,7 +118,7 @@ public class FilterItemController extends ItemController {
   }
 
   @FXML
-  public void onErrorInfo(ActionEvent event) {
+  public void onErrorInfo() {
     ErrorWarning errorWarning = errors.lastEntry().getValue();
     if (errorWarning.isError()) {
       this.<ErrorDetailBoxController>loadAndShowDetailBox("ErrorDetailBox.fxml", errorIcon)
@@ -130,7 +130,7 @@ public class FilterItemController extends ItemController {
   }
 
   @FXML
-  public void onChange(ActionEvent event) {
+  public void onChange() {
     Sound.click();
 
     this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {

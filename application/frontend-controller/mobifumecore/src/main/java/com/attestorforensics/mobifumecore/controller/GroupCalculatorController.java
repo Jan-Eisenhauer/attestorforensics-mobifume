@@ -342,15 +342,14 @@ public class GroupCalculatorController extends CloseableController {
   }
 
   private void closeCalculator() {
-    Scene scene = root.getScene();
-    SceneTransition.playBackward(scene, root);
+    close();
     if (callback != null) {
       callback.accept(calculateSettingsEvaporantAmount());
     }
   }
 
   @FXML
-  public void onBack(ActionEvent event) {
+  public void onBack() {
     Sound.click();
 
     if (!haveSettingsChanged()) {
@@ -467,7 +466,7 @@ public class GroupCalculatorController extends CloseableController {
   }
 
   @FXML
-  public void onSave(ActionEvent event) {
+  public void onSave() {
     Sound.click();
 
     applySettings();

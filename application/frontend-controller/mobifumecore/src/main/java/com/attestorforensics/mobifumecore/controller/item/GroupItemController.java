@@ -103,7 +103,7 @@ public class GroupItemController extends ItemController {
       case PURGE:
         long timePassedPurge = System.currentTimeMillis() - group.getPurgeStartTime();
         long countdownPurge =
-            group.getSettings().getPurgeTimer() * 60 * 1000 - timePassedPurge + 1000;
+            group.getSettings().getPurgeTimer() * 60 * 1000L - timePassedPurge + 1000L;
         Date datePurge = new Date(countdownPurge - 1000 * 60 * 60L);
         String formattedPurge;
         if (datePurge.getTime() < 0) {
@@ -146,7 +146,7 @@ public class GroupItemController extends ItemController {
   }
 
   @FXML
-  public void onRemove(ActionEvent event) {
+  public void onRemove() {
     Sound.click();
 
     this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {

@@ -178,7 +178,7 @@ public class CreateGroupDialogFilterItemController extends ItemController {
   }
 
   @FXML
-  public void onErrorInfo(ActionEvent event) {
+  public void onErrorInfo() {
     if (errorType) {
       this.<ErrorDetailBoxController>loadAndShowDetailBox("ErrorDetailBox.fxml", errorIcon)
           .thenAccept(controller -> controller.setErrorMessage(errorText));

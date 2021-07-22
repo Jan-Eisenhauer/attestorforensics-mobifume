@@ -46,7 +46,7 @@ public class GroupHumItemController extends ItemController {
   }
 
   @FXML
-  public void onErrorInfo(ActionEvent event) {
+  public void onErrorInfo() {
     ErrorWarning errorWarning = errors.lastEntry().getValue();
     if (errorWarning.isError()) {
       this.<ErrorDetailBoxController>loadAndShowDetailBox("ErrorDetailBox.fxml", errorIcon)

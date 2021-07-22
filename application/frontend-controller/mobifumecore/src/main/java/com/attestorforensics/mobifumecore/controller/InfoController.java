@@ -69,7 +69,7 @@ public class InfoController extends CloseableController {
   }
 
   @FXML
-  public void onUpdate(ActionEvent event) {
+  public void onUpdate() {
     Sound.click();
 
     Updater updater = Mobifume.getInstance().getModelManager().getUpdater();

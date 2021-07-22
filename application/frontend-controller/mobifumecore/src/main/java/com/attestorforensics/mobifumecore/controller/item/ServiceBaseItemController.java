@@ -185,7 +185,7 @@ public class ServiceBaseItemController extends ServiceItemController {
   }
 
   @FXML
-  public void onTemperatureCalibrate(ActionEvent event) {
+  public void onTemperatureCalibrate() {
     Sound.click();
 
     this.<CalibrateDialogController>loadAndOpenDialog("CalibrateDialog.fxml")
@@ -206,7 +206,7 @@ public class ServiceBaseItemController extends ServiceItemController {
   }
 
   @FXML
-  public void onHumidityCalibrate(ActionEvent event) {
+  public void onHumidityCalibrate() {
     Sound.click();
 
     this.<CalibrateDialogController>loadAndOpenDialog("CalibrateDialog.fxml")

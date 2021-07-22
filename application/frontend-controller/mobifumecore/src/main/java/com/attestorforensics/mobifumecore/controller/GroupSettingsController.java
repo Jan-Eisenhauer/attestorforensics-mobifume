@@ -252,9 +252,7 @@ public class GroupSettingsController extends CloseableController {
 
     applySettings();
 
-    Node button = (Node) event.getSource();
-    Scene scene = button.getScene();
-    SceneTransition.playBackward(scene, root);
+    close();
     callback.accept(null);
   }
 
@@ -284,7 +282,7 @@ public class GroupSettingsController extends CloseableController {
   }
 
   @FXML
-  public void onRestore(ActionEvent event) {
+  public void onRestore() {
     Sound.click();
 
     this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {

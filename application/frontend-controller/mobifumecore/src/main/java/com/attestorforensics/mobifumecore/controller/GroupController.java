@@ -386,7 +386,7 @@ public class GroupController extends CloseableController {
     cancelStatusTaskIfScheduled();
 
     if (root.getScene() != null) {
-      SceneTransition.playBackward(root.getScene(), root);
+      close();
     }
 
     humidifiers.getChildren()
@@ -406,12 +406,9 @@ public class GroupController extends CloseableController {
   }
 
   @FXML
-  public void onBack(ActionEvent event) {
+  public void onBack() {
     Sound.click();
-
-    Node button = (Node) event.getSource();
-    Scene scene = button.getScene();
-    SceneTransition.playBackward(scene, root);
+    close();
   }
 
   @FXML
@@ -437,7 +434,7 @@ public class GroupController extends CloseableController {
   }
 
   @FXML
-  public void onHumidifyNextStep(ActionEvent event) {
+  public void onHumidifyNextStep() {
     Sound.click();
 
     closeCurrentDialog();
@@ -460,7 +457,7 @@ public class GroupController extends CloseableController {
   }
 
   @FXML
-  public void onHumidifyCancel(ActionEvent event) {
+  public void onHumidifyCancel() {
     Sound.click();
 
     closeCurrentDialog();
@@ -480,7 +477,7 @@ public class GroupController extends CloseableController {
   }
 
   @FXML
-  public void onEvaporateNextStep(ActionEvent event) {
+  public void onEvaporateNextStep() {
     Sound.click();
 
     closeCurrentDialog();
@@ -499,7 +496,7 @@ public class GroupController extends CloseableController {
   }
 
   @FXML
-  public void onEvaporateCancel(ActionEvent event) {
+  public void onEvaporateCancel() {
     Sound.click();
 
     closeCurrentDialog();
@@ -519,7 +516,7 @@ public class GroupController extends CloseableController {
   }
 
   @FXML
-  public void onPurgeCancel(ActionEvent event) {
+  public void onPurgeCancel() {
     Sound.click();
 
     closeCurrentDialog();
@@ -538,7 +535,7 @@ public class GroupController extends CloseableController {
   }
 
   @FXML
-  public void onPurgeAgain(ActionEvent event) {
+  public void onPurgeAgain() {
     Sound.click();
 
     closeCurrentDialog();
