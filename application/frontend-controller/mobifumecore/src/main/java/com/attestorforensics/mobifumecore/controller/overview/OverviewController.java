@@ -1,6 +1,7 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.overview;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController;
@@ -9,7 +10,6 @@ import com.attestorforensics.mobifumecore.controller.dialog.InfoDialogController
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
-import com.attestorforensics.mobifumecore.controller.listener.ConnectionListener;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
@@ -62,6 +62,7 @@ public class OverviewController extends Controller {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    registerListeners();
     startBatteryUpdateTask();
     Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addNode);
     Mobifume.getInstance()
@@ -70,7 +71,6 @@ public class OverviewController extends Controller {
         .getAllHumidifier()
         .forEach(this::addNode);
     Mobifume.getInstance().getModelManager().getGroupPool().getAllGroups().forEach(this::addGroup);
-    Mobifume.getInstance().getEventDispatcher().registerListener(ConnectionListener.create(this));
   }
 
   @Override
@@ -134,7 +134,7 @@ public class OverviewController extends Controller {
       groups.getPanes().add(groupItemRoot);
       ObservableList<Node> deviceChildren = devices.getChildren();
       deviceChildren.filtered(
-          node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
+              node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
           .forEach(node -> nodeDeviceItemControllerPool.get(node).setGroup(group, groupColor));
       updateOrder();
       groupItemRoot.setExpanded(true);
@@ -155,20 +155,20 @@ public class OverviewController extends Controller {
 
     ObservableList<Node> deviceChildren = devices.getChildren();
     deviceChildren.filtered(
-        node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
+            node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
         .forEach(node -> nodeDeviceItemControllerPool.get(node).clearGroup());
 
     updateOrder();
   }
 
-  public void onBrokerConnected() {
+  void onBrokerConnected() {
     if (connectionLostDialogController != null) {
       connectionLostDialogController.close();
       connectionLostDialogController = null;
     }
   }
 
-  public void onBrokerLost() {
+  void onBrokerLost() {
     if (connectionLostDialogController == null) {
       return;
     }
@@ -180,7 +180,7 @@ public class OverviewController extends Controller {
     });
   }
 
-  public void updateConnection() {
+  void updateConnection() {
     Platform.runLater(() -> {
       String wifiImageName =
           Mobifume.getInstance().getWifiConnection().isEnabled() ? "Wifi" : "Lan";
@@ -191,6 +191,16 @@ public class OverviewController extends Controller {
       String resource = "images/" + wifiImageName + ".png";
       wifi.setImage(ImageHolder.getInstance().getImage(resource));
     });
+  }
+
+  private void registerListeners() {
+    Mobifume.getInstance().getEventDispatcher().registerListener(ConnectionListener.create(this));
+    Mobifume.getInstance()
+        .getEventDispatcher()
+        .registerListener(OverviewDeviceListener.create(this));
+    Mobifume.getInstance()
+        .getEventDispatcher()
+        .registerListener(OverviewGroupListener.create(this));
   }
 
   private void startBatteryUpdateTask() {

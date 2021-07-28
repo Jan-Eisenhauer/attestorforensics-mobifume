@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.view;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.OverviewController;
+import com.attestorforensics.mobifumecore.controller.overview.OverviewController;
 import com.attestorforensics.mobifumecore.controller.listener.BaseErrorListener;
 import com.attestorforensics.mobifumecore.controller.listener.DeviceConnectionListener;
 import com.attestorforensics.mobifumecore.controller.listener.EvaporateListener;

@@ -1,6 +1,5 @@
 package com.attestorforensics.mobifumecore.controller.listener;
 
-import com.attestorforensics.mobifumecore.controller.OverviewController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemController;
@@ -17,31 +16,14 @@ import javafx.application.Platform;
 
 public class DeviceConnectionListener implements Listener {
 
-  private final OverviewController controller;
-
-  public DeviceConnectionListener(OverviewController controller) {
-    this.controller = controller;
-  }
-
   @EventHandler
   public void onNodeConnection(DeviceConnectionEvent event) {
     Platform.runLater(() -> {
       switch (event.getStatus()) {
-        case CONNECTED:
-          controller.addNode(event.getDevice());
-          break;
-        case DISCONNECTED:
-          controller.removeNode(event.getDevice());
-          break;
         case LOST:
-          controller.updateNode(event.getDevice());
           showLostError(event.getDevice());
           break;
-        case STATUS_UPDATED:
-          controller.updateNode(event.getDevice());
-          break;
         case RECONNECT:
-          controller.updateNode(event.getDevice());
           hideLostError(event.getDevice());
           break;
         default:

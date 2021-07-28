@@ -2,7 +2,6 @@ package com.attestorforensics.mobifumecore.controller.listener;
 
 import com.attestorforensics.mobifumecore.controller.GroupController;
 import com.attestorforensics.mobifumecore.controller.GroupControllerHolder;
-import com.attestorforensics.mobifumecore.controller.OverviewController;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
@@ -12,13 +11,10 @@ import javafx.application.Platform;
 
 public class GroupListener implements Listener {
 
-  private final OverviewController controller;
   private final BaseErrorListener baseErrorListener;
   private final WaterErrorListener waterErrorListener;
 
-  public GroupListener(OverviewController controller, BaseErrorListener baseErrorListener,
-      WaterErrorListener waterErrorListener) {
-    this.controller = controller;
+  public GroupListener(BaseErrorListener baseErrorListener, WaterErrorListener waterErrorListener) {
     this.baseErrorListener = baseErrorListener;
     this.waterErrorListener = waterErrorListener;
   }
@@ -28,12 +24,10 @@ public class GroupListener implements Listener {
     Platform.runLater(() -> {
       switch (event.getStatus()) {
         case CREATED:
-          controller.addGroup(event.getGroup());
           event.getGroup().getBases().forEach(baseErrorListener::updateErrors);
           event.getGroup().getHumidifiers().forEach(waterErrorListener::updateErrors);
           break;
         case REMOVED:
-          controller.removeGroup(event.getGroup());
           GroupController groupController =
               GroupControllerHolder.getInstance().getController(event.getGroup());
           groupController.destroy();

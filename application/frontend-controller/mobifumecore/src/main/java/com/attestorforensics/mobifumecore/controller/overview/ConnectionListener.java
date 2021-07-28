@@ -1,11 +1,10 @@
-package com.attestorforensics.mobifumecore.controller.listener;
+package com.attestorforensics.mobifumecore.controller.overview;
 
-import com.attestorforensics.mobifumecore.controller.OverviewController;
 import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 
-public class ConnectionListener implements Listener {
+class ConnectionListener implements Listener {
 
   private final OverviewController overviewController;
 
@@ -13,7 +12,7 @@ public class ConnectionListener implements Listener {
     this.overviewController = overviewController;
   }
 
-  public static ConnectionListener create(OverviewController overviewController) {
+  static ConnectionListener create(OverviewController overviewController) {
     return new ConnectionListener(overviewController);
   }
 
