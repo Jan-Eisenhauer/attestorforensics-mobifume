@@ -15,13 +15,6 @@ public abstract class ChildStageController extends Controller {
   private ChildStageController childOfChildController;
   private boolean closed;
 
-  public void focusLost() {
-    if (childOfChildController == null || childOfChildController.closed) {
-      childOfChildController = null;
-      close();
-    }
-  }
-
   public CompletableFuture<Void> close() {
     checkState(getStage() != null, "Cannot close child controller without stage");
     if (closed) {
@@ -57,7 +50,7 @@ public abstract class ChildStageController extends Controller {
   }
 
   @Override
-  public <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
+  protected <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
       String dialogResource) {
     return super.<T>loadAndOpenDialog(dialogResource).thenApply(controller -> {
       if (childOfChildController != null) {
@@ -70,7 +63,7 @@ public abstract class ChildStageController extends Controller {
   }
 
   @Override
-  public <T extends DetailBoxController> CompletableFuture<T> loadAndShowDetailBox(
+  protected <T extends DetailBoxController> CompletableFuture<T> loadAndShowDetailBox(
       String detailBoxResource, Node parent) {
     return super.<T>loadAndShowDetailBox(detailBoxResource, parent).thenApply(controller -> {
       if (childOfChildController != null) {
@@ -80,5 +73,12 @@ public abstract class ChildStageController extends Controller {
       childOfChildController = controller;
       return controller;
     });
+  }
+
+  void focusLost() {
+    if (childOfChildController == null || childOfChildController.closed) {
+      childOfChildController = null;
+      close();
+    }
   }
 }
