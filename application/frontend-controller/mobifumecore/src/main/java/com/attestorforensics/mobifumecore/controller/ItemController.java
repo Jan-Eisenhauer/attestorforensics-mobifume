@@ -1,8 +1,7 @@
-package com.attestorforensics.mobifumecore.controller.item;
+package com.attestorforensics.mobifumecore.controller;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import com.attestorforensics.mobifumecore.controller.Controller;
 import com.attestorforensics.mobifumecore.controller.detailbox.DetailBoxController;
 import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
 import java.util.concurrent.CompletableFuture;

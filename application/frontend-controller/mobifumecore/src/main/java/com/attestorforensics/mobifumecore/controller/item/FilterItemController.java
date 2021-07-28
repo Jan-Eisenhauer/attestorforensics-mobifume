@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.ItemController;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.dialog.AddFilterRunDialogController;
@@ -17,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.NavigableMap;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;

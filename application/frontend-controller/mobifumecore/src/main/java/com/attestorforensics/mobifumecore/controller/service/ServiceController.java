@@ -4,8 +4,8 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
-import com.attestorforensics.mobifumecore.controller.item.ServiceBaseItemController;
-import com.attestorforensics.mobifumecore.controller.item.ServiceItemController;
+import com.attestorforensics.mobifumecore.controller.service.item.ServiceBaseItemController;
+import com.attestorforensics.mobifumecore.controller.service.item.ServiceItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
@@ -27,12 +27,12 @@ public class ServiceController extends CloseableController {
 
   private final Map<String, ServiceItemController> serviceItemControllers = Maps.newHashMap();
 
-  private ServiceListener serviceListener;
+  private ServiceDeviceListener serviceListener;
 
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
-    serviceListener = ServiceListener.create(this);
+    serviceListener = ServiceDeviceListener.create(this);
     Mobifume.getInstance().getEventDispatcher().registerListener(serviceListener);
     Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addDevice);
     Mobifume.getInstance()
@@ -90,15 +90,15 @@ public class ServiceController extends CloseableController {
   }
 
   void removeDevice(Device device) {
-    serviceItemControllers.get(device.getDeviceId()).remove();
+    Platform.runLater(() -> serviceItemControllers.get(device.getDeviceId()).remove());
   }
 
   void updateDevice(Device device) {
-    serviceItemControllers.get(device.getDeviceId()).update();
+    Platform.runLater(() -> serviceItemControllers.get(device.getDeviceId()).update());
   }
 
   void updateCalibration(Device device) {
-    ((ServiceBaseItemController) serviceItemControllers.get(
-        device.getDeviceId())).updateCalibration();
+    Platform.runLater(() -> ((ServiceBaseItemController) serviceItemControllers.get(
+        device.getDeviceId())).updateCalibration());
   }
 }

@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.controller.item;
+package com.attestorforensics.mobifumecore.controller.service.item;
 
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.node.Device;

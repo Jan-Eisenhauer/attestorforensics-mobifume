@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.attestorforensics.mobifumecore.controller.detailbox.DetailBoxController;
 import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
-import com.attestorforensics.mobifumecore.controller.item.ItemController;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;

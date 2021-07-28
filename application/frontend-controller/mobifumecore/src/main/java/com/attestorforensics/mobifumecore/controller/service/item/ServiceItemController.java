@@ -1,5 +1,6 @@
-package com.attestorforensics.mobifumecore.controller.item;
+package com.attestorforensics.mobifumecore.controller.service.item;
 
+import com.attestorforensics.mobifumecore.controller.ItemController;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 
 public abstract class ServiceItemController extends ItemController {
