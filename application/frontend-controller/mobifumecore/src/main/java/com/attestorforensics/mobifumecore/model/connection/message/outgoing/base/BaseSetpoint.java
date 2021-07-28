@@ -7,14 +7,14 @@ public class BaseSetpoint implements OutgoingMessage {
   private static final String TOPIC_PREFIX = "/MOBIfume/base/cmd/";
 
   private final String deviceId;
-  private final double heaterSetpoint;
+  private final int heaterSetpoint;
 
-  private BaseSetpoint(String deviceId, double heaterSetpoint) {
+  private BaseSetpoint(String deviceId, int heaterSetpoint) {
     this.deviceId = deviceId;
     this.heaterSetpoint = heaterSetpoint;
   }
 
-  public static BaseSetpoint create(String deviceId, double heaterSetpoint) {
+  public static BaseSetpoint create(String deviceId, int heaterSetpoint) {
     return new BaseSetpoint(deviceId, heaterSetpoint);
   }
 
