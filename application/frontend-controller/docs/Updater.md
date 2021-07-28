@@ -2,7 +2,7 @@
 
 MOBIfume supports an easy way to update old versions of the software via an usb device.
 
-## Create updater usb device
+## Create the updater usb device
 
 1. Format any usb device and set the volume label to `UPDATE` (upper case).
 2. Move the appropriate update file to the usb device. The file must keep the name `update.tgz`.
