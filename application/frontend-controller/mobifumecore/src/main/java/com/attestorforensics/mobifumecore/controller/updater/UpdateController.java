@@ -1,7 +1,7 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.updater;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.listener.UpdatingListener;
+import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.update.UpdatingState;
 import java.net.URL;
@@ -31,7 +31,7 @@ public class UpdateController extends CloseableController {
     return super.close();
   }
 
-  public void setState(UpdatingState updatingState) {
+  void setState(UpdatingState updatingState) {
     String updatingStateText = LocaleManager.getInstance()
         .getString("update.state." + updatingState.name().toLowerCase(Locale.ROOT));
     state.setText(updatingStateText);
