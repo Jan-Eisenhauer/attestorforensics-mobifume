@@ -1,6 +1,7 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.group;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;

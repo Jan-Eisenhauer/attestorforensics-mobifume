@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.group;
 
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.google.common.collect.Maps;

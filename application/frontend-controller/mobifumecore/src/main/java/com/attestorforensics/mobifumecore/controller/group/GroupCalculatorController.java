@@ -1,5 +1,6 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.group;
 
+import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.SaveDiscardCancelDialogController;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;

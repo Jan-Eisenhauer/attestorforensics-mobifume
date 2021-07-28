@@ -1,13 +1,13 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.group;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
 import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupFilterItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
@@ -21,11 +21,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;

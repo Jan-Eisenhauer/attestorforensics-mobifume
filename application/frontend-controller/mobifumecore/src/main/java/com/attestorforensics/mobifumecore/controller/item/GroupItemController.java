@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.GroupController;
+import com.attestorforensics.mobifumecore.controller.group.GroupController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
@@ -14,7 +14,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;

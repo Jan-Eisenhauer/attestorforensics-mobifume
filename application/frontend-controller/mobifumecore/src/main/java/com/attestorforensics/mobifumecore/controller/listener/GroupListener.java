@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.listener;
 
-import com.attestorforensics.mobifumecore.controller.GroupController;
-import com.attestorforensics.mobifumecore.controller.GroupControllerHolder;
+import com.attestorforensics.mobifumecore.controller.group.GroupController;
+import com.attestorforensics.mobifumecore.controller.group.GroupControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.event.GroupEvent;
