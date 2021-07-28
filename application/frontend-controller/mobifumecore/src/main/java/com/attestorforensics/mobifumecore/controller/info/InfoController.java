@@ -1,6 +1,7 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.info;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.dialog.YesNoDialogController;
@@ -9,20 +10,13 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.update.Updater;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
+import java.util.concurrent.CompletableFuture;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 
 public class InfoController extends CloseableController {
-
-  private static InfoController currentInstance;
-
-  @FXML
-  Parent root;
 
   @FXML
   private Text version;
@@ -36,14 +30,13 @@ public class InfoController extends CloseableController {
   @FXML
   private Button updateButton;
 
-  public static Optional<InfoController> getCurrentInstance() {
-    return Optional.ofNullable(currentInstance);
-  }
+  private InfoUpdatingListener updatingListener;
 
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
-    currentInstance = this;
+    updatingListener = InfoUpdatingListener.create(this);
+    Mobifume.getInstance().getEventDispatcher().registerListener(updatingListener);
     version.setText(LocaleManager.getInstance()
         .getString("info.version",
             Mobifume.getInstance().getProjectProperties().getProperty("version")));
@@ -61,10 +54,15 @@ public class InfoController extends CloseableController {
     }
   }
 
+  @Override
+  protected CompletableFuture<Void> close() {
+    Mobifume.getInstance().getEventDispatcher().unregisterListener(updatingListener);
+    return super.close();
+  }
+
   @FXML
   public void onBack() {
     Sound.click();
-
     close();
   }
 
@@ -110,11 +108,11 @@ public class InfoController extends CloseableController {
     });
   }
 
-  public void showUpdateButton() {
+  void showUpdateButton() {
     updateButton.setVisible(true);
   }
 
-  public void hideUpdateButton() {
+  void hideUpdateButton() {
     updateButton.setVisible(false);
   }
 }

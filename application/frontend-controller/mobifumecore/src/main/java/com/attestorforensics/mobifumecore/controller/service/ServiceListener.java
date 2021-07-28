@@ -1,7 +1,5 @@
-package com.attestorforensics.mobifumecore.controller.listener;
+package com.attestorforensics.mobifumecore.controller.service;
 
-import com.attestorforensics.mobifumecore.controller.service.ServiceController;
-import com.attestorforensics.mobifumecore.controller.item.ServiceBaseItemController;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
@@ -11,8 +9,12 @@ public class ServiceListener implements Listener {
 
   private ServiceController serviceController;
 
-  public ServiceListener(ServiceController serviceController) {
+  private ServiceListener(ServiceController serviceController) {
     this.serviceController = serviceController;
+  }
+
+  static ServiceListener create(ServiceController serviceController) {
+    return new ServiceListener(serviceController);
   }
 
   @EventHandler
@@ -30,8 +32,7 @@ public class ServiceListener implements Listener {
           serviceController.updateDevice(event.getDevice());
           break;
         case CALIBRATION_DATA_UPDATED:
-          ((ServiceBaseItemController) serviceController.getServiceItemController(
-              event.getDevice())).updateCalibration();
+          serviceController.updateCalibration(event.getDevice());
           break;
         default:
           break;

@@ -9,7 +9,6 @@ import com.attestorforensics.mobifumecore.controller.listener.FilterListener;
 import com.attestorforensics.mobifumecore.controller.listener.GroupListener;
 import com.attestorforensics.mobifumecore.controller.listener.HumidifyListener;
 import com.attestorforensics.mobifumecore.controller.listener.PurgeListener;
-import com.attestorforensics.mobifumecore.controller.listener.UpdateListener;
 import com.attestorforensics.mobifumecore.controller.listener.WaterErrorListener;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
@@ -126,6 +125,5 @@ public class MobiApplication extends Application {
         .getEventDispatcher()
         .registerListener(new DeviceConnectionListener(overviewController));
     Mobifume.getInstance().getEventDispatcher().registerListener(new PurgeListener());
-    Mobifume.getInstance().getEventDispatcher().registerListener(UpdateListener.create());
   }
 }
