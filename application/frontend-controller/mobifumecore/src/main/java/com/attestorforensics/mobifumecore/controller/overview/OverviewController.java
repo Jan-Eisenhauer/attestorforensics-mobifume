@@ -142,23 +142,25 @@ public class OverviewController extends Controller {
   }
 
   void removeGroup(Group group) {
-    ObservableList<TitledPane> groupChildren = groups.getPanes();
-    groupChildren.removeIf(node -> {
-      GroupItemController controller = nodeGroupItemControllerPool.get(node);
-      if (controller.getGroup() != group) {
-        return false;
-      }
+    Platform.runLater(() -> {
+      ObservableList<TitledPane> groupChildren = groups.getPanes();
+      groupChildren.removeIf(node -> {
+        GroupItemController controller = nodeGroupItemControllerPool.get(node);
+        if (controller.getGroup() != group) {
+          return false;
+        }
 
-      nodeGroupItemControllerPool.remove(node);
-      return true;
-    });
+        nodeGroupItemControllerPool.remove(node);
+        return true;
+      });
 
-    ObservableList<Node> deviceChildren = devices.getChildren();
-    deviceChildren.filtered(
-            node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
-        .forEach(node -> nodeDeviceItemControllerPool.get(node).clearGroup());
+      ObservableList<Node> deviceChildren = devices.getChildren();
+      deviceChildren.filtered(
+              node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
+          .forEach(node -> nodeDeviceItemControllerPool.get(node).clearGroup());
 
-    updateOrder();
+      updateOrder();
+    });g
   }
 
   void onBrokerConnected() {
