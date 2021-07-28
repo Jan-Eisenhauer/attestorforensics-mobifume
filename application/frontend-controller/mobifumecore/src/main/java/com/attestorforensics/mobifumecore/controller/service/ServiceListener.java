@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.listener;
 
-import com.attestorforensics.mobifumecore.controller.ServiceController;
+import com.attestorforensics.mobifumecore.controller.service.ServiceController;
 import com.attestorforensics.mobifumecore.controller.item.ServiceBaseItemController;
 import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
