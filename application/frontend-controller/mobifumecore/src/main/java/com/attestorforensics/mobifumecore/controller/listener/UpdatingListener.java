@@ -7,16 +7,18 @@ import com.attestorforensics.mobifumecore.model.listener.Listener;
 
 public class UpdatingListener implements Listener {
 
-  private UpdatingListener() {
+  private final UpdateController updateController;
+
+  private UpdatingListener(UpdateController updateController) {
+    this.updateController = updateController;
   }
 
-  public static UpdatingListener create() {
-    return new UpdatingListener();
+  public static UpdatingListener create(UpdateController updateController) {
+    return new UpdatingListener(updateController);
   }
 
   @EventHandler
   public void onUpdating(UpdatingEvent event) {
-    UpdateController.getCurrentInstance()
-        .ifPresent(controller -> controller.setState(event.getState()));
+    updateController.setState(event.getState());
   }
 }
