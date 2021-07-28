@@ -5,7 +5,7 @@ import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import javafx.application.Platform;
 
-class FilterListener implements Listener {
+public class FilterListener implements Listener {
 
   private final FilterController filterController;
 

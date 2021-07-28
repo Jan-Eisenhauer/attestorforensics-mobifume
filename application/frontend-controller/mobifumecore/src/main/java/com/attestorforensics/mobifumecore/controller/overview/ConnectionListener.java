@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 
-class ConnectionListener implements Listener {
+public class ConnectionListener implements Listener {
 
   private final OverviewController overviewController;
 

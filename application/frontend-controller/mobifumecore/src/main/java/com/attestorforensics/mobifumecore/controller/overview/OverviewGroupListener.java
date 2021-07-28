@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.model.event.GroupEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 
-class OverviewGroupListener implements Listener {
+public class OverviewGroupListener implements Listener {
 
   private final OverviewController overviewController;
 
