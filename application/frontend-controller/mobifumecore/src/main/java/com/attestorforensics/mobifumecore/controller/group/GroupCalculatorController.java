@@ -471,5 +471,6 @@ public class GroupCalculatorController extends CloseableController {
     Sound.click();
 
     applySettings();
+    close();
   }
 }
