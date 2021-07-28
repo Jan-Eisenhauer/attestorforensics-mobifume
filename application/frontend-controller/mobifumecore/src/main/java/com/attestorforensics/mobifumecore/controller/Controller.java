@@ -86,7 +86,7 @@ public abstract class Controller implements Initializable {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
       T controller = loadResource("view/dialog/" + dialogResource);
-      Stage stage = createStage(controller);
+      createStage(controller);
       completableFuture.complete(controller);
       openDialog(controller);
     });
