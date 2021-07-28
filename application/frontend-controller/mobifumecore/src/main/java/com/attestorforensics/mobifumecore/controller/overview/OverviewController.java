@@ -90,11 +90,11 @@ public class OverviewController extends Controller {
   }
 
   void removeDevice(Device device) {
-    if (createGroupDialogController != null) {
-      createGroupDialogController.removeDevice(device);
-    }
-
     Platform.runLater(() -> {
+      if (createGroupDialogController != null) {
+        createGroupDialogController.removeDevice(device);
+      }
+
       ObservableList<Node> children = devices.getChildren();
       children.removeIf(node -> {
         DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
