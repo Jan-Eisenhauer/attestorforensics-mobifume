@@ -5,7 +5,6 @@ import com.attestorforensics.mobifumecore.controller.OverviewController;
 import com.attestorforensics.mobifumecore.controller.listener.BaseErrorListener;
 import com.attestorforensics.mobifumecore.controller.listener.DeviceConnectionListener;
 import com.attestorforensics.mobifumecore.controller.listener.EvaporateListener;
-import com.attestorforensics.mobifumecore.controller.listener.FilterListener;
 import com.attestorforensics.mobifumecore.controller.listener.GroupListener;
 import com.attestorforensics.mobifumecore.controller.listener.HumidifyListener;
 import com.attestorforensics.mobifumecore.controller.listener.PurgeListener;
@@ -115,7 +114,6 @@ public class MobiApplication extends Application {
     WaterErrorListener waterErrorListener = new WaterErrorListener();
     Mobifume.getInstance().getEventDispatcher().registerListener(waterErrorListener);
     Mobifume.getInstance().getEventDispatcher().registerListener(new EvaporateListener());
-    Mobifume.getInstance().getEventDispatcher().registerListener(new FilterListener());
     Mobifume.getInstance()
         .getEventDispatcher()
         .registerListener(

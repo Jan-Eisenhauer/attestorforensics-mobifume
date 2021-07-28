@@ -293,7 +293,7 @@ public class OverviewController extends Controller {
   @FXML
   private void onFilters() {
     Sound.click();
-    loadAndOpenView("Filters.fxml");
+    loadAndOpenView("Filter.fxml");
   }
 
   @FXML

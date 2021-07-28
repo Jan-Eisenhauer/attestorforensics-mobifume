@@ -1,59 +1,47 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.filter;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.InputDialogController;
 import com.attestorforensics.mobifumecore.controller.item.FilterItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 
-public class FiltersController extends CloseableController {
+public class FilterController extends CloseableController {
 
-  private static FiltersController instance;
-
-  @FXML
-  Parent root;
   @FXML
   private Pane filters;
 
-  public static FiltersController getInstance() {
-    return instance;
-  }
+  private FilterListener filterListener;
 
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
-    instance = this;
-    List<Filter> filters = Mobifume.getInstance().getModelManager().getFilterPool().getAllFilters();
-    filters.forEach(this::addFilter);
+    filterListener = FilterListener.create(this);
+    Mobifume.getInstance().getEventDispatcher().registerListener(filterListener);
+    Mobifume.getInstance()
+        .getModelManager()
+        .getFilterPool()
+        .getAllFilters()
+        .forEach(this::addFilter);
   }
 
-  public void removeFilter(Filter filter) {
-    filters.getChildren()
-        .removeIf(
-            node -> ((FilterItemController) node.getProperties().get("controller")).getFilter()
-                == filter);
-  }
-
-  public void addFilter(Filter filter) {
-    this.<FilterItemController>loadItem("FilterItem.fxml").thenAccept(filterItemController -> {
-      Parent filterItemRoot = filterItemController.getRoot();
-      filters.getChildren().add(filterItemRoot);
-      filterItemController.setFilter(filter);
-      filterItemRoot.getProperties().put("controller", filterItemController);
-    });
+  @Override
+  protected CompletableFuture<Void> close() {
+    Mobifume.getInstance().getEventDispatcher().unregisterListener(filterListener);
+    return super.close();
   }
 
   @FXML
   public void onBack() {
     Sound.click();
-
     close();
   }
 
@@ -86,6 +74,22 @@ public class FiltersController extends CloseableController {
               Mobifume.getInstance().getConfig().getProperty("filter.prefix")));
       controller.setError(LocaleManager.getInstance().getString("dialog.filter.add.error"));
     });
+  }
+
+  void addFilter(Filter filter) {
+    this.<FilterItemController>loadItem("FilterItem.fxml").thenAccept(filterItemController -> {
+      Parent filterItemRoot = filterItemController.getRoot();
+      filters.getChildren().add(filterItemRoot);
+      filterItemController.setFilter(filter);
+      filterItemRoot.getProperties().put("controller", filterItemController);
+    });
+  }
+
+  void removeFilter(Filter filter) {
+    filters.getChildren()
+        .removeIf(
+            node -> ((FilterItemController) node.getProperties().get("controller")).getFilter()
+                == filter);
   }
 
   private boolean isFilterIdValid(String value) {
