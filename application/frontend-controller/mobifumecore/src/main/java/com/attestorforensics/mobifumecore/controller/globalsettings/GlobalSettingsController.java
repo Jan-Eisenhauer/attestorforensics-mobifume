@@ -1,10 +1,10 @@
-package com.attestorforensics.mobifumecore.controller;
+package com.attestorforensics.mobifumecore.controller.globalsettings;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.dialog.InfoDialogController;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedIntTextFormatter;
@@ -18,11 +18,7 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -30,26 +26,19 @@ import javafx.scene.control.TextField;
 public class GlobalSettingsController extends CloseableController {
 
   @FXML
-  private Parent root;
-
-  @FXML
   private ComboBox<String> languageBox;
-
   @FXML
   private TextField maxHumField;
   @FXML
   private Slider maxHumSlider;
-
   @FXML
   private TextField heaterTempField;
   @FXML
   private Slider heaterTempSlider;
-
   @FXML
   private TextField heatTimeField;
   @FXML
   private Slider heatTimeSlider;
-
   @FXML
   private TextField purgeTimeField;
   @FXML
