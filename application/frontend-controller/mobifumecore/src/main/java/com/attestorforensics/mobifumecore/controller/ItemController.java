@@ -21,13 +21,13 @@ public abstract class ItemController extends Controller {
   }
 
   @Override
-  public <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
+  protected <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
       String dialogResource) {
     return parent.loadAndOpenDialog(dialogResource);
   }
 
   @Override
-  public <T extends DetailBoxController> CompletableFuture<T> loadAndShowDetailBox(
+  protected <T extends DetailBoxController> CompletableFuture<T> loadAndShowDetailBox(
       String detailBoxResource, Node node) {
     return parent.loadAndShowDetailBox(detailBoxResource, node);
   }
