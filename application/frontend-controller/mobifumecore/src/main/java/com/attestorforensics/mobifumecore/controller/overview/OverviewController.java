@@ -64,12 +64,12 @@ public class OverviewController extends Controller {
   public void initialize(URL location, ResourceBundle resources) {
     registerListeners();
     startBatteryUpdateTask();
-    Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addNode);
+    Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addDevice);
     Mobifume.getInstance()
         .getModelManager()
         .getDevicePool()
         .getAllHumidifier()
-        .forEach(this::addNode);
+        .forEach(this::addDevice);
     Mobifume.getInstance().getModelManager().getGroupPool().getAllGroups().forEach(this::addGroup);
   }
 
@@ -78,7 +78,7 @@ public class OverviewController extends Controller {
     super.setRoot(root);
   }
 
-  public void addNode(Device device) {
+  void addDevice(Device device) {
     this.<DeviceItemController>loadItem("DeviceItem.fxml").thenAccept(controller -> {
       Parent deviceItemRoot = controller.getRoot();
       controller.setDevice(device);
@@ -89,7 +89,7 @@ public class OverviewController extends Controller {
     });
   }
 
-  public void removeNode(Device device) {
+  void removeDevice(Device device) {
     if (createGroupDialogController != null) {
       createGroupDialogController.removeDevice(device);
     }
@@ -111,7 +111,7 @@ public class OverviewController extends Controller {
     });
   }
 
-  public void updateNode(Device device) {
+  void updateDevice(Device device) {
     Platform.runLater(() -> {
       ObservableList<Node> children = devices.getChildren();
       children.forEach(node -> {
@@ -125,7 +125,7 @@ public class OverviewController extends Controller {
     });
   }
 
-  public void addGroup(Group group) {
+  void addGroup(Group group) {
     this.<GroupItemController>loadItem("GroupItem.fxml").thenAccept(controller -> {
       TitledPane groupItemRoot = (TitledPane) controller.getRoot();
       String groupColor = GroupColor.getNextColor();
@@ -141,7 +141,7 @@ public class OverviewController extends Controller {
     });
   }
 
-  public void removeGroup(Group group) {
+  void removeGroup(Group group) {
     ObservableList<TitledPane> groupChildren = groups.getPanes();
     groupChildren.removeIf(node -> {
       GroupItemController controller = nodeGroupItemControllerPool.get(node);

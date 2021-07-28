@@ -20,13 +20,13 @@ class OverviewDeviceListener implements Listener {
   public void onDevice(DeviceConnectionEvent event) {
     switch (event.getStatus()) {
       case CONNECTED:
-        overviewController.addNode(event.getDevice());
+        overviewController.addDevice(event.getDevice());
         break;
       case DISCONNECTED:
-        overviewController.removeNode(event.getDevice());
+        overviewController.removeDevice(event.getDevice());
         break;
       default:
-        overviewController.updateNode(event.getDevice());
+        overviewController.updateDevice(event.getDevice());
         break;
     }
   }
