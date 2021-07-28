@@ -88,7 +88,7 @@ public abstract class Controller implements Initializable {
       T controller = loadResource("view/dialog/" + dialogResource);
       Stage stage = createStage(controller);
       completableFuture.complete(controller);
-      openDialog(controller, stage);
+      openDialog(controller);
     });
 
     return completableFuture;
@@ -106,7 +106,7 @@ public abstract class Controller implements Initializable {
       stage.setY((bounds.getMaxY() + bounds.getMinY()) * 0.5D - 28);
 
       completableFuture.complete(controller);
-      showDetailBox(controller, stage, bounds);
+      showDetailBox(controller, bounds);
     });
 
     return completableFuture;
@@ -128,14 +128,16 @@ public abstract class Controller implements Initializable {
     return resourceController;
   }
 
-  private void openDialog(ChildController controller, Stage stage) {
+  private void openDialog(ChildStageController controller) {
     controller.onOpen();
-    stage.show();
+    controller.getStage().show();
     root.getScene().getRoot().setEffect(new ColorAdjust(0, 0, -0.3, 0));
   }
 
-  private void showDetailBox(DetailBoxController controller, Stage stage, Bounds bounds) {
+  private void showDetailBox(DetailBoxController controller, Bounds bounds) {
     controller.onOpen();
+
+    Stage stage = controller.getStage();
     stage.show();
 
     // flip stage if out of screen
@@ -145,7 +147,7 @@ public abstract class Controller implements Initializable {
     }
   }
 
-  private Stage createStage(ChildController controller) {
+  private Stage createStage(ChildStageController controller) {
     Stage stage = new Stage();
     controller.setStage(stage);
     stage.initOwner(root.getScene().getWindow());

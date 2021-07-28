@@ -9,10 +9,10 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 
-public abstract class ChildController extends Controller {
+public abstract class ChildStageController extends Controller {
 
   private Stage stage;
-  private ChildController childOfChildController;
+  private ChildStageController childOfChildController;
   private boolean closed;
 
   public void focusLost() {
@@ -23,7 +23,7 @@ public abstract class ChildController extends Controller {
   }
 
   public CompletableFuture<Void> close() {
-    checkState(getStage() != null, "Cannot close dialog without stage");
+    checkState(getStage() != null, "Cannot close child controller without stage");
     if (closed) {
       return CompletableFuture.completedFuture(null);
     }
