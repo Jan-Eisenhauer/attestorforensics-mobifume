@@ -117,11 +117,11 @@ public class MobiApplication extends Application {
     Mobifume.getInstance()
         .getEventDispatcher()
         .registerListener(
-            new GroupListener(overviewController, baseErrorListener, waterErrorListener));
+            new GroupListener(baseErrorListener, waterErrorListener));
     Mobifume.getInstance().getEventDispatcher().registerListener(new HumidifyListener());
     Mobifume.getInstance()
         .getEventDispatcher()
-        .registerListener(new DeviceConnectionListener(overviewController));
+        .registerListener(new DeviceConnectionListener());
     Mobifume.getInstance().getEventDispatcher().registerListener(new PurgeListener());
   }
 }

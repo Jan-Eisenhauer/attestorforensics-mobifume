@@ -81,7 +81,7 @@ public abstract class Controller implements Initializable {
   }
 
 
-  public <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
+  protected <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
       String dialogResource) {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
@@ -94,7 +94,7 @@ public abstract class Controller implements Initializable {
     return completableFuture;
   }
 
-  public <T extends DetailBoxController> CompletableFuture<T> loadAndShowDetailBox(
+  protected <T extends DetailBoxController> CompletableFuture<T> loadAndShowDetailBox(
       String detailBoxResource, Node node) {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
