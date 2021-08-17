@@ -18,7 +18,7 @@
 <?import javafx.scene.text.Text?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="parent" styleClass="primaryLight"
             xmlns="http://javafx.com/javafx/8.0.191"
-            fx:controller="com.attestorforensics.mobifumecore.controller.OverviewController">
+            fx:controller="com.attestorforensics.mobifumecore.controller.overview.OverviewController">
     <children>
         <HBox alignment="CENTER_LEFT" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
               AnchorPane.topAnchor="0.0">
@@ -137,11 +137,11 @@
                         </AnchorPane>
                         <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0">
                             <children>
-                                <HBox alignment="CENTER" onMousePressed="#onGroupAdd" prefHeight="80.0" spacing="5.0"
+                                <HBox alignment="CENTER" onMousePressed="#onGroupCreate" prefHeight="80.0" spacing="5.0"
                                       AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                                       AnchorPane.topAnchor="0.0">
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#onGroupAdd">
+                                        <Button mnemonicParsing="false" onAction="#onGroupCreate">
                                             <graphic>
                                                 <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true"
                                                            preserveRatio="true">

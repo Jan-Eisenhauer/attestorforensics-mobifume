@@ -1,7 +1,8 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
-import com.attestorforensics.mobifumecore.controller.Controller;
-import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
+import com.attestorforensics.mobifumecore.controller.ItemController;
+import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
+import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
@@ -10,14 +11,12 @@ import java.net.URL;
 import java.util.NavigableMap;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class GroupHumItemController extends Controller {
+public class GroupHumItemController extends ItemController {
 
   private Humidifier hum;
 
@@ -33,6 +32,7 @@ public class GroupHumItemController extends Controller {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   public Humidifier getHumidifier() {
@@ -46,9 +46,15 @@ public class GroupHumItemController extends Controller {
   }
 
   @FXML
-  public void onErrorInfo(ActionEvent event) {
-    new InfoBoxDialog(((Node) event.getSource()).getScene().getWindow(), errorIcon,
-        errors.lastEntry().getValue(), null);
+  public void onErrorInfo() {
+    ErrorWarning errorWarning = errors.lastEntry().getValue();
+    if (errorWarning.isError()) {
+      this.<ErrorDetailBoxController>loadAndShowDetailBox("ErrorDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setErrorMessage(errorWarning.getMessage()));
+    } else {
+      this.<WarningDetailBoxController>loadAndShowDetailBox("WarningDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setWarningMessage(errorWarning.getMessage()));
+    }
   }
 
   public void showError(String errorMessage, boolean isError, ItemErrorType errorType) {

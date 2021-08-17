@@ -1,7 +1,8 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
-import com.attestorforensics.mobifumecore.controller.Controller;
-import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
+import com.attestorforensics.mobifumecore.controller.ItemController;
+import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
+import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
@@ -13,15 +14,15 @@ import java.net.URL;
 import java.util.NavigableMap;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public class DeviceItemController extends Controller {
+public class DeviceItemController extends ItemController {
+
+  private final NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
 
   private Device device;
   private String currentStrength;
@@ -39,7 +40,6 @@ public class DeviceItemController extends Controller {
   @FXML
   private ImageView errorIcon;
 
-  private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
 
   @Override
   @FXML
@@ -118,21 +118,27 @@ public class DeviceItemController extends Controller {
   }
 
   @FXML
-  public void onErrorInfo(ActionEvent event) {
-    new InfoBoxDialog(((Node) event.getSource()).getScene().getWindow(), errorIcon,
-        errors.lastEntry().getValue(), null);
+  public void onErrorInfo() {
+    ErrorWarning errorWarning = errors.lastEntry().getValue();
+    if (errorWarning.isError()) {
+      this.<ErrorDetailBoxController>loadAndShowDetailBox("ErrorDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setErrorMessage(errorWarning.getMessage()));
+    } else {
+      this.<WarningDetailBoxController>loadAndShowDetailBox("WarningDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setWarningMessage(errorWarning.getMessage()));
+    }
   }
 
   public void setGroup(Group group, String color) {
     this.group = group;
-    selected = group == null;
-    if (group != null) {
-      deviceItem.setStyle("-fx-background-color: " + color);
-      setSelected(false);
-    } else {
-      deviceItem.setStyle("");
-      setSelected(true);
-    }
+    deviceItem.setStyle("-fx-background-color: " + color);
+    setSelected(false);
+  }
+
+  public void clearGroup() {
+    group = null;
+    deviceItem.setStyle("");
+    setSelected(true);
   }
 
   public void showError(String errorMessage, boolean isError, ItemErrorType errorType) {

@@ -39,7 +39,8 @@ public class Updater {
   private boolean updateAvailable = false;
   private String newVersion;
 
-  private Updater(ScheduledExecutorService scheduledExecutorService, EventDispatcher eventDispatcher) {
+  private Updater(ScheduledExecutorService scheduledExecutorService,
+      EventDispatcher eventDispatcher) {
     this.scheduledExecutorService = scheduledExecutorService;
     this.eventDispatcher = eventDispatcher;
     updateFile = new File(Mobifume.getInstance().getConfig().getProperty("update_file"));
@@ -223,9 +224,10 @@ public class Updater {
     try {
       Mobifume.getInstance().getLogger().info("Starting external updater");
       Runtime.getRuntime()
-          .exec("cmd /S /c \"\"" + currentJar.getParent() + JAVAW + "\" -jar \"" + currentJar.getParent()
-              + "\\MOBIfumeUpdate.jar\" \"" + TMP_UPDATE_FILE.getAbsolutePath() + "\" \""
-              + currentJar.getAbsolutePath() + "\"\"");
+          .exec("cmd /S /c \"\"" + currentJar.getParent() + JAVAW + "\" -jar \""
+              + currentJar.getParent() + "\\MOBIfumeUpdate.jar\" \""
+              + TMP_UPDATE_FILE.getAbsolutePath() + "\" \"" + currentJar.getAbsolutePath()
+              + "\"\"");
     } catch (IOException e) {
       e.printStackTrace();
       Mobifume.getInstance().getLogger().info("Failed installing update");

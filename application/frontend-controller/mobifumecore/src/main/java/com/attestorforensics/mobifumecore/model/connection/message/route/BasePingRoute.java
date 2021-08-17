@@ -42,6 +42,25 @@ public class BasePingRoute implements MessageRoute<BasePing> {
     Base base = optionalBase.get();
     base.setRssi(message.getRssi());
 
+    updateTemperature(message, base);
+    updateHumidity(message, base);
+    base.setHeaterSetpoint(message.getHeaterSetpoint());
+    updateHeaterTemperature(message, base);
+    updateLatch(message, base);
+
+    Mobifume.getInstance()
+        .getEventDispatcher()
+        .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
+
+    Optional<Group> optionalGroup = groupPool.getGroupOfBase(base);
+    if (optionalGroup.isPresent()) {
+      Group group = optionalGroup.get();
+      CustomLogger.logGroupBase(group, base);
+      group.updateHumidify();
+    }
+  }
+
+  private void updateTemperature(BasePing message, Base base) {
     double temperature = message.getTemperature();
     double oldTemperature = base.getTemperature();
     base.setTemperature(temperature);
@@ -56,7 +75,9 @@ public class BasePingRoute implements MessageRoute<BasePing> {
           .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.TEMPERATURE));
     }
+  }
 
+  private void updateHumidity(BasePing message, Base base) {
     double humidity = message.getHumidity();
     double oldHumidity = base.getHumidity();
     base.setHumidity(humidity);
@@ -71,9 +92,9 @@ public class BasePingRoute implements MessageRoute<BasePing> {
           .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.HUMIDITY));
     }
+  }
 
-    base.setHeaterSetpoint(message.getHeaterSetpoint());
-
+  private void updateHeaterTemperature(BasePing message, Base base) {
     double heaterTemperature = message.getHeaterTemperature();
     double oldHeaterTemperature = base.getHeaterTemperature();
     base.setHeaterTemperature(heaterTemperature);
@@ -87,7 +108,9 @@ public class BasePingRoute implements MessageRoute<BasePing> {
           .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.HEATER));
     }
+  }
 
+  private void updateLatch(BasePing message, Base base) {
     Latch latch = message.getLatch();
     Latch oldLatch = base.getLatch();
     base.setLatch(latch);
@@ -105,17 +128,6 @@ public class BasePingRoute implements MessageRoute<BasePing> {
       Mobifume.getInstance()
           .getEventDispatcher()
           .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.LATCH));
-    }
-
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
-
-    Optional<Group> optionalGroup = groupPool.getGroupOfBase(base);
-    if (optionalGroup.isPresent()) {
-      Group group = optionalGroup.get();
-      CustomLogger.logGroupBase(group, base);
-      group.updateHumidify();
     }
   }
 }

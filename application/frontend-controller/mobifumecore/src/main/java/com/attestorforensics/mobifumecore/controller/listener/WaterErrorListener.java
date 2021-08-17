@@ -5,11 +5,11 @@ import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHo
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
+import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.event.WaterErrorEvent;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;

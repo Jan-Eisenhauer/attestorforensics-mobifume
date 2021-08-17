@@ -1,10 +1,12 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.Controller;
-import com.attestorforensics.mobifumecore.controller.dialog.AddFilterRunDialog;
-import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
-import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
+import com.attestorforensics.mobifumecore.controller.ItemController;
+import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
+import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
+import com.attestorforensics.mobifumecore.controller.dialog.AddFilterRunDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
@@ -16,16 +18,14 @@ import java.text.SimpleDateFormat;
 import java.util.NavigableMap;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
-public class FilterItemController extends Controller {
+public class FilterItemController extends ItemController {
 
   private Filter filter;
 
@@ -52,6 +52,7 @@ public class FilterItemController extends Controller {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   public void setFilter(Filter filter) {
@@ -117,32 +118,45 @@ public class FilterItemController extends Controller {
   }
 
   @FXML
-  public void onErrorInfo(ActionEvent event) {
-    new InfoBoxDialog(((Node) event.getSource()).getScene().getWindow(), errorIcon,
-        errors.lastEntry().getValue(), null);
+  public void onErrorInfo() {
+    ErrorWarning errorWarning = errors.lastEntry().getValue();
+    if (errorWarning.isError()) {
+      this.<ErrorDetailBoxController>loadAndShowDetailBox("ErrorDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setErrorMessage(errorWarning.getMessage()));
+    } else {
+      this.<WarningDetailBoxController>loadAndShowDetailBox("WarningDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setWarningMessage(errorWarning.getMessage()));
+    }
   }
 
   @FXML
-  public void onChange(ActionEvent event) {
+  public void onChange() {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.filter.change.title", filter.getId()),
-        LocaleManager.getInstance().getString("dialog.filter.change.content", filter.getId()), true,
-        accepted -> {
-          if (Boolean.TRUE.equals(accepted)) {
-            filter.setRemoved();
-            Mobifume.getInstance().getModelManager().getFilterPool().removeFilter(filter);
-          }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(confirmResult -> {
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          filter.setRemoved();
+          Mobifume.getInstance().getModelManager().getFilterPool().removeFilter(filter);
+        }
+      });
+
+      controller.setTitle(
+          LocaleManager.getInstance().getString("dialog.filter.change.title", filter.getId()));
+      controller.setContent(
+          LocaleManager.getInstance().getString("dialog.filter.change.content", filter.getId()));
+    });
+  }
+
+  @FXML
+  private void onAdd() {
+    Sound.click();
+
+    this.<AddFilterRunDialogController>loadAndOpenDialog("AddFilterRunDialog.fxml")
+        .thenAccept(controller -> {
+          controller.setFilter(filter);
+          controller.setCallback(this::loadFilter);
         });
-  }
-
-  @FXML
-  public void onAdd(ActionEvent event) {
-    Sound.click();
-
-    new AddFilterRunDialog(((Node) event.getSource()).getScene().getWindow(), filter,
-        avoid -> loadFilter());
   }
 
   public void hideError(ItemErrorType errorType) {

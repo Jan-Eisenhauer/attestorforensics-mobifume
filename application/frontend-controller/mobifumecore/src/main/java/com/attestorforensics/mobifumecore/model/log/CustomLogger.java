@@ -4,7 +4,6 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.io.File;
 import java.io.IOException;
@@ -90,6 +89,12 @@ public class CustomLogger {
         settings.getHeaterTemperature(), settings.getHeatTimer(), settings.getPurgeTimer());
   }
 
+  public static void info(Object... elements) {
+    String info = join(elements);
+    Mobifume.getInstance().getLogger().info(info);
+    System.out.println(info);
+  }
+
   public static void info(Group group, Object... elements) {
     String info = join(elements);
     group.getLogger().info(info);
@@ -110,21 +115,16 @@ public class CustomLogger {
   }
 
   public static void logGroupBase(Group group, Base base) {
-    info(group, "BASE", base.getDeviceId(), base.getRssi(), base.getTemperature(), base.getHumidity(),
-        base.getHeaterSetpoint(), base.getHeaterTemperature(), base.getLatch());
+    info(group, "BASE", base.getDeviceId(), base.getRssi(), base.getTemperature(),
+        base.getHumidity(), base.getHeaterSetpoint(), base.getHeaterTemperature(), base.getLatch());
   }
 
   public static void logGroupHum(Group group, Humidifier hum) {
-    info(group, "HUM", hum.getDeviceId(), hum.getRssi(), hum.isHumidify(), hum.getLed1(), hum.getLed2());
+    info(group, "HUM", hum.getDeviceId(), hum.getRssi(), hum.isHumidify(), hum.getLed1(),
+        hum.getLed2());
   }
 
   public static void logGroupRemove(Group group) {
     info(group, "DESTROY");
-  }
-
-  public static void info(Object... elements) {
-    String info = join(elements);
-    Mobifume.getInstance().getLogger().info(info);
-    System.out.println(info);
   }
 }

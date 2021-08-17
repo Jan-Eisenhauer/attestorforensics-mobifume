@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Text?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" minWidth="300.0" spacing="16.0" styleClass="dialog"
       xmlns="http://javafx.com/javafx/8.0.191"
-      fx:controller="com.attestorforensics.mobifumecore.controller.dialog.ConfirmController">
+      fx:controller="com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController">
     <children>
         <Text fx:id="title" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="dialogTitle" AnchorPane.leftAnchor="0.0"
               AnchorPane.topAnchor="0.0"/>
@@ -16,7 +16,7 @@
               AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="48.0"/>
         <AnchorPane>
             <children>
-                <Button fx:id="cancel" cancelButton="true" visible="false" mnemonicParsing="false" onAction="#onCancel"
+                <Button fx:id="cancel" cancelButton="true" mnemonicParsing="false" onAction="#onCancel"
                         prefHeight="48.0" prefWidth="128.0" text="%dialog.button.cancel" AnchorPane.bottomAnchor="0.0"
                         AnchorPane.rightAnchor="168.0" AnchorPane.topAnchor="0.0"/>
                 <Button defaultButton="true" mnemonicParsing="false" onAction="#onOk" prefHeight="48.0"

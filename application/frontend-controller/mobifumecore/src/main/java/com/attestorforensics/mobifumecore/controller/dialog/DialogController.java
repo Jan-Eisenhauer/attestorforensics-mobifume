@@ -1,5 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.dialog;
 
-public interface DialogController {
+import com.attestorforensics.mobifumecore.controller.ChildStageController;
+
+public abstract class DialogController extends ChildStageController {
 
 }

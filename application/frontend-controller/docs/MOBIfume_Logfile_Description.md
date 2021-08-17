@@ -193,7 +193,7 @@ Wird bei jedem Zustandswechsel des Prozesses ausgegeben.
 - rssi (int): Verbindungsstärke zum Router (Wlan); je näher an 0, desto besser die Verbindung
 - temperature (double): Aktuell gemessene Raumtemperatur (-128: Sensorfehler)
 - humidity (double): Aktuell gemessene Raumluftfeuchtigkeit (-128: Sensorfehler)
-- heater-setpoint (int): Eingestellte Soll-Heizplattentemperatur
+- heater-setpoint (double): Eingestellte Soll-Heizplattentemperatur
 - heater-temperature (double): Aktuelle Heizplattentemperatur (-128: Sensorfehler)
 - latch (int): Zustand der Verriegelung für die Filterung/Reinigung
   - -1: In Bewegung
@@ -228,7 +228,7 @@ Wenn ein Gerät die Verbindung verloren hatte und nun wieder verbunden ist, wird
 
 ### Soll-Heizplattentemperatur geändert
 > UPDATE_HEATERSETPOINT;{heater-setpoint}
-- heater-setpoint (double): Neue Soll-Heizplattentemperatur
+- heater-setpoint (int): Neue Soll-Heizplattentemperatur
 
 ### Heizdauer update
 > UPDATE_HEATTIMER;{evaporate-starttime};{heat-duration}

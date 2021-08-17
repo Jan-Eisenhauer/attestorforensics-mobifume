@@ -1,26 +1,25 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
-import com.attestorforensics.mobifumecore.controller.Controller;
-import com.attestorforensics.mobifumecore.controller.dialog.InfoBoxDialog;
+import com.attestorforensics.mobifumecore.controller.ItemController;
+import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
+import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.util.NavigableMap;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class GroupBaseItemController extends Controller {
+public class GroupBaseItemController extends ItemController {
 
   private Group group;
   private Base base;
@@ -39,6 +38,7 @@ public class GroupBaseItemController extends Controller {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   public Base getBase() {
@@ -71,9 +71,15 @@ public class GroupBaseItemController extends Controller {
   }
 
   @FXML
-  public void onErrorInfo(ActionEvent event) {
-    new InfoBoxDialog(((Node) event.getSource()).getScene().getWindow(), errorIcon,
-        errors.lastEntry().getValue(), null);
+  public void onErrorInfo() {
+    ErrorWarning errorWarning = errors.lastEntry().getValue();
+    if (errorWarning.isError()) {
+      this.<ErrorDetailBoxController>loadAndShowDetailBox("ErrorDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setErrorMessage(errorWarning.getMessage()));
+    } else {
+      this.<WarningDetailBoxController>loadAndShowDetailBox("WarningDetailBox.fxml", errorIcon)
+          .thenAccept(controller -> controller.setWarningMessage(errorWarning.getMessage()));
+    }
   }
 
   public void showError(String errorMessage, boolean isError, ItemErrorType errorType) {

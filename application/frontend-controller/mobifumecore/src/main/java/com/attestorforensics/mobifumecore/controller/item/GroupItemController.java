@@ -1,9 +1,10 @@
 package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.controller.Controller;
-import com.attestorforensics.mobifumecore.controller.GroupController;
-import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialog;
+import com.attestorforensics.mobifumecore.controller.ItemController;
+import com.attestorforensics.mobifumecore.controller.group.GroupController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
+import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
@@ -14,7 +15,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -22,7 +22,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
-public class GroupItemController extends Controller {
+public class GroupItemController extends ItemController {
 
   private Group group;
 
@@ -38,6 +38,7 @@ public class GroupItemController extends Controller {
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
+    // nothing to initialize
   }
 
   public Group getGroup() {
@@ -66,11 +67,11 @@ public class GroupItemController extends Controller {
   }
 
   private void loadGroupView() {
-    this.<GroupController>loadView("Group.fxml").thenAccept(groupController -> {
-      this.groupController = groupController;
-      Parent groupRoot = groupController.getRoot();
-      groupController.setGroup(group);
-      groupRoot.getProperties().put("controller", groupController);
+    this.<GroupController>loadView("Group.fxml").thenAccept(controller -> {
+      this.groupController = controller;
+      Parent groupRoot = controller.getRoot();
+      controller.setGroup(group);
+      groupRoot.getProperties().put("controller", controller);
     });
   }
 
@@ -83,7 +84,7 @@ public class GroupItemController extends Controller {
         int humidity = (int) group.getHumidity();
         status.setText(LocaleManager.getInstance()
             .getString("group.status.humidify", humidity >= 0 ? humidity : "-",
-                (int) group.getSettings().getHumidifyMax()));
+                group.getSettings().getHumidifyMax()));
         break;
       case EVAPORATE:
         long timePassedEvaporate = System.currentTimeMillis() - group.getEvaporateStartTime();
@@ -102,7 +103,7 @@ public class GroupItemController extends Controller {
       case PURGE:
         long timePassedPurge = System.currentTimeMillis() - group.getPurgeStartTime();
         long countdownPurge =
-            group.getSettings().getPurgeTimer() * 60 * 1000 - timePassedPurge + 1000;
+            group.getSettings().getPurgeTimer() * 60 * 1000L - timePassedPurge + 1000L;
         Date datePurge = new Date(countdownPurge - 1000 * 60 * 60L);
         String formattedPurge;
         if (datePurge.getTime() < 0) {
@@ -145,23 +146,25 @@ public class GroupItemController extends Controller {
   }
 
   @FXML
-  public void onRemove(ActionEvent event) {
+  public void onRemove() {
     Sound.click();
 
-    new ConfirmDialog(((Node) event.getSource()).getScene().getWindow(),
-        LocaleManager.getInstance().getString("dialog.group.remove.title", group.getName()),
-        LocaleManager.getInstance()
-            .getString("dialog.group.remove.content",
-                group.getName() + " - " + group.getSettings().getCycleCount()), true, accepted -> {
-      if (Boolean.FALSE.equals(accepted)) {
-        return;
-      }
+    this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
+      controller.setCallback(confirmResult -> {
+        if (confirmResult == ConfirmResult.CONFIRM) {
+          if (Objects.nonNull(statusUpdateTask) && !statusUpdateTask.isDone()) {
+            statusUpdateTask.cancel(false);
+          }
 
-      if (Objects.nonNull(statusUpdateTask) && !statusUpdateTask.isDone()) {
-        statusUpdateTask.cancel(false);
-      }
+          Mobifume.getInstance().getModelManager().getGroupPool().removeGroup(group);
+        }
+      });
 
-      Mobifume.getInstance().getModelManager().getGroupPool().removeGroup(group);
+      controller.setTitle(
+          LocaleManager.getInstance().getString("dialog.group.remove.title", group.getName()));
+      controller.setContent(LocaleManager.getInstance()
+          .getString("dialog.group.remove.content",
+              group.getName() + " - " + group.getSettings().getCycleCount()));
     });
   }
 }

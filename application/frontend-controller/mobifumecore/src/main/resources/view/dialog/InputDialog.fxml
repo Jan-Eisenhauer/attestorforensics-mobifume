@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" spacing="16.0" styleClass="dialog" xmlns="http://javafx.com/javafx/8.0.191"
-      fx:controller="com.attestorforensics.mobifumecore.controller.dialog.InputController">
+      fx:controller="com.attestorforensics.mobifumecore.controller.dialog.InputDialogController">
     <children>
         <Text fx:id="title" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="dialogTitle" AnchorPane.leftAnchor="0.0"
               AnchorPane.topAnchor="0.0"/>
