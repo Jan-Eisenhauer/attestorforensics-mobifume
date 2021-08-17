@@ -58,10 +58,13 @@ public class ServiceHumItemController extends ServiceItemController {
     rssi.setText(hum.getRssi() + "");
     humidify.setText(LocaleManager.getInstance()
         .getString("support.status.humidify.value", hum.isHumidify() ? 1 : 0));
-    led1.setText(LocaleManager.getInstance().getString("support.status.led.value", hum.getLed1()));
-    led2.setText(LocaleManager.getInstance().getString("support.status.led.value", hum.getLed2()));
-    overTemperature.setText(hum.isOverHeated() ? LocaleManager.getInstance()
-        .getString("support.status.overtemperature") : "");
+    led1.setText(
+        LocaleManager.getInstance().getString("support.status.led.value", hum.getLed1().ordinal()));
+    led2.setText(
+        LocaleManager.getInstance().getString("support.status.led.value", hum.getLed2().ordinal()));
+    overTemperature.setText(
+        hum.isOverHeated() ? LocaleManager.getInstance().getString("support.status.overtemperature")
+            : "");
   }
 
   @Override

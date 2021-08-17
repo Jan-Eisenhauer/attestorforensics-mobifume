@@ -97,7 +97,7 @@ public class ServiceBaseItemController extends ServiceItemController {
     setpoint.setText(base.getHeaterSetpoint() + "°C");
     heater.setText(base.getHeaterTemperature() + "°C");
     latch.setText(
-        LocaleManager.getInstance().getString("support.status.latch.value", base.getLatch()));
+        LocaleManager.getInstance().getString("support.status.latch.value", base.getLatch().ordinal()));
   }
 
   @Override
