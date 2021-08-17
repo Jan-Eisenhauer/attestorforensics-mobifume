@@ -23,7 +23,7 @@ public class BaseRequestCalibrationData implements OutgoingMessage {
 
   @Override
   public String payload() {
-    // unnecessary parameter '1' is a workaround for a bug in base version < 5 which required a
+    // unnecessary parameter '1' is a workaround for a bug in the base firmware which requires a
     // parameter
     return "G;1";
   }
