@@ -25,7 +25,7 @@ public class DeviceItemControllerHolder {
     return controllers.get(device);
   }
 
-  void addController(Device device, DeviceItemController controller) {
+  public void addController(Device device, DeviceItemController controller) {
     controllers.put(device, controller);
   }
 

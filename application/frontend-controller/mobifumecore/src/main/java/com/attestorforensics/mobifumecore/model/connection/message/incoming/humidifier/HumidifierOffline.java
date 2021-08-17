@@ -16,7 +16,7 @@ public class HumidifierOffline implements IncomingMessage {
     this.deviceId = deviceId;
   }
 
-  public static HumidifierOffline createFromPayload(String topic, String[] arguments) {
+  public static HumidifierOffline createFromPayload(String topic) {
     String deviceId = topic.substring(TOPIC_PREFIX.length());
     return new HumidifierOffline(deviceId);
   }
@@ -41,7 +41,7 @@ public class HumidifierOffline implements IncomingMessage {
     @Override
     public Optional<HumidifierOffline> create(String topic, String[] arguments) {
       if (messagePattern.matches(topic, arguments)) {
-        return Optional.of(HumidifierOffline.createFromPayload(topic, arguments));
+        return Optional.of(HumidifierOffline.createFromPayload(topic));
       }
 
       return Optional.empty();

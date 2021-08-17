@@ -1,18 +1,19 @@
 package com.attestorforensics.mobifumecore.model.element.filter;
 
 import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MobiFilter implements Filter {
+public class MobiFilter implements Filter, Serializable {
 
-  private final transient long warningTime = 1000L * 60 * 60 * 24 * 30 * 11; // ~ 11 months
-  private final transient long outOfTime = 1000L * 60 * 60 * 24 * 365; // ~ 12 months
+  private static final transient long WARNING_TIME = 1000L * 60 * 60 * 24 * 30 * 11; // ~ 11 months
+  private static final transient long OUT_OF_TIME = 1000L * 60 * 60 * 24 * 365; // ~ 12 months
   private final String id;
   private final long date;
   private transient FilterFileHandler fileHandler;
-  private List<RunProcess> runs = new ArrayList<>();
+  private final List<RunProcess> runs = new ArrayList<>();
   private boolean removed;
 
   public MobiFilter(FilterFileHandler fileHandler, String id) {
@@ -76,13 +77,13 @@ public class MobiFilter implements Filter {
   @Override
   public boolean isTimeWarning() {
     long lifeTime = (System.currentTimeMillis() - date);
-    return lifeTime > warningTime;
+    return lifeTime > WARNING_TIME;
   }
 
   @Override
   public boolean isOutOfTime() {
     long lifeTime = System.currentTimeMillis() - date;
-    return lifeTime > outOfTime;
+    return lifeTime > OUT_OF_TIME;
   }
 
   @Override
@@ -91,7 +92,7 @@ public class MobiFilter implements Filter {
       return false;
     }
     if (isOutOfTime()) {
-      long outOfTimeDate = date + outOfTime;
+      long outOfTimeDate = date + OUT_OF_TIME;
       return getRuns().stream().noneMatch(run -> run.getDate() > outOfTimeDate);
     }
     return true;

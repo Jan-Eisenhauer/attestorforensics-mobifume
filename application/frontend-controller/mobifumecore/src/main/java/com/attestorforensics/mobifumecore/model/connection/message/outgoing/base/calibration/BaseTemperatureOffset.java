@@ -25,6 +25,6 @@ public class BaseTemperatureOffset implements OutgoingMessage {
 
   @Override
   public String payload() {
-    return "Y;" + temperatureOffset;
+    return "Z;" + temperatureOffset;
   }
 }

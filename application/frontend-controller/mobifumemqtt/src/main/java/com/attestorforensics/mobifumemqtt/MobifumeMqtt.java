@@ -21,8 +21,6 @@ public class MobifumeMqtt {
   static final String USER = "mobifume";
   static final String PASSWORD = "0123456789";
 
-  private MqttClient client;
-
   public static void main(String[] args) {
     MobifumeMqtt mobifumeMqtt = new MobifumeMqtt();
     mobifumeMqtt.start();
@@ -32,6 +30,7 @@ public class MobifumeMqtt {
     String clientId = MqttClient.generateClientId();
     MqttDefaultFilePersistence persistence = prepareDirectory();
 
+    MqttClient client;
     try {
       client = new MqttClient(CONNECTION_TYPE + BROKER_IP + ":" + PORT, clientId, persistence);
     } catch (MqttException e) {
@@ -41,7 +40,7 @@ public class MobifumeMqtt {
 
     ClientConnection clientConnection = MqttClientConnection.create(client);
     MessageSender messageSender = MqttMessageSender.create(client);
-    MessageRouter messageRouter = MqttMessageRouter.create(messageSender, clientConnection);
+    MessageRouter messageRouter = MqttMessageRouter.create(clientConnection);
     MqttCallback mqttCallback = MqttMessageCallback.create(messageRouter);
     client.setCallback(mqttCallback);
 
@@ -49,7 +48,7 @@ public class MobifumeMqtt {
 
     ScheduledExecutorService scheduledExecutorService =
         Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-    Console console = Console.create(messageSender, messageRouter, scheduledExecutorService);
+    Console console = Console.create(messageSender, scheduledExecutorService);
     console.read();
   }
 

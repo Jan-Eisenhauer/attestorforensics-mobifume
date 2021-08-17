@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.model.event;
 
-import com.attestorforensics.mobifumecore.model.listener.Event;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.listener.Event;
 
 public class DeviceConnectionEvent implements Event {
 

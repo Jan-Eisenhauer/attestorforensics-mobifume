@@ -37,7 +37,7 @@ public class FileApplicationLock implements ApplicationLock {
       e.printStackTrace();
     }
 
-    final FileLock finalLock = lock;
+    FileLock finalLock = lock;
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       if (finalLock != null && finalLock.isValid()) {

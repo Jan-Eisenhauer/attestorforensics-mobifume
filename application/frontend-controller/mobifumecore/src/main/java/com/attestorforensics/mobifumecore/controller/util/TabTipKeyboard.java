@@ -11,9 +11,12 @@ public class TabTipKeyboard {
 
   private static ScheduledFuture<?> closeTask;
 
+  private TabTipKeyboard() {
+  }
+
   public static void onFocus(TextField field) {
     field.focusedProperty().addListener((observable, oldValue, focus) -> {
-      if (Boolean.TRUE.equals(focus)) {
+      if (focus != null && focus) {
         open();
       } else {
         close();
@@ -28,7 +31,7 @@ public class TabTipKeyboard {
 
     Runtime rt = Runtime.getRuntime();
     String[] commands =
-        {"cmd", "/c", "\"C:\\Program Files\\Common Files\\microsoft shared\\ink\\TabTip.exe"};
+      {"cmd", "/c", "\"C:\\Program Files\\Common Files\\microsoft shared\\ink\\TabTip.exe"};
     try {
       rt.exec(commands);
     } catch (IOException e) {
