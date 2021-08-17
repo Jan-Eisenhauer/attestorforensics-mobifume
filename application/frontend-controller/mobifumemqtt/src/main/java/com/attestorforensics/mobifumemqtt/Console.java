@@ -76,6 +76,9 @@ public class Console {
       case "sim":
         onSim();
         break;
+      case "calib":
+        onCalibdataRequest(arguments);
+        break;
       default:
         System.out.println("Unknown command");
         break;
@@ -140,6 +143,17 @@ public class Console {
     }));
 
     startPingsTask(baseId, humId);
+  }
+
+  private void onCalibdataRequest(String[] arguments) {
+    if (arguments.length != 1) {
+      System.out.println("Usage: calib <id>");
+      return;
+    }
+
+    String deviceId = arguments[0];
+    messageSender.sendRawMessage("/MOBIfume/base/cmd/" + deviceId, "G");
+    // raw /MOBIfume/base/cmd/node-2370677 G;1
   }
 
   private void startPingsTask(String baseId, String humId) {
