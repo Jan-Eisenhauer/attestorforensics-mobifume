@@ -152,8 +152,7 @@ public class Console {
     }
 
     String deviceId = arguments[0];
-    messageSender.sendRawMessage("/MOBIfume/base/cmd/" + deviceId, "G");
-    // raw /MOBIfume/base/cmd/node-2370677 G;1
+    messageSender.sendRawMessage("/MOBIfume/base/cmd/" + deviceId, "G;1");
   }
 
   private void startPingsTask(String baseId, String humId) {
