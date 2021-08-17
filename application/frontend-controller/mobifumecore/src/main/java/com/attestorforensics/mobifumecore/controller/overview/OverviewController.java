@@ -160,7 +160,7 @@ public class OverviewController extends Controller {
           .forEach(node -> nodeDeviceItemControllerPool.get(node).clearGroup());
 
       updateOrder();
-    });g
+    });
   }
 
   void onBrokerConnected() {
