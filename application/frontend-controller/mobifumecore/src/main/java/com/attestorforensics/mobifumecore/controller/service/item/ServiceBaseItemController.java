@@ -86,6 +86,8 @@ public class ServiceBaseItemController extends ServiceItemController {
     setpoint.setText("-");
     heater.setText("-");
     latch.setText("-");
+
+    updateCalibration();
   }
 
   @Override
