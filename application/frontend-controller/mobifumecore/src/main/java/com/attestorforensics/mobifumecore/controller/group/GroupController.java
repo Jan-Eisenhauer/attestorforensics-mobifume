@@ -103,10 +103,15 @@ public class GroupController extends CloseableController {
   private XYChart.Series<Double, Double> dataSeries;
   private long latestDataTimestamp;
 
+  private final HumidifyListener humidifyListener = HumidifyListener.create(this);
+  private final EvaporateListener evaporateListener = EvaporateListener.create(this);
+  private final PurgeListener purgeListener = PurgeListener.create(this);
+
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
     // nothing to initialize
+    registerListeners();
   }
 
   public void setGroup(Group group) {
@@ -400,6 +405,20 @@ public class GroupController extends CloseableController {
         .filtered(child -> child.getProperties().containsKey("controller"))
         .forEach(child -> child.getProperties().remove("controller"));
     filters.getChildren().clear();
+
+    unregisterListeners();
+  }
+
+  private void registerListeners() {
+    Mobifume.getInstance().getEventDispatcher().registerListener(humidifyListener);
+    Mobifume.getInstance().getEventDispatcher().registerListener(evaporateListener);
+    Mobifume.getInstance().getEventDispatcher().registerListener(purgeListener);
+  }
+
+  private void unregisterListeners() {
+    Mobifume.getInstance().getEventDispatcher().unregisterListener(humidifyListener);
+    Mobifume.getInstance().getEventDispatcher().unregisterListener(evaporateListener);
+    Mobifume.getInstance().getEventDispatcher().unregisterListener(purgeListener);
   }
 
   @FXML

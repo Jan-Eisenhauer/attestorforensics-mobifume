@@ -1,7 +1,5 @@
-package com.attestorforensics.mobifumecore.controller.listener;
+package com.attestorforensics.mobifumecore.controller.group;
 
-import com.attestorforensics.mobifumecore.controller.group.GroupController;
-import com.attestorforensics.mobifumecore.controller.group.GroupControllerHolder;
 import com.attestorforensics.mobifumecore.model.event.PurgeEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
@@ -9,11 +7,19 @@ import javafx.application.Platform;
 
 public class PurgeListener implements Listener {
 
+  private final GroupController groupController;
+
+  private PurgeListener(GroupController groupController) {
+    this.groupController = groupController;
+  }
+
+  static PurgeListener create(GroupController groupController) {
+    return new PurgeListener(groupController);
+  }
+
   @EventHandler
   public void onPurge(PurgeEvent event) {
     Platform.runLater(() -> {
-      GroupController groupController = GroupControllerHolder.getInstance()
-          .getController(event.getGroup());
       switch (event.getStatus()) {
         case STARTED:
           groupController.clearActionPane();
