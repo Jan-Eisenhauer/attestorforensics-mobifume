@@ -2,9 +2,9 @@ package com.attestorforensics.mobifumecore.controller.item;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.ItemController;
-import com.attestorforensics.mobifumecore.controller.group.GroupController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
+import com.attestorforensics.mobifumecore.controller.group.GroupController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
@@ -48,11 +49,12 @@ public class GroupItemController extends ItemController {
   public void setGroup(Group group, String color) {
     this.group = group;
 
+    groupPane.setVisible(false);
     groupPane.setText(group.getName() + " - " + group.getSettings().getCycleCount());
-
     Platform.runLater(() -> {
       Node title = groupPane.lookup(".title");
       title.setStyle("-fx-background-color: " + color);
+      groupPane.setVisible(true);
     });
 
     statusUpdate();
