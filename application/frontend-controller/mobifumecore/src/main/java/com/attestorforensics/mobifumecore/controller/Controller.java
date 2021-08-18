@@ -83,7 +83,7 @@ public abstract class Controller implements Initializable {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
       T controller = loadResource(VIEW_RESOURCE + "items/" + itemResource);
-      controller.setParent(this);
+      controller.setParentController(this);
       controller.onLoad();
       completableFuture.complete(controller);
     });
