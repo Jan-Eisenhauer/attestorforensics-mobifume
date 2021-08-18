@@ -19,6 +19,10 @@ public class HumidifyListener implements Listener {
 
   @EventHandler
   public void onHumidify(HumidifyEvent event) {
+    if (event.getGroup() != groupController.getGroup()) {
+      return;
+    }
+
     Platform.runLater(() -> {
       switch (event.getStatus()) {
         case STARTED:

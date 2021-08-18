@@ -19,6 +19,10 @@ public class PurgeListener implements Listener {
 
   @EventHandler
   public void onPurge(PurgeEvent event) {
+    if (event.getGroup() != groupController.getGroup()) {
+      return;
+    }
+
     Platform.runLater(() -> {
       switch (event.getStatus()) {
         case STARTED:

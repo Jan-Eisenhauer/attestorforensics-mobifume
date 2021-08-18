@@ -19,9 +19,11 @@ public class EvaporateListener implements Listener {
 
   @EventHandler
   public void onEvaporate(EvaporateEvent event) {
+    if (event.getGroup() != groupController.getGroup()) {
+      return;
+    }
+
     Platform.runLater(() -> {
-      GroupController groupController =
-          GroupControllerHolder.getInstance().getController(event.getGroup());
       if (event.getStatus() == EvaporateEvent.EvaporateStatus.STARTED) {
         groupController.clearActionPane();
         groupController.getEvaporatePane().setVisible(true);
