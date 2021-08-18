@@ -38,11 +38,18 @@ public abstract class Controller implements Initializable {
     this.root = root;
   }
 
+  protected void onLoad() {
+  }
+
+  protected void onShow() {
+  }
+
   protected <T extends Controller> CompletableFuture<T> openView(T controller) {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
-      SceneTransition.playForward(getRoot().getScene(), controller.getRoot());
       completableFuture.complete(controller);
+      controller.onShow();
+      SceneTransition.playForward(getRoot().getScene(), controller.getRoot());
     });
 
     return completableFuture;
@@ -52,8 +59,10 @@ public abstract class Controller implements Initializable {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
       T controller = loadResource(VIEW_RESOURCE + viewResource);
-      SceneTransition.playForward(getRoot().getScene(), controller.getRoot());
+      controller.onLoad();
       completableFuture.complete(controller);
+      controller.onShow();
+      SceneTransition.playForward(getRoot().getScene(), controller.getRoot());
     });
 
     return completableFuture;
@@ -63,6 +72,7 @@ public abstract class Controller implements Initializable {
     CompletableFuture<T> completableFuture = new CompletableFuture<>();
     Platform.runLater(() -> {
       T controller = loadResource(VIEW_RESOURCE + viewResource);
+      controller.onLoad();
       completableFuture.complete(controller);
     });
 
@@ -74,12 +84,12 @@ public abstract class Controller implements Initializable {
     Platform.runLater(() -> {
       T controller = loadResource(VIEW_RESOURCE + "items/" + itemResource);
       controller.setParent(this);
+      controller.onLoad();
       completableFuture.complete(controller);
     });
 
     return completableFuture;
   }
-
 
   protected <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
       String dialogResource) {
@@ -87,7 +97,9 @@ public abstract class Controller implements Initializable {
     Platform.runLater(() -> {
       T controller = loadResource("view/dialog/" + dialogResource);
       createStage(controller);
+      controller.onLoad();
       completableFuture.complete(controller);
+      controller.onShow();
       openDialog(controller);
     });
 
@@ -105,7 +117,9 @@ public abstract class Controller implements Initializable {
       stage.setX(bounds.getMaxX());
       stage.setY((bounds.getMaxY() + bounds.getMinY()) * 0.5D - 28);
 
+      controller.onLoad();
       completableFuture.complete(controller);
+      controller.onShow();
       showDetailBox(controller, bounds);
     });
 
@@ -129,14 +143,11 @@ public abstract class Controller implements Initializable {
   }
 
   private void openDialog(ChildStageController controller) {
-    controller.onOpen();
     controller.getStage().show();
     root.getScene().getRoot().setEffect(new ColorAdjust(0, 0, -0.3, 0));
   }
 
   private void showDetailBox(DetailBoxController controller, Bounds bounds) {
-    controller.onOpen();
-
     Stage stage = controller.getStage();
     stage.show();
 

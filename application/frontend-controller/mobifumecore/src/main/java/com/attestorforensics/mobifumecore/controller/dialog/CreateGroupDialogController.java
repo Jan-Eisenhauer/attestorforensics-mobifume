@@ -94,7 +94,7 @@ public class CreateGroupDialogController extends DialogController {
   }
 
   @Override
-  protected void onOpen() {
+  protected void onShow() {
     getStage().setWidth(getStage().getOwner().getWidth() * 0.9);
   }
 
