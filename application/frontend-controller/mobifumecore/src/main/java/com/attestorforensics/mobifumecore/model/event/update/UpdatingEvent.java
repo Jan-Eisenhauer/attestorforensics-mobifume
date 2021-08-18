@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.model.event;
+package com.attestorforensics.mobifumecore.model.event.update;
 
 import com.attestorforensics.mobifumecore.model.listener.Event;
 import com.attestorforensics.mobifumecore.model.update.UpdatingState;

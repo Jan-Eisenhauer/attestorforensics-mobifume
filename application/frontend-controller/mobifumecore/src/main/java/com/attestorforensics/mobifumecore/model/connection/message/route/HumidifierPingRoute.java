@@ -6,7 +6,7 @@ import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
 import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierStatusUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Optional;
 
@@ -45,8 +45,7 @@ public class HumidifierPingRoute implements MessageRoute<HumidifierPing> {
 
     Mobifume.getInstance()
         .getEventDispatcher()
-        .call(new DeviceConnectionEvent(humidifier,
-            DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
+        .call(HumidifierStatusUpdatedEvent.create(humidifier));
 
     Optional<Group> optionalGroup = groupPool.getGroupOfHumidifier(humidifier);
     if (optionalGroup.isPresent()) {

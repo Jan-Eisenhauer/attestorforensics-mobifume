@@ -5,9 +5,13 @@ import com.attestorforensics.mobifumecore.model.connection.wifi.WifiConnection;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
 import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
-import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseDisconnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseLostEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.broker.BrokerConnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.broker.BrokerConnectingEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.broker.BrokerTimeoutEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierDisconnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierLostEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Optional;
 import java.util.Properties;
@@ -86,16 +90,12 @@ class MqttBrokerConnector {
   }
 
   private void establishConnection() {
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new ConnectionEvent(ConnectionStatus.BROKER_CONNECTING));
+    Mobifume.getInstance().getEventDispatcher().call(BrokerConnectingEvent.create());
 
     retryConnectUntilConnected();
     subscribeChannel();
 
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new ConnectionEvent(ConnectionStatus.BROKER_CONNECTED));
+    Mobifume.getInstance().getEventDispatcher().call(BrokerConnectedEvent.create());
   }
 
   private void retryConnectUntilConnected() {
@@ -124,17 +124,13 @@ class MqttBrokerConnector {
     devicePool.getAllBases().forEach(base -> {
       Optional<Group> optionalGroup = groupPool.getGroupOfBase(base);
       if (!optionalGroup.isPresent()) {
-        Mobifume.getInstance()
-            .getEventDispatcher()
-            .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
+        Mobifume.getInstance().getEventDispatcher().call(BaseDisconnectedEvent.create(base));
         devicePool.removeBase(base);
       }
 
       base.setRssi(-100);
       base.setOffline(true);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.LOST));
+      Mobifume.getInstance().getEventDispatcher().call(BaseLostEvent.create(base));
     });
 
     devicePool.getAllHumidifier().forEach(humidifier -> {
@@ -142,21 +138,16 @@ class MqttBrokerConnector {
       if (!optionalGroup.isPresent()) {
         Mobifume.getInstance()
             .getEventDispatcher()
-            .call(new DeviceConnectionEvent(humidifier,
-                DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
+            .call(HumidifierDisconnectedEvent.create(humidifier));
         devicePool.removeHumidifier(humidifier);
       }
 
       humidifier.setRssi(-100);
       humidifier.setOffline(true);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new DeviceConnectionEvent(humidifier, DeviceConnectionEvent.DeviceStatus.LOST));
+      Mobifume.getInstance().getEventDispatcher().call(HumidifierLostEvent.create(humidifier));
     });
 
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new ConnectionEvent(ConnectionStatus.BROKER_CONNECT_TIMEOUT));
+    Mobifume.getInstance().getEventDispatcher().call(BrokerTimeoutEvent.create());
   }
 
   private void subscribeChannel() {

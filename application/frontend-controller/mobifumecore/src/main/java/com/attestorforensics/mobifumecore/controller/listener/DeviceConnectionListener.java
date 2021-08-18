@@ -8,7 +8,10 @@ import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHol
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseLostEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseReconnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierLostEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierReconnectedEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
@@ -17,19 +20,23 @@ import javafx.application.Platform;
 public class DeviceConnectionListener implements Listener {
 
   @EventHandler
-  public void onNodeConnection(DeviceConnectionEvent event) {
-    Platform.runLater(() -> {
-      switch (event.getStatus()) {
-        case LOST:
-          showLostError(event.getDevice());
-          break;
-        case RECONNECT:
-          hideLostError(event.getDevice());
-          break;
-        default:
-          break;
-      }
-    });
+  public void onBaseLost(BaseLostEvent event) {
+    Platform.runLater(() -> showLostError(event.getBase()));
+  }
+
+  @EventHandler
+  public void onHumidifierLost(HumidifierLostEvent event) {
+    Platform.runLater(() -> showLostError(event.getHumidifier()));
+  }
+
+  @EventHandler
+  public void onBaseReconnected(BaseReconnectedEvent event) {
+    Platform.runLater(() -> hideLostError(event.getBase()));
+  }
+
+  @EventHandler
+  public void onHumidifierReconnected(HumidifierReconnectedEvent event) {
+    Platform.runLater(() -> hideLostError(event.getHumidifier()));
   }
 
   private void showLostError(Device device) {

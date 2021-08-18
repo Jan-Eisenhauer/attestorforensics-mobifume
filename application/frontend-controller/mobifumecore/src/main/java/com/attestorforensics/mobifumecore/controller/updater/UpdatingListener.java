@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.controller.updater;
 
-import com.attestorforensics.mobifumecore.model.event.UpdatingEvent;
+import com.attestorforensics.mobifumecore.model.event.update.UpdatingEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 

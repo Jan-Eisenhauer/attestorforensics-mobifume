@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.info;
 
-import com.attestorforensics.mobifumecore.model.event.UpdateAvailableEvent;
-import com.attestorforensics.mobifumecore.model.event.UpdateNotAvailableEvent;
+import com.attestorforensics.mobifumecore.model.event.update.UpdateAvailableEvent;
+import com.attestorforensics.mobifumecore.model.event.update.UpdateRejectedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import javafx.application.Platform;
@@ -24,7 +24,7 @@ public class InfoUpdatingListener implements Listener {
   }
 
   @EventHandler
-  public void onUpdateNotAvailable(UpdateNotAvailableEvent event) {
+  public void onUpdateNotAvailable(UpdateRejectedEvent event) {
     Platform.runLater(infoController::hideUpdateButton);
   }
 }

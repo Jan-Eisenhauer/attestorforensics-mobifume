@@ -6,8 +6,9 @@ import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
-import com.attestorforensics.mobifumecore.model.event.GroupEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseDisconnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.GroupRemovedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierDisconnectedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
@@ -38,23 +39,27 @@ public class RoomPool implements GroupPool {
     ((Room) group).stop();
     List<Device> offlineDevicesInGroup =
         group.getDevices().stream().filter(Device::isOffline).collect(Collectors.toList());
-    offlineDevicesInGroup.forEach(device -> Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(device, DeviceConnectionEvent.DeviceStatus.DISCONNECTED)));
+    // TODO - split bases and humidifiers in group#getBases and group#getHumidifiers
     offlineDevicesInGroup.stream()
         .filter(device -> device.getType() == DeviceType.BASE)
         .map(Base.class::cast)
-        .forEach(devicePool::removeBase);
+        .forEach(base -> {
+          devicePool.removeBase(base);
+          Mobifume.getInstance().getEventDispatcher().call(BaseDisconnectedEvent.create(base));
+        });
     offlineDevicesInGroup.stream()
         .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
         .map(Humidifier.class::cast)
-        .forEach(devicePool::removeHumidifier);
+        .forEach(humidifier -> {
+          devicePool.removeHumidifier(humidifier);
+          Mobifume.getInstance()
+              .getEventDispatcher()
+              .call(HumidifierDisconnectedEvent.create(humidifier));
+        });
 
     groups.remove(group);
     CustomLogger.logGroupRemove(group);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new GroupEvent(group, GroupEvent.GroupStatus.REMOVED));
+    Mobifume.getInstance().getEventDispatcher().call(GroupRemovedEvent.create(group));
   }
 
   @Override

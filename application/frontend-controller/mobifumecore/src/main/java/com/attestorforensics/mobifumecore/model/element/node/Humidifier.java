@@ -5,7 +5,8 @@ import com.attestorforensics.mobifumecore.model.connection.message.MessageSender
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierEnable;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierReset;
 import com.attestorforensics.mobifumecore.model.element.misc.Led;
-import com.attestorforensics.mobifumecore.model.event.WaterErrorEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.error.WaterErrorEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.error.WaterErrorResolvedEvent;
 
 public class Humidifier extends Device {
 
@@ -47,17 +48,13 @@ public class Humidifier extends Device {
       waterState++;
       if (waterState == 5 && !waterEmpty) {
         waterEmpty = true;
-        Mobifume.getInstance()
-            .getEventDispatcher()
-            .call(new WaterErrorEvent(this, WaterErrorEvent.WaterStatus.EMPTY));
+        Mobifume.getInstance().getEventDispatcher().call(WaterErrorEvent.create(this));
       }
     } else if (waterState > 0) {
       waterState--;
       if (waterState == 0 && waterEmpty) {
         waterEmpty = false;
-        Mobifume.getInstance()
-            .getEventDispatcher()
-            .call(new WaterErrorEvent(this, WaterErrorEvent.WaterStatus.FILLED));
+        Mobifume.getInstance().getEventDispatcher().call(WaterErrorResolvedEvent.create(this));
       }
     }
   }

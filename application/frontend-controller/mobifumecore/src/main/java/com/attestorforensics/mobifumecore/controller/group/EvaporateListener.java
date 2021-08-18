@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.group;
 
-import com.attestorforensics.mobifumecore.model.event.EvaporateEvent;
+import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateFinishedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateStartedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import javafx.application.Platform;
@@ -18,19 +19,25 @@ public class EvaporateListener implements Listener {
   }
 
   @EventHandler
-  public void onEvaporate(EvaporateEvent event) {
+  public void onEvaporateStarted(EvaporateStartedEvent event) {
     if (event.getGroup() != groupController.getGroup()) {
       return;
     }
 
     Platform.runLater(() -> {
-      if (event.getStatus() == EvaporateEvent.EvaporateStatus.STARTED) {
-        groupController.clearActionPane();
-        groupController.getEvaporatePane().setVisible(true);
-        groupController.setupEvaporateTimer();
-      }
-
+      groupController.clearActionPane();
+      groupController.getEvaporatePane().setVisible(true);
+      groupController.setupEvaporateTimer();
       groupController.updateStatus();
     });
+  }
+
+  @EventHandler
+  public void onEvaporateFinished(EvaporateFinishedEvent event) {
+    if (event.getGroup() != groupController.getGroup()) {
+      return;
+    }
+
+    Platform.runLater(groupController::updateStatus);
   }
 }

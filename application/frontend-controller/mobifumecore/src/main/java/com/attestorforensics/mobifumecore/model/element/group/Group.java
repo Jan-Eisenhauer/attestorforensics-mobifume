@@ -52,8 +52,6 @@ public interface Group {
 
   long getPurgeStartTime();
 
-  void reset();
-
   void cancel();
 
   void updateHeaterSetpoint();

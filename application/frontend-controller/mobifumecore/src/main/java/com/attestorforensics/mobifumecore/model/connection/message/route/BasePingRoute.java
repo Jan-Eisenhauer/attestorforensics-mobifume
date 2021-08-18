@@ -7,9 +7,15 @@ import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.event.BaseErrorEvent;
-import com.attestorforensics.mobifumecore.model.event.BaseErrorResolvedEvent;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseStatusUpdatedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.error.HeaterErrorEvent;
+import com.attestorforensics.mobifumecore.model.event.base.error.HeaterErrorResolvedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.error.HumidityErrorEvent;
+import com.attestorforensics.mobifumecore.model.event.base.error.HumidityErrorResolvedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.error.LatchErrorEvent;
+import com.attestorforensics.mobifumecore.model.event.base.error.LatchErrorResolvedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.error.TemperatureErrorEvent;
+import com.attestorforensics.mobifumecore.model.event.base.error.TemperatureErrorResolvedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Optional;
 
@@ -48,9 +54,7 @@ public class BasePingRoute implements MessageRoute<BasePing> {
     updateHeaterTemperature(message, base);
     updateLatch(message, base);
 
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.STATUS_UPDATED));
+    Mobifume.getInstance().getEventDispatcher().call(BaseStatusUpdatedEvent.create(base));
 
     Optional<Group> optionalGroup = groupPool.getGroupOfBase(base);
     if (optionalGroup.isPresent()) {
@@ -65,15 +69,11 @@ public class BasePingRoute implements MessageRoute<BasePing> {
     double oldTemperature = base.getTemperature();
     base.setTemperature(temperature);
     if (temperature == -128 && oldTemperature != -128) {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.TEMPERATURE));
+      Mobifume.getInstance().getEventDispatcher().call(TemperatureErrorEvent.create(base));
     }
 
     if (oldTemperature == -128 && temperature != -128) {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.TEMPERATURE));
+      Mobifume.getInstance().getEventDispatcher().call(TemperatureErrorResolvedEvent.create(base));
     }
   }
 
@@ -82,15 +82,11 @@ public class BasePingRoute implements MessageRoute<BasePing> {
     double oldHumidity = base.getHumidity();
     base.setHumidity(humidity);
     if (humidity == -128 && oldHumidity != -128) {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.HUMIDITY));
+      Mobifume.getInstance().getEventDispatcher().call(HumidityErrorEvent.create(base));
     }
 
     if (oldHumidity == -128 && humidity != -128) {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.HUMIDITY));
+      Mobifume.getInstance().getEventDispatcher().call(HumidityErrorResolvedEvent.create(base));
     }
   }
 
@@ -99,14 +95,10 @@ public class BasePingRoute implements MessageRoute<BasePing> {
     double oldHeaterTemperature = base.getHeaterTemperature();
     base.setHeaterTemperature(heaterTemperature);
     if (heaterTemperature == -128 && oldHeaterTemperature != -128) {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.HEATER));
+      Mobifume.getInstance().getEventDispatcher().call(HeaterErrorEvent.create(base));
     }
     if (oldHeaterTemperature == -128 && heaterTemperature != -128) {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.HEATER));
+      Mobifume.getInstance().getEventDispatcher().call(HeaterErrorResolvedEvent.create(base));
     }
   }
 
@@ -117,17 +109,13 @@ public class BasePingRoute implements MessageRoute<BasePing> {
     if ((latch == Latch.ERROR_OTHER || latch == Latch.ERROR_NOT_REACHED
         || latch == Latch.ERROR_BLOCKED) && (oldLatch != Latch.ERROR_OTHER
         && oldLatch != Latch.ERROR_NOT_REACHED && oldLatch != Latch.ERROR_BLOCKED)) {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new BaseErrorEvent(base, BaseErrorEvent.ErrorType.LATCH));
+      Mobifume.getInstance().getEventDispatcher().call(LatchErrorEvent.create(base));
     }
 
     if ((latch != Latch.ERROR_OTHER && latch != Latch.ERROR_NOT_REACHED
         && latch != Latch.ERROR_BLOCKED) && (oldLatch == Latch.ERROR_OTHER
         || oldLatch == Latch.ERROR_NOT_REACHED || oldLatch == Latch.ERROR_BLOCKED)) {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new BaseErrorResolvedEvent(base, BaseErrorEvent.ErrorType.LATCH));
+      Mobifume.getInstance().getEventDispatcher().call(LatchErrorResolvedEvent.create(base));
     }
   }
 }

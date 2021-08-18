@@ -1,9 +1,9 @@
 package com.attestorforensics.mobifumecore.model.update;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.event.UpdateAvailableEvent;
-import com.attestorforensics.mobifumecore.model.event.UpdateNotAvailableEvent;
-import com.attestorforensics.mobifumecore.model.event.UpdatingEvent;
+import com.attestorforensics.mobifumecore.model.event.update.UpdateAvailableEvent;
+import com.attestorforensics.mobifumecore.model.event.update.UpdateRejectedEvent;
+import com.attestorforensics.mobifumecore.model.event.update.UpdatingEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventDispatcher;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import java.io.File;
@@ -110,7 +110,7 @@ public class Updater {
     if (!isUpdateDeviceConnected()) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventDispatcher.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateRejectedEvent.create());
       }
 
       return;
@@ -121,7 +121,7 @@ public class Updater {
     if (!usbDisplayName.equals(updateDisplayName)) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventDispatcher.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateRejectedEvent.create());
       }
 
       return;
@@ -139,7 +139,7 @@ public class Updater {
       e.printStackTrace();
       if (updateAvailable) {
         updateAvailable = false;
-        eventDispatcher.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateRejectedEvent.create());
       }
 
       return;
@@ -148,7 +148,7 @@ public class Updater {
     if (updateProjectProperties == null) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventDispatcher.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateRejectedEvent.create());
       }
 
       return;
@@ -158,7 +158,7 @@ public class Updater {
     if (updateVersion == null || projectProperties.getProperty("version").equals(updateVersion)) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventDispatcher.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateRejectedEvent.create());
       }
 
       return;
@@ -170,7 +170,7 @@ public class Updater {
         .equals(updateProjectProperties.getProperty("groupId"))) {
       if (updateAvailable) {
         updateAvailable = false;
-        eventDispatcher.call(UpdateNotAvailableEvent.create());
+        eventDispatcher.call(UpdateRejectedEvent.create());
       }
 
       return;

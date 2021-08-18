@@ -6,10 +6,16 @@ import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.event.EvaporateEvent;
-import com.attestorforensics.mobifumecore.model.event.GroupEvent;
-import com.attestorforensics.mobifumecore.model.event.HumidifyEvent;
-import com.attestorforensics.mobifumecore.model.event.PurgeEvent;
+import com.attestorforensics.mobifumecore.model.event.group.GroupCanceledEvent;
+import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateFinishedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateStartedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.humidify.HumidifyFinishedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.humidify.HumidifyStartedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.purge.HumidifyDisabledEvent;
+import com.attestorforensics.mobifumecore.model.event.group.purge.HumidifyEnabledEvent;
+import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeFinishedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeStartedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.setup.SetupStartedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.List;
@@ -120,9 +126,7 @@ public class Room implements Group {
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     this.getDevices().forEach(Device::reset);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new GroupEvent(this, GroupEvent.GroupStatus.SETUP_STARTED));
+    Mobifume.getInstance().getEventDispatcher().call(SetupStartedEvent.create(this));
   }
 
   @Override
@@ -130,6 +134,7 @@ public class Room implements Group {
     if (status != GroupStatus.START) {
       return;
     }
+
     status = GroupStatus.HUMIDIFY;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
@@ -147,9 +152,7 @@ public class Room implements Group {
 
     humidifying = false;
     setHumidifying(true);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new HumidifyEvent(this, HumidifyEvent.HumidifyStatus.STARTED));
+    Mobifume.getInstance().getEventDispatcher().call(HumidifyStartedEvent.create(this));
   }
 
   private void updateLatchOpened() {
@@ -194,9 +197,7 @@ public class Room implements Group {
 
     createOrUpdateEvaporateTask();
 
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new EvaporateEvent(this, EvaporateEvent.EvaporateStatus.STARTED));
+    Mobifume.getInstance().getEventDispatcher().call(EvaporateStartedEvent.create(this));
   }
 
   private void cancelEvaporateTaskIfScheduled() {
@@ -214,9 +215,7 @@ public class Room implements Group {
     long timePassed = System.currentTimeMillis() - evaporateStartTime;
     long timeLeft = settings.getHeatTimer() * 60 * 1000 - timePassed;
     evaporateTask = Mobifume.getInstance().getScheduledExecutorService().schedule(() -> {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new EvaporateEvent(this, EvaporateEvent.EvaporateStatus.FINISHED));
+      Mobifume.getInstance().getEventDispatcher().call(EvaporateFinishedEvent.create(this));
       startPurge();
       evaporateTimeTask.cancel(false);
     }, timeLeft, TimeUnit.MILLISECONDS);
@@ -251,9 +250,7 @@ public class Room implements Group {
 
     createOrUpdatePurgeTask();
 
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new PurgeEvent(this, PurgeEvent.PurgeStatus.STARTED));
+    Mobifume.getInstance().getEventDispatcher().call(PurgeStartedEvent.create(this));
   }
 
   private void cancelPurgeTaskIfScheduled() {
@@ -272,22 +269,7 @@ public class Room implements Group {
   }
 
   public void updateHumidify() {
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new HumidifyEvent(this, HumidifyEvent.HumidifyStatus.UPDATED));
     checkHumidify();
-  }
-
-  @Override
-  public void reset() {
-    status = GroupStatus.RESET;
-    CustomLogger.logGroupState(this);
-    CustomLogger.logGroupSettings(this);
-    this.getDevices().forEach(Device::reset);
-
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new GroupEvent(this, GroupEvent.GroupStatus.RESET));
   }
 
   @Override
@@ -307,9 +289,7 @@ public class Room implements Group {
         this.getDevices().forEach(Device::reset);
         status = GroupStatus.CANCEL;
         CustomLogger.logGroupState(this);
-        Mobifume.getInstance()
-            .getEventDispatcher()
-            .call(new GroupEvent(this, GroupEvent.GroupStatus.CANCELED));
+        Mobifume.getInstance().getEventDispatcher().call(GroupCanceledEvent.create(this));
         break;
     }
   }
@@ -413,9 +393,7 @@ public class Room implements Group {
         humidifyMaxTimes++;
         if (humidifyMaxTimes >= 5) {
           humidifyMaxReached = true;
-          Mobifume.getInstance()
-              .getEventDispatcher()
-              .call(new HumidifyEvent(this, HumidifyEvent.HumidifyStatus.FINISHED));
+          Mobifume.getInstance().getEventDispatcher().call(HumidifyFinishedEvent.create(this));
         }
       }
       return;
@@ -424,15 +402,11 @@ public class Room implements Group {
     if (isHumidifying()
         && getHumidity() >= getSettings().getHumidifyMax() + getSettings().getHumidifyPuffer()) {
       setHumidifying(false);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new HumidifyEvent(this, HumidifyEvent.HumidifyStatus.ENABLED));
+      Mobifume.getInstance().getEventDispatcher().call(HumidifyEnabledEvent.create(this));
     }
     if (!isHumidifying() && getHumidity() <= getSettings().getHumidifyMax()) {
       setHumidifying(true);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new HumidifyEvent(this, HumidifyEvent.HumidifyStatus.DISABLED));
+      Mobifume.getInstance().getEventDispatcher().call(HumidifyDisabledEvent.create(this));
     }
   }
 
@@ -441,9 +415,7 @@ public class Room implements Group {
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
     this.getDevices().forEach(Device::reset);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new PurgeEvent(this, PurgeEvent.PurgeStatus.FINISHED));
+    Mobifume.getInstance().getEventDispatcher().call(PurgeFinishedEvent.create(this));
   }
 
   public void stop() {

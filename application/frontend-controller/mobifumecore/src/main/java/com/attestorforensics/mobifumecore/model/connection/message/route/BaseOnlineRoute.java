@@ -7,7 +7,8 @@ import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseConnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseReconnectedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Optional;
 
@@ -58,17 +59,14 @@ public class BaseOnlineRoute implements MessageRoute<BaseOnline> {
       CustomLogger.info(group, "RECONNECT", base.getDeviceId());
       CustomLogger.info("Reconnect " + base.getDeviceId());
       group.sendState(base);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.RECONNECT));
+
+      Mobifume.getInstance().getEventDispatcher().call(BaseReconnectedEvent.create(base));
     }
   }
 
   private void deviceOnline(Base base) {
     base.setOffline(false);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.CONNECTED));
+    Mobifume.getInstance().getEventDispatcher().call(BaseConnectedEvent.create(base));
     CustomLogger.info("Base online : " + base.getDeviceId());
   }
 }

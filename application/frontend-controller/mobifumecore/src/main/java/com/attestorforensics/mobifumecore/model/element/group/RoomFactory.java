@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.event.GroupEvent;
+import com.attestorforensics.mobifumecore.model.event.group.GroupCreatedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.model.setting.Settings;
 import java.util.List;
@@ -49,9 +49,7 @@ public class RoomFactory implements GroupFactory {
             + groupSettings.getEvaporantAmountPerCm() + ";" + groupSettings.getRoomWidth() + ";"
             + groupSettings.getRoomDepth() + ";" + groupSettings.getRoomHeight());
     room.setupStart();
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new GroupEvent(room, GroupEvent.GroupStatus.CREATED));
+    Mobifume.getInstance().getEventDispatcher().call(GroupCreatedEvent.create(room));
     return room;
   }
 }

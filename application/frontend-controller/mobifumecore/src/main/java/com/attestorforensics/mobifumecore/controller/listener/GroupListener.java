@@ -2,15 +2,12 @@ package com.attestorforensics.mobifumecore.controller.listener;
 
 import com.attestorforensics.mobifumecore.controller.group.GroupController;
 import com.attestorforensics.mobifumecore.controller.group.GroupControllerHolder;
-import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.event.GroupEvent;
-import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
-import javafx.application.Platform;
 
 public class GroupListener implements Listener {
 
+  // TODO - implement group listener
   private final BaseErrorListener baseErrorListener;
   private final WaterErrorListener waterErrorListener;
 
@@ -19,41 +16,35 @@ public class GroupListener implements Listener {
     this.waterErrorListener = waterErrorListener;
   }
 
-  @EventHandler
-  public void onGroup(GroupEvent event) {
-    Platform.runLater(() -> {
-      switch (event.getStatus()) {
-        case CREATED:
-          event.getGroup().getBases().forEach(baseErrorListener::updateErrors);
-          event.getGroup().getHumidifiers().forEach(waterErrorListener::updateErrors);
-          break;
-        case REMOVED:
-          GroupController groupController =
-              GroupControllerHolder.getInstance().getController(event.getGroup());
-          groupController.destroy();
-          GroupControllerHolder.getInstance().removeController(event.getGroup());
-          GroupItemControllerHolder.getInstance().removeGroupItems(event.getGroup());
-          break;
-        case RESET:
-          onGroupReset(event.getGroup());
-          break;
-        case CANCELED:
-          onGroupCanceled(event.getGroup());
-          break;
-        case SETUP_STARTED:
-          onGroupSetupStart(event.getGroup());
-          break;
-        default:
-          break;
-      }
-    });
-  }
-
-  private void onGroupReset(Group group) {
-    GroupController groupController = GroupControllerHolder.getInstance().getController(group);
-    groupController.clearActionPane();
-    groupController.getCanceledPane().setVisible(true);
-  }
+  //  @EventHandler
+  //  public void onGroup(GroupEvent event) {
+  //    Platform.runLater(() -> {
+  //      switch (event.getStatus()) {
+  //        case CREATED:
+  //          event.getGroup().getBases().forEach(baseErrorListener::updateErrors);
+  //          event.getGroup().getHumidifiers().forEach(waterErrorListener::updateErrors);
+  //          break;
+  //        case REMOVED:
+  //          GroupController groupController =
+  //              GroupControllerHolder.getInstance().getController(event.getGroup());
+  //          groupController.destroy();
+  //          GroupControllerHolder.getInstance().removeController(event.getGroup());
+  //          GroupItemControllerHolder.getInstance().removeGroupItems(event.getGroup());
+  //          break;
+  //        case RESET:
+  //          onGroupReset(event.getGroup());
+  //          break;
+  //        case CANCELED:
+  //          onGroupCanceled(event.getGroup());
+  //          break;
+  //        case SETUP_STARTED:
+  //          onGroupSetupStart(event.getGroup());
+  //          break;
+  //        default:
+  //          break;
+  //      }
+  //    });
+  //  }
 
   private void onGroupCanceled(Group group) {
     GroupController groupController = GroupControllerHolder.getInstance().getController(group);

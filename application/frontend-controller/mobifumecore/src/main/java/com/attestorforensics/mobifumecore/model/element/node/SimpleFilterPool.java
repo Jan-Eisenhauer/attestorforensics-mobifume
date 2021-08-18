@@ -2,7 +2,8 @@ package com.attestorforensics.mobifumecore.model.element.node;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
-import com.attestorforensics.mobifumecore.model.event.FilterEvent;
+import com.attestorforensics.mobifumecore.model.event.filter.FilterAddedEvent;
+import com.attestorforensics.mobifumecore.model.event.filter.FilterRemovedEvent;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
@@ -22,16 +23,13 @@ public class SimpleFilterPool implements FilterPool {
   @Override
   public void addFilter(Filter filter) {
     filters.add(filter);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new FilterEvent(filter, FilterEvent.FilterStatus.ADDED));
+    Mobifume.getInstance().getEventDispatcher().call(FilterAddedEvent.create(filter));
   }
 
   @Override
   public void removeFilter(Filter filter) {
     filters.remove(filter);
-    Mobifume.getInstance()
-              .getEventDispatcher().call(new FilterEvent(filter, FilterEvent.FilterStatus.REMOVED));
+    Mobifume.getInstance().getEventDispatcher().call(FilterRemovedEvent.create(filter));
   }
 
   @Override

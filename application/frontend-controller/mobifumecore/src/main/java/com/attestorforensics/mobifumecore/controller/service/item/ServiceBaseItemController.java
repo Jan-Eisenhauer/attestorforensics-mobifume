@@ -9,7 +9,7 @@ import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseCalibrationDataUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -98,8 +98,8 @@ public class ServiceBaseItemController extends ServiceItemController {
     humidity.setText(base.getHumidity() + "%rH");
     setpoint.setText(base.getHeaterSetpoint() + "°C");
     heater.setText(base.getHeaterTemperature() + "°C");
-    latch.setText(
-        LocaleManager.getInstance().getString("support.status.latch.value", base.getLatch().ordinal()));
+    latch.setText(LocaleManager.getInstance()
+        .getString("support.status.latch.value", base.getLatch().ordinal()));
   }
 
   @Override
@@ -197,8 +197,7 @@ public class ServiceBaseItemController extends ServiceItemController {
               base.updateTemperatureCalibration(calibration);
               Mobifume.getInstance()
                   .getEventDispatcher()
-                  .call(new DeviceConnectionEvent(base,
-                      DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
+                  .call(BaseCalibrationDataUpdatedEvent.create(base));
             }
           });
 
@@ -218,8 +217,7 @@ public class ServiceBaseItemController extends ServiceItemController {
               base.updateHumidityCalibration(calibration);
               Mobifume.getInstance()
                   .getEventDispatcher()
-                  .call(new DeviceConnectionEvent(base,
-                      DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
+                  .call(BaseCalibrationDataUpdatedEvent.create(base));
             }
           });
 

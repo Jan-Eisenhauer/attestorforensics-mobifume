@@ -7,7 +7,8 @@ import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
 import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierConnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierReconnectedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Optional;
 
@@ -60,16 +61,13 @@ public class HumidifierOnlineRoute implements MessageRoute<HumidifierOnline> {
       group.sendState(humidifier);
       Mobifume.getInstance()
           .getEventDispatcher()
-          .call(
-              new DeviceConnectionEvent(humidifier, DeviceConnectionEvent.DeviceStatus.RECONNECT));
+          .call(HumidifierReconnectedEvent.create(humidifier));
     }
   }
 
   private void deviceOnline(Humidifier humidifier) {
     humidifier.setOffline(false);
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(humidifier, DeviceConnectionEvent.DeviceStatus.CONNECTED));
+    Mobifume.getInstance().getEventDispatcher().call(HumidifierConnectedEvent.create(humidifier));
     CustomLogger.info("Humidifier online : " + humidifier.getDeviceId());
   }
 }
