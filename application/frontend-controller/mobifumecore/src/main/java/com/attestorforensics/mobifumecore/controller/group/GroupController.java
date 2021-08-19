@@ -332,10 +332,10 @@ public class GroupController extends CloseableController {
     }
 
     DoubleSensor hum = group.getHumidity();
-    if (hum.isValid()) {
+    if (hum.isError()) {
       if (humWrong == 5) {
         humWrong = 6;
-        humidity.setText(LocaleManager.gegtInstance().getString("group.error.humidity"));
+        humidity.setText(LocaleManager.getInstance().getString("group.error.humidity"));
         humidity.getStyleClass().add(errorStyle);
       } else {
         humWrong++;
