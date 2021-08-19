@@ -316,8 +316,8 @@ public class GroupCalculatorController extends CloseableController {
   private double calculateSettingsEvaporantAmount() {
     GroupSettings groupSettings = group.getSettings();
     EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
-    double roomSize =
-        evaporantSettings.roomWidth() * evaporantSettings.roomDepth() * evaporantSettings.roomHeight();
+    double roomSize = evaporantSettings.roomWidth() * evaporantSettings.roomDepth()
+        * evaporantSettings.roomHeight();
     double evaporantAmount = roomSize * evaporantSettings.evaporantAmountPerCm();
     evaporantAmount = (double) Math.round(evaporantAmount * 100) / 100;
     return evaporantAmount;
@@ -482,6 +482,6 @@ public class GroupCalculatorController extends CloseableController {
     Sound.click();
 
     applySettings();
-    close();
+    closeCalculator();
   }
 }
