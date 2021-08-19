@@ -6,8 +6,9 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class CreateGroupDialogController extends DialogController {
     this.devices = devices;
     displayDeviceCounts();
 
-    long bases = devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
+    long bases = devices.stream().filter(Base.class::isInstance).count();
     createFilterBoxes((int) bases);
   }
 
@@ -99,14 +100,13 @@ public class CreateGroupDialogController extends DialogController {
   }
 
   private void displayDeviceCounts() {
-    long bases = devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
+    long bases = devices.stream().filter(Base.class::isInstance).count();
     baseCount.setText(
         LocaleManager.getInstance().getString("dialog.group.create.count.base", bases));
     if (bases == 0) {
       baseCount.getStyleClass().add("deviceCountError");
     }
-    long hums =
-        devices.stream().filter(device -> device.getType() == DeviceType.HUMIDIFIER).count();
+    long hums = devices.stream().filter(Humidifier.class::isInstance).count();
     humCount.setText(LocaleManager.getInstance().getString("dialog.group.create.count.hum", hums));
     if (hums == 0) {
       humCount.getStyleClass().add("deviceCountError");
@@ -171,10 +171,10 @@ public class CreateGroupDialogController extends DialogController {
       return;
     }
 
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.BASE)) {
+    if (devices.stream().noneMatch(device -> device instanceof Base)) {
       return;
     }
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.HUMIDIFIER)) {
+    if (devices.stream().noneMatch(device -> device instanceof Humidifier)) {
       return;
     }
 
@@ -201,8 +201,8 @@ public class CreateGroupDialogController extends DialogController {
     devices.remove(device);
     displayDeviceCounts();
 
-    if (device.getType() == DeviceType.BASE) {
-      long bases = devices.stream().filter(d -> d.getType() == DeviceType.BASE).count();
+    if (device instanceof Base) {
+      long bases = devices.stream().filter(d -> d instanceof Base).count();
       createFilterBoxes((int) bases);
     }
     checkOkButton();
@@ -260,15 +260,14 @@ public class CreateGroupDialogController extends DialogController {
       }
     });
 
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.BASE)) {
+    if (devices.stream().noneMatch(device -> device instanceof Base)) {
       return;
     }
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.HUMIDIFIER)) {
+    if (devices.stream().noneMatch(device -> device instanceof Humidifier)) {
       return;
     }
 
-    long deviceCount =
-        devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
+    long deviceCount = devices.stream().filter(Base.class::isInstance).count();
     if (filters.size() != deviceCount) {
       return;
     }

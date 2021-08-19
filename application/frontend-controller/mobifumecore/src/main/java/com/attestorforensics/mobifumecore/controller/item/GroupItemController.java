@@ -53,6 +53,7 @@ public class GroupItemController extends ItemController {
     Platform.runLater(() -> {
       Node title = groupPane.lookup(".title");
       title.setStyle("-fx-background-color: " + color);
+
       groupPane.setVisible(true);
     });
 

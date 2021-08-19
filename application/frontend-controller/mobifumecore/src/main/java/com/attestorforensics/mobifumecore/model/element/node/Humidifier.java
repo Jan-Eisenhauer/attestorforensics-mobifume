@@ -19,7 +19,7 @@ public class Humidifier extends Device {
   private HumidifierWaterState waterState;
 
   public Humidifier(MessageSender messageSender, final String deviceId, final int version) {
-    super(messageSender, DeviceType.HUMIDIFIER, deviceId, version);
+    super(messageSender, deviceId, version);
   }
 
   @Override

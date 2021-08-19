@@ -301,32 +301,27 @@ public class Room implements Group {
 
   @Override
   public void sendState(Device device) {
-    CustomLogger.info(this, "SENDSTATE", device.getDeviceId(), device.getType());
-    switch (device.getType()) {
-      case BASE:
-        Base base = (Base) device;
-        if (status == GroupStatus.EVAPORATE) {
-          long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
-          int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-          base.updateTime(settings.evaporateSettings().evaporateTime() - passedTimeInMinutes);
-          base.forceUpdateHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
-        } else {
-          base.forceUpdateHeaterSetpoint(0);
-        }
+    CustomLogger.info(this, "SENDSTATE", device.getDeviceId(), device.getClass().getSimpleName());
+    if (device instanceof Base) {
+      Base base = (Base) device;
+      if (status == GroupStatus.EVAPORATE) {
+        long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
+        int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
+        base.updateTime(settings.evaporateSettings().evaporateTime() - passedTimeInMinutes);
+        base.forceUpdateHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
+      } else {
+        base.forceUpdateHeaterSetpoint(0);
+      }
 
-        if (status == GroupStatus.HUMIDIFY) {
-          base.updateTime(30);
-        }
+      if (status == GroupStatus.HUMIDIFY) {
+        base.updateTime(30);
+      }
 
-        boolean latchOpen = status != GroupStatus.HUMIDIFY && status != GroupStatus.EVAPORATE;
-        base.forceUpdateLatch(latchOpen);
-        break;
-      case HUMIDIFIER:
-        Humidifier hum = (Humidifier) device;
-        hum.forceUpdateHumidify(humidifying);
-        break;
-      default:
-        break;
+      boolean latchOpen = status != GroupStatus.HUMIDIFY && status != GroupStatus.EVAPORATE;
+      base.forceUpdateLatch(latchOpen);
+    } else if (device instanceof Humidifier) {
+      Humidifier hum = (Humidifier) device;
+      hum.forceUpdateHumidify(humidifying);
     }
   }
 

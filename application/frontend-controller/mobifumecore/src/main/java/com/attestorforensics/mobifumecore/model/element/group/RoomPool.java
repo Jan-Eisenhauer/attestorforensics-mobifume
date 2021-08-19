@@ -4,7 +4,6 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.base.BaseDisconnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.group.GroupRemovedEvent;
@@ -41,14 +40,14 @@ public class RoomPool implements GroupPool {
         group.getDevices().stream().filter(Device::isOffline).collect(Collectors.toList());
     // TODO - split bases and humidifiers in group#getBases and group#getHumidifiers
     offlineDevicesInGroup.stream()
-        .filter(device -> device.getType() == DeviceType.BASE)
+        .filter(Base.class::isInstance)
         .map(Base.class::cast)
         .forEach(base -> {
           devicePool.removeBase(base);
           Mobifume.getInstance().getEventDispatcher().call(BaseDisconnectedEvent.create(base));
         });
     offlineDevicesInGroup.stream()
-        .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
+        .filter(Humidifier.class::isInstance)
         .map(Humidifier.class::cast)
         .forEach(humidifier -> {
           devicePool.removeHumidifier(humidifier);

@@ -26,7 +26,7 @@ public class Base extends Device {
   private Calibration temperatureCalibration;
 
   public Base(MessageSender messageSender, final String deviceId, final int version) {
-    super(messageSender, DeviceType.BASE, deviceId, version);
+    super(messageSender, deviceId, version);
   }
 
   @Override

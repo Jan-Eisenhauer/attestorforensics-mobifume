@@ -110,7 +110,7 @@ public class CustomLogger {
   public static void logGroupDevices(Group group) {
     List<String> nodeList = group.getDevices()
         .stream()
-        .map(mapper -> mapper.getDeviceId() + "," + mapper.getType())
+        .map(mapper -> mapper.getDeviceId() + "," + mapper.getClass().getSimpleName())
         .collect(Collectors.toList());
     nodeList.add(0, "DEVICES");
     info(group, nodeList.toArray());

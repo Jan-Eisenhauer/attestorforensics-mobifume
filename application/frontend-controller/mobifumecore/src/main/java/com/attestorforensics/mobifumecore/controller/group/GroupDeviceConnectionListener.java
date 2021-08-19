@@ -4,8 +4,9 @@ import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemControlle
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.base.BaseLostEvent;
 import com.attestorforensics.mobifumecore.model.event.base.BaseReconnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierLostEvent;
@@ -65,13 +66,13 @@ public class GroupDeviceConnectionListener implements Listener {
 
   private void showLostError(Device device) {
     String message = LocaleManager.getInstance().getString("device.error.connection");
-    if (device.getType() == DeviceType.BASE) {
+    if (device instanceof Base) {
       GroupBaseItemController baseController =
           GroupItemControllerHolder.getInstance().getBaseController(device);
       if (baseController != null) {
         baseController.showError(message, true, ItemErrorType.DEVICE_CONNECTION_LOST);
       }
-    } else if (device.getType() == DeviceType.HUMIDIFIER) {
+    } else if (device instanceof Humidifier) {
       GroupHumItemController humController =
           GroupItemControllerHolder.getInstance().getHumController(device);
       if (humController != null) {
@@ -81,13 +82,13 @@ public class GroupDeviceConnectionListener implements Listener {
   }
 
   private void hideLostError(Device device) {
-    if (device.getType() == DeviceType.BASE) {
+    if (device instanceof Base) {
       GroupBaseItemController baseController =
           GroupItemControllerHolder.getInstance().getBaseController(device);
       if (baseController != null) {
         baseController.hideError(ItemErrorType.DEVICE_CONNECTION_LOST);
       }
-    } else if (device.getType() == DeviceType.HUMIDIFIER) {
+    } else if (device instanceof Humidifier) {
       GroupHumItemController humController =
           GroupItemControllerHolder.getInstance().getHumController(device);
       if (humController != null) {

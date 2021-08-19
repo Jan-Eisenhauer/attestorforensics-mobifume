@@ -18,7 +18,6 @@ import com.attestorforensics.mobifumecore.model.element.misc.HumidifierWaterStat
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.util.Kernel32;
@@ -175,10 +174,10 @@ public class OverviewController extends Controller {
   void addGroup(Group group) {
     this.<GroupItemController>loadItem("GroupItem.fxml").thenAccept(controller -> {
       TitledPane groupItemRoot = (TitledPane) controller.getRoot();
-      String groupColor = GroupColor.getNextColor();
-      controller.setGroup(group, groupColor);
       nodeGroupItemControllerPool.put(groupItemRoot, controller);
       groups.getPanes().add(groupItemRoot);
+      String groupColor = GroupColor.getNextColor();
+      controller.setGroup(group, groupColor);
       ObservableList<Node> deviceChildren = devices.getChildren();
       deviceChildren.filtered(
               node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
@@ -275,7 +274,7 @@ public class OverviewController extends Controller {
     deviceElements.sort((n1, n2) -> {
       DeviceItemController deviceController1 = nodeDeviceItemControllerPool.get(n1);
       Device device1 = deviceController1.getDevice();
-      Optional<Group> optionalGroup1 = device1.getType() == DeviceType.BASE ? Mobifume.getInstance()
+      Optional<Group> optionalGroup1 = device1 instanceof Base ? Mobifume.getInstance()
           .getModelManager()
           .getGroupPool()
           .getGroupOfBase((Base) device1) : Mobifume.getInstance()
@@ -285,7 +284,7 @@ public class OverviewController extends Controller {
 
       DeviceItemController deviceController2 = nodeDeviceItemControllerPool.get(n2);
       Device device2 = deviceController2.getDevice();
-      Optional<Group> optionalGroup2 = device2.getType() == DeviceType.BASE ? Mobifume.getInstance()
+      Optional<Group> optionalGroup2 = device2 instanceof Base ? Mobifume.getInstance()
           .getModelManager()
           .getGroupPool()
           .getGroupOfBase((Base) device2) : Mobifume.getInstance()
@@ -409,14 +408,14 @@ public class OverviewController extends Controller {
     }
 
     if (selectedDevices.stream()
-        .noneMatch(controller -> controller.getDevice().getType() == DeviceType.BASE)) {
+        .noneMatch(controller -> controller.getDevice() instanceof Base)) {
       // no base selected
       createGroupError();
       return;
     }
 
     if (selectedDevices.stream()
-        .noneMatch(controller -> controller.getDevice().getType() == DeviceType.HUMIDIFIER)) {
+        .noneMatch(controller -> controller.getDevice() instanceof Humidifier)) {
       // no hum selected
       createGroupError();
       return;
@@ -437,12 +436,12 @@ public class OverviewController extends Controller {
             GroupData groupData = createGroupResult.getGroupData().get();
             List<Base> bases = groupData.getDevices()
                 .stream()
-                .filter(device -> device.getType() == DeviceType.BASE)
+                .filter(Base.class::isInstance)
                 .map(Base.class::cast)
                 .collect(Collectors.toList());
             List<Humidifier> humidifiers = groupData.getDevices()
                 .stream()
-                .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
+                .filter(Humidifier.class::isInstance)
                 .map(Humidifier.class::cast)
                 .collect(Collectors.toList());
 

@@ -8,8 +8,8 @@ import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import java.net.URL;
 import java.util.NavigableMap;
 import java.util.ResourceBundle;
@@ -64,7 +64,7 @@ public class DeviceItemController extends ItemController {
     }
 
     currentStrength = strength;
-    String deviceName = getDeviceName(device.getType());
+    String deviceName = device instanceof Base ? "Base" : "Hum";
     String resource = "images/" + deviceName + "_" + strength + ".png";
     deviceImage.setImage(ImageHolder.getInstance().getImage(resource));
     nodeId.setText(device.getShortId());
@@ -78,16 +78,6 @@ public class DeviceItemController extends ItemController {
       return "Moderate";
     }
     return "Bad";
-  }
-
-  private String getDeviceName(DeviceType deviceType) {
-    if (deviceType == DeviceType.BASE) {
-      return "Base";
-    }
-    if (deviceType == DeviceType.HUMIDIFIER) {
-      return "Hum";
-    }
-    return null;
   }
 
   @FXML

@@ -5,16 +5,13 @@ import com.attestorforensics.mobifumecore.model.connection.message.MessageSender
 public abstract class Device {
 
   protected final MessageSender messageSender;
-  private final DeviceType type;
   protected final String deviceId;
   private int version;
   private int rssi = -100;
   private boolean isOffline;
 
-  protected Device(MessageSender messageSender, final DeviceType type, final String deviceId,
-      final int version) {
+  protected Device(MessageSender messageSender, String deviceId, int version) {
     this.messageSender = messageSender;
-    this.type = type;
     this.deviceId = deviceId;
     this.version = version;
   }
@@ -29,10 +26,6 @@ public abstract class Device {
     } catch (NumberFormatException e) {
       return nodeNumber;
     }
-  }
-
-  public DeviceType getType() {
-    return type;
   }
 
   public String getDeviceId() {

@@ -110,6 +110,7 @@ public class GroupController extends CloseableController {
 
   private final GroupDeviceConnectionListener groupDeviceConnectionListener =
       GroupDeviceConnectionListener.create(this);
+  private final GroupDeviceListener groupDeviceListener = GroupDeviceListener.create(this);
   private final SetupListener setupListener = SetupListener.create(this);
   private final HumidifyListener humidifyListener = HumidifyListener.create(this);
   private final EvaporateListener evaporateListener = EvaporateListener.create(this);
@@ -421,6 +422,7 @@ public class GroupController extends CloseableController {
 
   private void registerListeners() {
     Mobifume.getInstance().getEventDispatcher().registerListener(groupDeviceConnectionListener);
+    Mobifume.getInstance().getEventDispatcher().registerListener(groupDeviceListener);
     Mobifume.getInstance().getEventDispatcher().registerListener(setupListener);
     Mobifume.getInstance().getEventDispatcher().registerListener(humidifyListener);
     Mobifume.getInstance().getEventDispatcher().registerListener(evaporateListener);
@@ -429,6 +431,7 @@ public class GroupController extends CloseableController {
 
   private void unregisterListeners() {
     Mobifume.getInstance().getEventDispatcher().unregisterListener(groupDeviceConnectionListener);
+    Mobifume.getInstance().getEventDispatcher().unregisterListener(groupDeviceListener);
     Mobifume.getInstance().getEventDispatcher().unregisterListener(setupListener);
     Mobifume.getInstance().getEventDispatcher().unregisterListener(humidifyListener);
     Mobifume.getInstance().getEventDispatcher().unregisterListener(evaporateListener);
