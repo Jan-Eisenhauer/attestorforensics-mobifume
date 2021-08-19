@@ -8,6 +8,7 @@ import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
+import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
@@ -54,19 +55,19 @@ public class GroupBaseItemController extends ItemController {
   }
 
   public void updateHeaterTemperature() {
-    setTemperature(base.isOffline() ? -128 : base.getHeaterTemperature());
+    setTemperature(base.isOffline() ? DoubleSensor.error() : base.getHeaterTemperature());
   }
 
-  private void setTemperature(double temperature) {
-    if (temperature == -128) {
+  private void setTemperature(DoubleSensor temperature) {
+    if (temperature.isError()) {
       this.temperature.setText(LocaleManager.getInstance().getString("group.error.temperature"));
     } else if (group.getStatus() == GroupStatus.EVAPORATE) {
       this.temperature.setText(LocaleManager.getInstance()
-          .getString("group.base.temperature.setpoint", temperature,
+          .getString("group.base.temperature.setpoint", temperature.value(),
               group.getSettings().evaporateSettings().heaterTemperature()));
     } else {
       this.temperature.setText(
-          LocaleManager.getInstance().getString("group.base.temperature", temperature));
+          LocaleManager.getInstance().getString("group.base.temperature", temperature.value()));
     }
   }
 

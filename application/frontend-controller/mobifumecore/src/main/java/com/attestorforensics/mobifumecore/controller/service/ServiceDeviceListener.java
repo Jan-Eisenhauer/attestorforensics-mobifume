@@ -4,11 +4,11 @@ import com.attestorforensics.mobifumecore.model.event.base.BaseCalibrationDataUp
 import com.attestorforensics.mobifumecore.model.event.base.BaseConnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.base.BaseDisconnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.base.BaseLostEvent;
-import com.attestorforensics.mobifumecore.model.event.base.BaseStatusUpdatedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierConnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierDisconnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierLostEvent;
-import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierStatusUpdatedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 
@@ -55,12 +55,12 @@ public class ServiceDeviceListener implements Listener {
   }
 
   @EventHandler
-  public void onBaseStatusUpdated(BaseStatusUpdatedEvent event) {
+  public void onBaseUpdated(BaseUpdatedEvent event) {
     serviceController.updateDevice(event.getBase());
   }
 
   @EventHandler
-  public void onHumidifierStatusUpdated(HumidifierStatusUpdatedEvent event) {
+  public void onHumidifierUpdated(HumidifierUpdatedEvent event) {
     serviceController.updateDevice(event.getHumidifier());
   }
 

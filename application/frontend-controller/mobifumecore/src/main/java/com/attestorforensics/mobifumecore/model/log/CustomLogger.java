@@ -117,8 +117,9 @@ public class CustomLogger {
   }
 
   public static void logGroupBase(Group group, Base base) {
-    info(group, "BASE", base.getDeviceId(), base.getRssi(), base.getTemperature(),
-        base.getHumidity(), base.getHeaterSetpoint(), base.getHeaterTemperature(), base.getLatch());
+    info(group, "BASE", base.getDeviceId(), base.getRssi(), base.getTemperature().value(),
+        base.getHumidity().value(), base.getHeaterSetpoint(), base.getHeaterTemperature().value(),
+        base.getLatch());
   }
 
   public static void logGroupHum(Group group, Humidifier hum) {

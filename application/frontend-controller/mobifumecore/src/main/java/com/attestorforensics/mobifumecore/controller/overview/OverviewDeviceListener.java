@@ -5,12 +5,12 @@ import com.attestorforensics.mobifumecore.model.event.base.BaseConnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.base.BaseDisconnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.base.BaseLostEvent;
 import com.attestorforensics.mobifumecore.model.event.base.BaseReconnectedEvent;
-import com.attestorforensics.mobifumecore.model.event.base.BaseStatusUpdatedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierConnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierDisconnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierLostEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierReconnectedEvent;
-import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierStatusUpdatedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 
@@ -48,36 +48,36 @@ public class OverviewDeviceListener implements Listener {
 
   @EventHandler
   public void onBaseLost(BaseLostEvent event) {
-    overviewController.updateDevice(event.getBase());
+    overviewController.updateBase(event.getBase());
   }
 
   @EventHandler
   public void onHumidifierLost(HumidifierLostEvent event) {
-    overviewController.updateDevice(event.getHumidifier());
+    overviewController.updateHumidifier(event.getHumidifier());
   }
 
   @EventHandler
   public void onBaseReconnected(BaseReconnectedEvent event) {
-    overviewController.updateDevice(event.getBase());
+    overviewController.updateBase(event.getBase());
   }
 
   @EventHandler
   public void onHumidifierReconnected(HumidifierReconnectedEvent event) {
-    overviewController.updateDevice(event.getHumidifier());
+    overviewController.updateHumidifier(event.getHumidifier());
   }
 
   @EventHandler
-  public void onBaseStatusUpdated(BaseStatusUpdatedEvent event) {
-    overviewController.updateDevice(event.getBase());
+  public void onBaseUpdated(BaseUpdatedEvent event) {
+    overviewController.updateBase(event.getBase());
   }
 
   @EventHandler
-  public void onHumidifierStatusUpdated(HumidifierStatusUpdatedEvent event) {
-    overviewController.updateDevice(event.getHumidifier());
+  public void onHumidifierUpdated(HumidifierUpdatedEvent event) {
+    overviewController.updateHumidifier(event.getHumidifier());
   }
 
   @EventHandler
   public void onBaseCalibrationDataUpdated(BaseCalibrationDataUpdatedEvent event) {
-    overviewController.updateDevice(event.getBase());
+    overviewController.updateBase(event.getBase());
   }
 }

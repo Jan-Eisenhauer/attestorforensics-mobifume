@@ -4,6 +4,7 @@ import com.attestorforensics.mobifumecore.model.connection.message.InvalidMessag
 import com.attestorforensics.mobifumecore.model.connection.message.MessagePattern;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessage;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
+import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import java.util.Optional;
 
@@ -11,23 +12,24 @@ public class BasePing implements IncomingMessage {
 
   private static final String TOPIC_PREFIX = "/MOBIfume/base/status/";
   private static final String FIRST_ARGUMENT = "P";
+  private static final int SENSOR_ERROR = -128;
 
   private final String deviceId;
   private final int rssi;
-  private final double temperature;
-  private final double humidity;
+  private final DoubleSensor temperature;
+  private final DoubleSensor humidity;
   private final double heaterSetpoint;
-  private final double heaterTemperature;
+  private final DoubleSensor heaterTemperature;
   private final Latch latch;
 
   private BasePing(String deviceId, int rssi, double temperature, double humidity,
       double heaterSetpoint, double heaterTemperature, Latch latch) {
     this.deviceId = deviceId;
     this.rssi = rssi;
-    this.temperature = temperature;
-    this.humidity = humidity;
+    this.temperature = DoubleSensor.of(temperature);
+    this.humidity = DoubleSensor.of(humidity);
     this.heaterSetpoint = heaterSetpoint;
-    this.heaterTemperature = heaterTemperature;
+    this.heaterTemperature = DoubleSensor.of(heaterTemperature);
     this.latch = latch;
   }
 
@@ -100,11 +102,11 @@ public class BasePing implements IncomingMessage {
     return rssi;
   }
 
-  public double getTemperature() {
+  public DoubleSensor getTemperature() {
     return temperature;
   }
 
-  public double getHumidity() {
+  public DoubleSensor getHumidity() {
     return humidity;
   }
 
@@ -112,7 +114,7 @@ public class BasePing implements IncomingMessage {
     return heaterSetpoint;
   }
 
-  public double getHeaterTemperature() {
+  public DoubleSensor getHeaterTemperature() {
     return heaterTemperature;
   }
 

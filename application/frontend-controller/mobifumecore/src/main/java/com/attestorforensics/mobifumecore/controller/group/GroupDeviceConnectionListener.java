@@ -1,7 +1,5 @@
-package com.attestorforensics.mobifumecore.controller.listener;
+package com.attestorforensics.mobifumecore.controller.group;
 
-import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
-import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
@@ -17,39 +15,56 @@ import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import javafx.application.Platform;
 
-public class DeviceConnectionListener implements Listener {
+public class GroupDeviceConnectionListener implements Listener {
+
+  private final GroupController groupController;
+
+  private GroupDeviceConnectionListener(GroupController groupController) {
+    this.groupController = groupController;
+  }
+
+  static GroupDeviceConnectionListener create(GroupController groupController) {
+    return new GroupDeviceConnectionListener(groupController);
+  }
 
   @EventHandler
   public void onBaseLost(BaseLostEvent event) {
+    if (!groupController.getGroup().containsDevice(event.getBase())) {
+      return;
+    }
+
     Platform.runLater(() -> showLostError(event.getBase()));
   }
 
   @EventHandler
   public void onHumidifierLost(HumidifierLostEvent event) {
+    if (!groupController.getGroup().containsDevice(event.getHumidifier())) {
+      return;
+    }
+
     Platform.runLater(() -> showLostError(event.getHumidifier()));
   }
 
   @EventHandler
   public void onBaseReconnected(BaseReconnectedEvent event) {
+    if (!groupController.getGroup().containsDevice(event.getBase())) {
+      return;
+    }
+
     Platform.runLater(() -> hideLostError(event.getBase()));
   }
 
   @EventHandler
   public void onHumidifierReconnected(HumidifierReconnectedEvent event) {
+    if (!groupController.getGroup().containsDevice(event.getHumidifier())) {
+      return;
+    }
+
     Platform.runLater(() -> hideLostError(event.getHumidifier()));
   }
 
   private void showLostError(Device device) {
     String message = LocaleManager.getInstance().getString("device.error.connection");
-
-    // overview error
-    DeviceItemController deviceController =
-        DeviceItemControllerHolder.getInstance().getController(device);
-    if (deviceController != null) {
-      deviceController.showError(message, true, ItemErrorType.DEVICE_CONNECTION_LOST);
-    }
-
-    // group error
     if (device.getType() == DeviceType.BASE) {
       GroupBaseItemController baseController =
           GroupItemControllerHolder.getInstance().getBaseController(device);
@@ -66,14 +81,6 @@ public class DeviceConnectionListener implements Listener {
   }
 
   private void hideLostError(Device device) {
-    // overview error
-    DeviceItemController deviceController =
-        DeviceItemControllerHolder.getInstance().getController(device);
-    if (deviceController != null) {
-      deviceController.hideError(ItemErrorType.DEVICE_CONNECTION_LOST);
-    }
-
-    // group error
     if (device.getType() == DeviceType.BASE) {
       GroupBaseItemController baseController =
           GroupItemControllerHolder.getInstance().getBaseController(device);

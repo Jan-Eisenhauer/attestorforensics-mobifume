@@ -98,8 +98,8 @@ public class Room implements Group {
   @Override
   public double getTemperature() {
     return bases.stream()
-        .filter(base -> base.getTemperature() != -128 && !base.isOffline())
-        .mapToDouble(Base::getTemperature)
+        .filter(base -> base.getTemperature().isValid() && !base.isOffline())
+        .mapToDouble(base -> base.getTemperature().value())
         .average()
         .orElse(-128);
   }
@@ -107,8 +107,8 @@ public class Room implements Group {
   @Override
   public double getHumidity() {
     return bases.stream()
-        .filter(base -> base.getHumidity() != -128 && !base.isOffline())
-        .mapToDouble(Base::getHumidity)
+        .filter(base -> base.getHumidity().isValid() && !base.isOffline())
+        .mapToDouble(base -> base.getHumidity().value())
         .average()
         .orElse(-128);
   }

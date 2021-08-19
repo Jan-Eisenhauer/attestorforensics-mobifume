@@ -11,8 +11,11 @@ import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
+import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.misc.HumidifierWaterState;
+import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
@@ -111,18 +114,62 @@ public class OverviewController extends Controller {
     });
   }
 
-  void updateDevice(Device device) {
+  void updateBase(Base base) {
     Platform.runLater(() -> {
-      ObservableList<Node> children = devices.getChildren();
-      children.forEach(node -> {
-        DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
-        if (controller.getDevice() != device) {
-          return;
-        }
-
-        controller.updateConnection();
-      });
+      updateDevice(base);
+      updateBaseErrors(base);
     });
+  }
+
+  void updateHumidifier(Humidifier humidifier) {
+    Platform.runLater(() -> {
+      updateDevice(humidifier);
+      updateHumidifierErrors(humidifier);
+    });
+  }
+
+  private void updateDevice(Device device) {
+    ObservableList<Node> children = devices.getChildren();
+    children.forEach(node -> {
+      DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
+      if (controller.getDevice() != device) {
+        return;
+      }
+
+      controller.updateConnection();
+    });
+  }
+
+  private void updateBaseErrors(Base base) {
+    DeviceItemController deviceController =
+        DeviceItemControllerHolder.getInstance().getController(base);
+    if (base.getLatch() == Latch.ERROR_OTHER || base.getLatch() == Latch.ERROR_NOT_REACHED
+        || base.getLatch() == Latch.ERROR_BLOCKED) {
+      String message = LocaleManager.getInstance().getString("base.error.latch");
+      deviceController.showError(message, true, ItemErrorType.BASE_LATCH);
+    } else if (base.getHeaterTemperature().isError()) {
+      String message = LocaleManager.getInstance().getString("base.error.heater");
+      deviceController.showError(message, true, ItemErrorType.BASE_HEATER);
+    } else if (base.getTemperature().isError()) {
+      String message = LocaleManager.getInstance().getString("base.error.temperature");
+      deviceController.showError(message, true, ItemErrorType.BASE_TEMPERATURE);
+    } else if (base.getHumidity().isError()) {
+      String message = LocaleManager.getInstance().getString("base.error.humidity");
+      deviceController.showError(message, true, ItemErrorType.BASE_HUMIDITY);
+    } else {
+      deviceController.hideAllError();
+    }
+  }
+
+  private void updateHumidifierErrors(Humidifier humidifier) {
+    DeviceItemController humController =
+        DeviceItemControllerHolder.getInstance().getController(humidifier);
+    if (humidifier.getWaterState() == HumidifierWaterState.EMPTY) {
+      String message = LocaleManager.getInstance().getString("hum.error.water");
+      humController.showError(message, true, ItemErrorType.HUMIDIFIER_WATER);
+    } else {
+      humController.hideError(ItemErrorType.HUMIDIFIER_WATER);
+    }
   }
 
   void addGroup(Group group) {
@@ -197,6 +244,9 @@ public class OverviewController extends Controller {
 
   private void registerListeners() {
     Mobifume.getInstance().getEventDispatcher().registerListener(ConnectionListener.create(this));
+    Mobifume.getInstance()
+        .getEventDispatcher()
+        .registerListener(OverviewDeviceConnectionListener.create());
     Mobifume.getInstance()
         .getEventDispatcher()
         .registerListener(OverviewDeviceListener.create(this));

@@ -1,23 +1,22 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
-import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierEnable;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierReset;
+import com.attestorforensics.mobifumecore.model.element.misc.HumidifierWaterState;
 import com.attestorforensics.mobifumecore.model.element.misc.Led;
-import com.attestorforensics.mobifumecore.model.event.humidifier.error.WaterErrorEvent;
-import com.attestorforensics.mobifumecore.model.event.humidifier.error.WaterErrorResolvedEvent;
 
 public class Humidifier extends Device {
 
-  private boolean humidify;
+  private static final int WATER_EMPTY_SIGNAL_COUNT_UNTIL_ERROR = 5;
 
+  private boolean humidify;
   private Led led1;
   private Led led2;
   private boolean overHeated;
 
-  private int waterState;
-  private boolean waterEmpty;
+  private int waterEmptyPingCount;
+  private HumidifierWaterState waterState;
 
   public Humidifier(MessageSender messageSender, final String deviceId, final int version) {
     super(messageSender, DeviceType.HUMIDIFIER, deviceId, version);
@@ -43,19 +42,19 @@ public class Humidifier extends Device {
   public void setLed1(Led led1) {
     this.led1 = led1;
 
-    // wait for 5 water empty signals
-    if (waterState < 5 && led1 == Led.BLINKING) {
-      waterState++;
-      if (waterState == 5 && !waterEmpty) {
-        waterEmpty = true;
-        Mobifume.getInstance().getEventDispatcher().call(WaterErrorEvent.create(this));
-      }
-    } else if (waterState > 0) {
-      waterState--;
-      if (waterState == 0 && waterEmpty) {
-        waterEmpty = false;
-        Mobifume.getInstance().getEventDispatcher().call(WaterErrorResolvedEvent.create(this));
-      }
+    if (led1 == Led.BLINKING && waterEmptyPingCount < WATER_EMPTY_SIGNAL_COUNT_UNTIL_ERROR) {
+      waterEmptyPingCount++;
+    } else if (led1 != Led.BLINKING && waterEmptyPingCount > 0) {
+      waterEmptyPingCount--;
+    }
+
+    if (waterEmptyPingCount == WATER_EMPTY_SIGNAL_COUNT_UNTIL_ERROR
+        && waterState != HumidifierWaterState.EMPTY) {
+      waterState = HumidifierWaterState.EMPTY;
+    }
+
+    if (waterEmptyPingCount == 0 && waterState != HumidifierWaterState.FILLED) {
+      waterState = HumidifierWaterState.FILLED;
     }
   }
 
@@ -87,11 +86,7 @@ public class Humidifier extends Device {
     this.overHeated = overHeated;
   }
 
-  public int getWaterState() {
+  public HumidifierWaterState getWaterState() {
     return waterState;
-  }
-
-  public boolean isWaterEmpty() {
-    return waterEmpty;
   }
 }

@@ -11,15 +11,16 @@ import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseTemperatureGradient;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseTemperatureOffset;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
+import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import java.util.Optional;
 
 public class Base extends Device {
 
-  private double temperature = -128;
-  private double humidity = -128;
-  private double heaterSetpoint = -128;
-  private double heaterTemperature = -128;
+  private DoubleSensor temperature;
+  private DoubleSensor humidity;
+  private double heaterSetpoint;
+  private DoubleSensor heaterTemperature;
   private Latch latch;
   private Calibration humidityCalibration;
   private Calibration temperatureCalibration;
@@ -96,19 +97,19 @@ public class Base extends Device {
     messageSender.send(BaseTemperatureOffset.create(deviceId, calibration.getOffset()));
   }
 
-  public double getTemperature() {
+  public DoubleSensor getTemperature() {
     return temperature;
   }
 
-  public void setTemperature(double temperature) {
+  public void setTemperature(DoubleSensor temperature) {
     this.temperature = temperature;
   }
 
-  public double getHumidity() {
+  public DoubleSensor getHumidity() {
     return humidity;
   }
 
-  public void setHumidity(double humidity) {
+  public void setHumidity(DoubleSensor humidity) {
     this.humidity = humidity;
   }
 
@@ -120,11 +121,11 @@ public class Base extends Device {
     this.heaterSetpoint = heaterSetpoint;
   }
 
-  public double getHeaterTemperature() {
+  public DoubleSensor getHeaterTemperature() {
     return heaterTemperature;
   }
 
-  public void setHeaterTemperature(double heaterTemperature) {
+  public void setHeaterTemperature(DoubleSensor heaterTemperature) {
     this.heaterTemperature = heaterTemperature;
   }
 
