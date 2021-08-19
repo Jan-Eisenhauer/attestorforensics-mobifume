@@ -94,10 +94,12 @@ public class ServiceBaseItemController extends ServiceItemController {
   public void update() {
     version.setText(base.getVersion() + "");
     rssi.setText(base.getRssi() + "");
-    temperature.setText(base.getTemperature().value() + "°C");
-    humidity.setText(base.getHumidity().value() + "%rH");
+    temperature.setText(
+        (base.getTemperature().isValid() ? base.getTemperature().value() : "-") + "°C");
+    humidity.setText((base.getHumidity().isValid() ? base.getHumidity().value() : "-") + "%rH");
     setpoint.setText(base.getHeaterSetpoint() + "°C");
-    heater.setText(base.getHeaterTemperature().value() + "°C");
+    heater.setText(
+        (base.getHeaterTemperature().isValid() ? base.getHeaterTemperature().value() : "-") + "°C");
     latch.setText(LocaleManager.getInstance()
         .getString("support.status.latch.value", base.getLatch().ordinal()));
   }
