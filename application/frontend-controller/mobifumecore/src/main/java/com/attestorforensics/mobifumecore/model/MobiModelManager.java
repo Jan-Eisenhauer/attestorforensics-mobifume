@@ -13,7 +13,8 @@ import com.attestorforensics.mobifumecore.model.element.node.SimpleDevicePool;
 import com.attestorforensics.mobifumecore.model.element.node.SimpleFilterFactory;
 import com.attestorforensics.mobifumecore.model.element.node.SimpleFilterPool;
 import com.attestorforensics.mobifumecore.model.log.LogMover;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.GlobalSettings;
+import com.attestorforensics.mobifumecore.model.setting.SettingsRepository;
 import com.attestorforensics.mobifumecore.model.update.Updater;
 
 public class MobiModelManager implements ModelManager {
@@ -23,13 +24,14 @@ public class MobiModelManager implements ModelManager {
   private final GroupFactory groupFactory;
   private final FilterPool filterPool;
   private final FilterFactory filterFactory;
-  private final Settings globalSettings;
+  private GlobalSettings globalSettings;
+  private final SettingsRepository settingsRepository;
   private final Updater updater;
 
-  public MobiModelManager(Settings globalSettings) {
+  public MobiModelManager(GlobalSettings globalSettings, SettingsRepository settingsRepository) {
     devicePool = SimpleDevicePool.create();
     groupPool = RoomPool.create(devicePool);
-    groupFactory = RoomFactory.create(globalSettings);
+    groupFactory = RoomFactory.create(this);
     filterPool = SimpleFilterPool.create();
     FilterFileHandler filterFileHandler = new FilterFileHandler();
     filterFactory = SimpleFilterFactory.create(filterFileHandler);
@@ -39,6 +41,7 @@ public class MobiModelManager implements ModelManager {
         .forEach(filterPool::addFilter);
 
     this.globalSettings = globalSettings;
+    this.settingsRepository = settingsRepository;
     updater = Updater.create(Mobifume.getInstance().getScheduledExecutorService(),
         Mobifume.getInstance().getEventDispatcher());
     updater.startCheckingForUpdate();
@@ -74,8 +77,14 @@ public class MobiModelManager implements ModelManager {
   }
 
   @Override
-  public Settings getGlobalSettings() {
+  public GlobalSettings getGlobalSettings() {
     return globalSettings;
+  }
+
+  @Override
+  public void setGlobalSettings(GlobalSettings globalSettings) {
+    this.globalSettings = globalSettings;
+    settingsRepository.save(globalSettings);
   }
 
   @Override

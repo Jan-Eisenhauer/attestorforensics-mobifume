@@ -61,8 +61,12 @@ public class AddFilterRunDialogController extends DialogController {
         .forEach(evapo -> evaporants.add(
             evapo.name().substring(0, 1).toUpperCase() + evapo.name().substring(1).toLowerCase()));
     evaporant.setItems(evaporants);
-    Evaporant selected =
-        Mobifume.getInstance().getModelManager().getGlobalSettings().getEvaporant();
+    Evaporant selected = Mobifume.getInstance()
+        .getModelManager()
+        .getGlobalSettings()
+        .groupTemplateSettings()
+        .evaporantSettings()
+        .evaporant();
     evaporant.getSelectionModel()
         .select(selected.name().substring(0, 1).toUpperCase() + selected.name()
             .substring(1)

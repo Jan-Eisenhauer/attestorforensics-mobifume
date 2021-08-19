@@ -10,12 +10,12 @@ public interface SettingsRepository {
    *
    * @return the stored global settings if exists otherwise the default settings
    */
-  Settings load();
+  GlobalSettings load();
 
   /**
    * Saves the global settings.
    *
    * @param settings the settings to save
    */
-  void save(Settings settings);
+  void save(GlobalSettings settings);
 }

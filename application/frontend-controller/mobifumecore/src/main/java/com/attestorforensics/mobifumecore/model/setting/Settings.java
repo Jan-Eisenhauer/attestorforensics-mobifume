@@ -3,9 +3,8 @@ package com.attestorforensics.mobifumecore.model.setting;
 import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import java.util.Locale;
 
+@Deprecated
 public class Settings {
-
-  private static final SettingsRepository settingsRepository = SettingsFileRepository.create();
 
   private Locale language = Locale.GERMANY;
   private int humidifyMax = 80;
@@ -45,14 +44,6 @@ public class Settings {
 
   public static Settings copy(Settings settings) {
     return new Settings(settings);
-  }
-
-  public static void saveGlobalSettings(Settings settings) {
-    settingsRepository.save(settings);
-  }
-
-  public static Settings loadGlobalSettings() {
-    return settingsRepository.load();
   }
 
   public Locale getLanguage() {

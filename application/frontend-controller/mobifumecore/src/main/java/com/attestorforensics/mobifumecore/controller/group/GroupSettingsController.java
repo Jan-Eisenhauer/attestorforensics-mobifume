@@ -4,22 +4,22 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.EvaporateSettings;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
+import com.attestorforensics.mobifumecore.model.setting.HumidifySettings;
+import com.attestorforensics.mobifumecore.model.setting.PurgeSettings;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -76,13 +76,13 @@ public class GroupSettingsController extends CloseableController {
 
   public void setGroup(Group group) {
     this.group = group;
-    groupName.setText(group.getName() + " - " + group.getSettings().getCycleCount());
+    groupName.setText(group.getName() + " - " + group.getCycleNumber());
 
-    Settings settings = group.getSettings();
-    maxHum = settings.getHumidifyMax();
-    heaterTemp = settings.getHeaterTemperature();
-    heatTime = settings.getHeatTimer();
-    purgeTime = settings.getPurgeTimer();
+    GroupSettings groupSettings = group.getSettings();
+    maxHum = groupSettings.humidifySettings().humiditySetpoint();
+    heaterTemp = groupSettings.evaporateSettings().heaterTemperature();
+    heatTime = groupSettings.evaporateSettings().evaporateTime();
+    purgeTime = groupSettings.purgeSettings().purgeTime();
 
     maxHumField.setTextFormatter(new UnsignedIntTextFormatter());
     maxHumField.textProperty()
@@ -258,28 +258,38 @@ public class GroupSettingsController extends CloseableController {
   }
 
   private void applySettings() {
-    Settings settings = group.getSettings();
+    GroupSettings groupSettings = group.getSettings();
+
+    HumidifySettings humidifySettings = groupSettings.humidifySettings();
     int maxHumidity = getFixedValue(maxHumSlider, maxHum);
-    if (maxHumidity != settings.getHumidifyMax()) {
-      settings.setHumidifyMax(maxHumidity);
+    if (maxHumidity != humidifySettings.humiditySetpoint()) {
+      humidifySettings = humidifySettings.humiditySetpoint(maxHumidity);
+      groupSettings = groupSettings.humidifySettings(humidifySettings);
       group.updateHumidify();
     }
 
+    EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
     int heaterTemperature = getFixedValue(heaterTempSlider, heaterTemp);
-    if (heaterTemperature != settings.getHeaterTemperature()) {
-      settings.setHeaterTemperature(heaterTemperature);
+    if (heaterTemperature != evaporateSettings.heaterTemperature()) {
+      evaporateSettings = evaporateSettings.heaterTemperature(heaterTemperature);
+      groupSettings = groupSettings.evaporateSettings(evaporateSettings);
       group.updateHeaterSetpoint();
     }
 
-    if (heatTime != settings.getHeatTimer()) {
-      settings.setHeatTimer(heatTime);
+    if (heatTime != evaporateSettings.evaporateTime()) {
+      evaporateSettings = evaporateSettings.evaporateTime(heatTime);
+      groupSettings = groupSettings.evaporateSettings(evaporateSettings);
       group.resetHeatTimer();
     }
 
-    if (purgeTime != settings.getPurgeTimer()) {
-      settings.setPurgeTimer(purgeTime);
+    PurgeSettings purgeSettings = groupSettings.purgeSettings();
+    if (purgeTime != purgeSettings.purgeTime()) {
+      purgeSettings = purgeSettings.purgeTime(purgeTime);
+      groupSettings = groupSettings.purgeSettings(purgeSettings);
       group.resetPurgeTimer();
     }
+
+    group.setSettings(groupSettings);
   }
 
   @FXML
@@ -289,11 +299,12 @@ public class GroupSettingsController extends CloseableController {
     this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
       controller.setCallback(confirmResult -> {
         if (confirmResult == ConfirmResult.CONFIRM) {
-          Settings settings = Mobifume.getInstance().getModelManager().getGlobalSettings();
-          maxHumField.setText(settings.getHumidifyMax() + "");
-          heaterTempField.setText(settings.getHeaterTemperature() + "");
-          heatTimeField.setText(settings.getHeatTimer() + "");
-          purgeTimeField.setText(settings.getPurgeTimer() + "");
+          GroupSettings groupSettings =
+              Mobifume.getInstance().getModelManager().getGlobalSettings().groupTemplateSettings();
+          maxHumField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
+          heaterTempField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
+          heatTimeField.setText(groupSettings.evaporateSettings().evaporateTime() + "");
+          purgeTimeField.setText(groupSettings.purgeSettings().purgeTime() + "");
 
           applySettings();
         }

@@ -11,8 +11,13 @@ import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
+import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
+import com.attestorforensics.mobifumecore.model.setting.EvaporateSettings;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
+import com.attestorforensics.mobifumecore.model.setting.HumidifySettings;
+import com.attestorforensics.mobifumecore.model.setting.PurgeSettings;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -117,7 +122,7 @@ public class GroupController extends CloseableController {
   public void setGroup(Group group) {
     this.group = group;
     GroupControllerHolder.getInstance().addController(group, this);
-    groupName.setText(group.getName() + " - " + group.getSettings().getCycleCount());
+    groupName.setText(group.getName() + " - " + group.getCycleNumber());
 
     initEvaporant();
     updateMaxHumidity();
@@ -153,21 +158,22 @@ public class GroupController extends CloseableController {
   }
 
   private void initEvaporant() {
-    Settings settings = group.getSettings();
-    evaporant.setText(
-        settings.getEvaporant().name().substring(0, 1).toUpperCase() + settings.getEvaporant()
-            .name()
-            .substring(1)
-            .toLowerCase());
-    double amount = settings.getRoomWidth() * settings.getRoomDepth() * settings.getRoomHeight()
-        * settings.getEvaporantAmountPerCm();
+    GroupSettings groupSettings = group.getSettings();
+    EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
+    Evaporant evaporant = evaporantSettings.evaporant();
+    this.evaporant.setText(evaporant.name().substring(0, 1).toUpperCase() + evaporant.name()
+        .substring(1)
+        .toLowerCase());
+    double amount = evaporantSettings.roomWidth() * evaporantSettings.roomDepth()
+        * evaporantSettings.roomHeight() * evaporantSettings.evaporantAmountPerCm();
     amount = (double) Math.round(amount * 100) / 100;
     evaporantAmount.setText(LocaleManager.getInstance().getString("group.amount.gramm", amount));
   }
 
   private void updateMaxHumidity() {
     humidify.setText(LocaleManager.getInstance()
-        .getString("group.humidify.wait", group.getSettings().getHumidifyMax()));
+        .getString("group.humidify.wait",
+            group.getSettings().humidifySettings().humiditySetpoint()));
   }
 
   public void clearActionPane() {
@@ -334,7 +340,7 @@ public class GroupController extends CloseableController {
     }
 
     if (group.getStatus() == GroupStatus.HUMIDIFY || group.getStatus() == GroupStatus.EVAPORATE) {
-      double humGoal = group.getSettings().getHumidifyMax();
+      double humGoal = group.getSettings().humidifySettings().humiditySetpoint();
       humiditySetpoint.setText((int) humGoal + "%rH");
       humiditySetpointPane.setVisible(true);
     } else {
@@ -350,14 +356,16 @@ public class GroupController extends CloseableController {
 
   private long updateEvaporateTimer() {
     long timePassed = System.currentTimeMillis() - group.getEvaporateStartTime();
-    long countdown = group.getSettings().getHeatTimer() * 60 * 1000 - timePassed + 1000;
+    long countdown =
+        group.getSettings().evaporateSettings().evaporateTime() * 60 * 1000L - timePassed + 1000;
     updateCountdown(countdown, evaporateTimer);
     return countdown;
   }
 
   private long updatePurgeTimer() {
     long timePassed = System.currentTimeMillis() - group.getPurgeStartTime();
-    long countdown = group.getSettings().getPurgeTimer() * 60 * 1000 - timePassed + 1000;
+    long countdown =
+        group.getSettings().purgeSettings().purgeTime() * 60 * 1000L - timePassed + 1000;
     updateCountdown(countdown, purgeTimer);
     return countdown;
   }
@@ -460,7 +468,12 @@ public class GroupController extends CloseableController {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
           if (group.getHumidity() != -128) {
-            group.getSettings().setHumidifyMax(Math.round((float) group.getHumidity()));
+            GroupSettings groupSettings = group.getSettings();
+            HumidifySettings humidifySettings = groupSettings.humidifySettings();
+            humidifySettings =
+                humidifySettings.humiditySetpoint(Math.round((float) group.getHumidity()));
+            groupSettings.humidifySettings(humidifySettings);
+            group.setSettings(groupSettings);
           }
 
           group.startEvaporate();
@@ -576,9 +589,12 @@ public class GroupController extends CloseableController {
     this.<GroupCalculatorController>loadAndOpenView("GroupCalculator.fxml")
         .thenAccept(groupCalculatorController -> {
           groupCalculatorController.setCallback(amount -> {
-            Settings settings = group.getSettings();
-            evaporant.setText(settings.getEvaporant().name().substring(0, 1).toUpperCase()
-                + settings.getEvaporant().name().substring(1).toLowerCase());
+            GroupSettings groupSettings = group.getSettings();
+            EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
+            Evaporant evaporant = evaporantSettings.evaporant();
+            this.evaporant.setText(evaporant.name().substring(0, 1).toUpperCase() + evaporant.name()
+                .substring(1)
+                .toLowerCase());
             evaporantAmount.setText(
                 LocaleManager.getInstance().getString("group.amount.gramm", amount));
           });
@@ -591,7 +607,11 @@ public class GroupController extends CloseableController {
   public void onEvaporateTimerAdd() {
     Sound.click();
 
-    group.getSettings().setHeatTimer(group.getSettings().getHeatTimer() + 5);
+    GroupSettings groupSettings = group.getSettings();
+    EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
+    evaporateSettings = evaporateSettings.evaporateTime(evaporateSettings.evaporateTime() + 5);
+    groupSettings.evaporateSettings(evaporateSettings);
+    group.setSettings(groupSettings);
     group.updateHeatTimer();
     updateEvaporateTimer();
   }
@@ -600,7 +620,11 @@ public class GroupController extends CloseableController {
   public void onPurgeTimerAdd() {
     Sound.click();
 
-    group.getSettings().setPurgeTimer(group.getSettings().getPurgeTimer() + 5);
+    GroupSettings groupSettings = group.getSettings();
+    PurgeSettings purgeSettings = groupSettings.purgeSettings();
+    purgeSettings = purgeSettings.purgeTime(purgeSettings.purgeTime() + 5);
+    groupSettings.purgeSettings(purgeSettings);
+    group.setSettings(groupSettings);
     group.updatePurgeTimer();
     updatePurgeTimer();
   }

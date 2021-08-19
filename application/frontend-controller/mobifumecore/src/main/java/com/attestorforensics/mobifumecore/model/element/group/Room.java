@@ -4,7 +4,6 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.group.GroupCanceledEvent;
 import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateFinishedEvent;
@@ -17,52 +16,51 @@ import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeFinishedE
 import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeStartedEvent;
 import com.attestorforensics.mobifumecore.model.event.group.setup.SetupStartedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.log4j.Logger;
 
 public class Room implements Group {
 
   private final Logger logger;
   private final String name;
-  private final List<Device> devices;
-
+  private final int cycleNumber;
+  private final List<Base> bases;
+  private final List<Humidifier> humidifiers;
   private final List<Filter> filters;
+  private GroupSettings settings;
 
   private GroupStatus status = GroupStatus.START;
-
-  private final Settings settings;
-
   private boolean humidifyMaxReached;
-
   private int humidifyMaxTimes;
-
   private boolean humidifying;
-
   private ScheduledFuture<?> updateLatchTask;
-
   private long evaporateStartTime;
   private ScheduledFuture<?> evaporateTask;
   private ScheduledFuture<?> evaporateTimeTask;
-
   private long purgeStartTime;
   private ScheduledFuture<?> purgeTask;
 
-  public Room(String name, List<Device> devices, List<Filter> filters, Settings settings) {
+  public Room(String name, int cycleNumber, List<Base> bases, List<Humidifier> humidifiers,
+      List<Filter> filters, GroupSettings settings) {
+    logger = CustomLogger.createGroupLogger(this);
     this.name = name;
-    this.devices = devices;
+    this.cycleNumber = cycleNumber;
+    this.bases = bases;
+    this.humidifiers = humidifiers;
+    this.filters = filters;
+    this.settings = settings;
+
     if (getBases().size() != filters.size()) {
       throw new IllegalArgumentException(
           "The count of filters is not the same as the count of bases!");
     }
-    this.filters = filters;
-    this.settings = settings;
-
-    logger = CustomLogger.createGroupLogger(this);
   }
 
   @Override
@@ -72,27 +70,22 @@ public class Room implements Group {
 
   @Override
   public boolean containsDevice(Device device) {
-    return devices.contains(device);
+    return bases.contains(device) || humidifiers.contains(device);
   }
 
   @Override
   public List<Base> getBases() {
-    return devices.stream()
-        .filter(device -> device.getType() == DeviceType.BASE)
-        .map(Base.class::cast)
-        .collect(Collectors.toList());
+    return bases;
   }
 
   @Override
   public List<Humidifier> getHumidifiers() {
-    return devices.stream()
-        .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
-        .map(Humidifier.class::cast)
-        .collect(Collectors.toList());
+    return humidifiers;
   }
 
   @Override
-  public void setSettings(Settings settings) {
+  public void setSettings(GroupSettings settings) {
+    this.settings = settings;
     if (Objects.nonNull(evaporateTask) && !evaporateTask.isDone()) {
       createOrUpdateEvaporateTask();
     }
@@ -104,7 +97,7 @@ public class Room implements Group {
 
   @Override
   public double getTemperature() {
-    return getBases().stream()
+    return bases.stream()
         .filter(base -> base.getTemperature() != -128 && !base.isOffline())
         .mapToDouble(Base::getTemperature)
         .average()
@@ -113,7 +106,7 @@ public class Room implements Group {
 
   @Override
   public double getHumidity() {
-    return getBases().stream()
+    return bases.stream()
         .filter(base -> base.getHumidity() != -128 && !base.isOffline())
         .mapToDouble(Base::getHumidity)
         .average()
@@ -125,7 +118,7 @@ public class Room implements Group {
     status = GroupStatus.START;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
-    this.getDevices().forEach(Device::reset);
+    getDevices().forEach(Device::reset);
     Mobifume.getInstance().getEventDispatcher().call(SetupStartedEvent.create(this));
   }
 
@@ -179,11 +172,11 @@ public class Room implements Group {
     status = GroupStatus.EVAPORATE;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
-    double evaporantAmount =
-        settings.getRoomWidth() * settings.getRoomDepth() * settings.getRoomHeight()
-            * settings.getEvaporantAmountPerCm();
+    EvaporantSettings evaporantSettings = settings.evaporantSettings();
+    double evaporantAmount = evaporantSettings.roomWidth() * evaporantSettings.roomDepth()
+        * evaporantSettings.roomHeight() * evaporantSettings.evaporantAmountPerCm();
     filters.forEach(
-        filter -> filter.addRun(settings.getCycleCount(), settings.getEvaporant(), evaporantAmount,
+        filter -> filter.addRun(cycleNumber, evaporantSettings.evaporant(), evaporantAmount,
             filters.size()));
 
     humidifyMaxReached = true;
@@ -191,7 +184,7 @@ public class Room implements Group {
     cancelEvaporateTaskIfScheduled();
     evaporateStartTime = System.currentTimeMillis();
 
-    getBases().forEach(base -> base.updateTime(settings.getHeatTimer()));
+    getBases().forEach(base -> base.updateTime(settings.evaporateSettings().evaporateTime()));
     updateHeaterSetpoint();
     getBases().forEach(base -> base.updateLatch(false));
 
@@ -213,7 +206,7 @@ public class Room implements Group {
   private void createOrUpdateEvaporateTask() {
     cancelEvaporateTaskIfScheduled();
     long timePassed = System.currentTimeMillis() - evaporateStartTime;
-    long timeLeft = settings.getHeatTimer() * 60 * 1000 - timePassed;
+    long timeLeft = settings.evaporateSettings().evaporateTime() * 60 * 1000L - timePassed;
     evaporateTask = Mobifume.getInstance().getScheduledExecutorService().schedule(() -> {
       Mobifume.getInstance().getEventDispatcher().call(EvaporateFinishedEvent.create(this));
       startPurge();
@@ -227,8 +220,8 @@ public class Room implements Group {
 
           long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
           int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-          getBases().forEach(
-              base -> base.updateTime(settings.getHeatTimer() - passedTimeInMinutes));
+          getBases().forEach(base -> base.updateTime(
+              settings.evaporateSettings().evaporateTime() - passedTimeInMinutes));
         }, 60L, 60L, TimeUnit.MINUTES);
   }
 
@@ -262,7 +255,7 @@ public class Room implements Group {
   private void createOrUpdatePurgeTask() {
     cancelPurgeTaskIfScheduled();
     long timePassed = System.currentTimeMillis() - purgeStartTime;
-    long timeLeft = settings.getPurgeTimer() * 60 * 1000 - timePassed;
+    long timeLeft = settings.purgeSettings().purgeTime() * 60 * 1000L - timePassed;
     purgeTask = Mobifume.getInstance()
         .getScheduledExecutorService()
         .schedule(this::finish, timeLeft, TimeUnit.MILLISECONDS);
@@ -299,9 +292,11 @@ public class Room implements Group {
     if (status != GroupStatus.EVAPORATE) {
       return;
     }
-    CustomLogger.info(this, "UPDATE_HEATERSETPOINT", settings.getHeaterTemperature());
+
+    int heaterTemperature = settings.evaporateSettings().heaterTemperature();
+    CustomLogger.info(this, "UPDATE_HEATERSETPOINT", heaterTemperature);
     CustomLogger.logGroupSettings(this);
-    getBases().forEach(base -> base.updateHeaterSetpoint(settings.getHeaterTemperature()));
+    getBases().forEach(base -> base.updateHeaterSetpoint(heaterTemperature));
   }
 
   @Override
@@ -313,8 +308,8 @@ public class Room implements Group {
         if (status == GroupStatus.EVAPORATE) {
           long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
           int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-          base.updateTime(settings.getHeatTimer() - passedTimeInMinutes);
-          base.forceUpdateHeaterSetpoint(settings.getHeaterTemperature());
+          base.updateTime(settings.evaporateSettings().evaporateTime() - passedTimeInMinutes);
+          base.forceUpdateHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
         } else {
           base.forceUpdateHeaterSetpoint(0);
         }
@@ -341,11 +336,12 @@ public class Room implements Group {
       return;
     }
 
-    CustomLogger.info(this, "UPDATE_HEATTIMER", evaporateStartTime, settings.getHeatTimer());
+    int evaporateTime = settings.evaporateSettings().evaporateTime();
+    CustomLogger.info(this, "UPDATE_HEATTIMER", evaporateStartTime, evaporateTime);
     CustomLogger.logGroupSettings(this);
     long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
     int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-    getBases().forEach(base -> base.updateTime(settings.getHeatTimer() - passedTimeInMinutes));
+    getBases().forEach(base -> base.updateTime(evaporateTime - passedTimeInMinutes));
     createOrUpdateEvaporateTask();
   }
 
@@ -356,7 +352,8 @@ public class Room implements Group {
     }
 
     evaporateStartTime = System.currentTimeMillis();
-    CustomLogger.info(this, "RESET_HEATTIMER", evaporateStartTime, settings.getHeatTimer());
+    CustomLogger.info(this, "RESET_HEATTIMER", evaporateStartTime,
+        settings.evaporateSettings().evaporateTime());
     CustomLogger.logGroupSettings(this);
     updateHeatTimer();
   }
@@ -367,7 +364,8 @@ public class Room implements Group {
       return;
     }
 
-    CustomLogger.info(this, "UPDATE_PURGETIMER", purgeStartTime, settings.getPurgeTimer());
+    CustomLogger.info(this, "UPDATE_PURGETIMER", purgeStartTime,
+        settings.purgeSettings().purgeTime());
     CustomLogger.logGroupSettings(this);
     createOrUpdatePurgeTask();
   }
@@ -379,7 +377,8 @@ public class Room implements Group {
     }
 
     purgeStartTime = System.currentTimeMillis();
-    CustomLogger.info(this, "RESET_PURGETIMER", purgeStartTime, settings.getPurgeTimer());
+    CustomLogger.info(this, "RESET_PURGETIMER", purgeStartTime,
+        settings.purgeSettings().purgeTime());
     CustomLogger.logGroupSettings(this);
     updatePurgeTimer();
   }
@@ -388,8 +387,10 @@ public class Room implements Group {
     if (status != GroupStatus.HUMIDIFY && status != GroupStatus.EVAPORATE) {
       return;
     }
+
+    int humiditySetpoint = settings.humidifySettings().humiditySetpoint();
     if (!isHumidifyMaxReached()) {
-      if (getHumidity() <= 100 && getHumidity() >= getSettings().getHumidifyMax()) {
+      if (getHumidity() <= 100 && getHumidity() >= humiditySetpoint) {
         humidifyMaxTimes++;
         if (humidifyMaxTimes >= 5) {
           humidifyMaxReached = true;
@@ -399,12 +400,12 @@ public class Room implements Group {
       return;
     }
 
-    if (isHumidifying()
-        && getHumidity() >= getSettings().getHumidifyMax() + getSettings().getHumidifyPuffer()) {
+    if (isHumidifying() && getHumidity() >= humiditySetpoint + settings.humidifySettings()
+        .humidityPuffer()) {
       setHumidifying(false);
       Mobifume.getInstance().getEventDispatcher().call(HumidifyEnabledEvent.create(this));
     }
-    if (!isHumidifying() && getHumidity() <= getSettings().getHumidifyMax()) {
+    if (!isHumidifying() && getHumidity() <= humiditySetpoint) {
       setHumidifying(true);
       Mobifume.getInstance().getEventDispatcher().call(HumidifyDisabledEvent.create(this));
     }
@@ -429,8 +430,13 @@ public class Room implements Group {
     return name;
   }
 
+  @Override
+  public int getCycleNumber() {
+    return cycleNumber;
+  }
+
   public List<Device> getDevices() {
-    return devices;
+    return Stream.concat(bases.stream(), humidifiers.stream()).collect(Collectors.toList());
   }
 
   public List<Filter> getFilters() {
@@ -441,7 +447,7 @@ public class Room implements Group {
     return status;
   }
 
-  public Settings getSettings() {
+  public GroupSettings getSettings() {
     return settings;
   }
 

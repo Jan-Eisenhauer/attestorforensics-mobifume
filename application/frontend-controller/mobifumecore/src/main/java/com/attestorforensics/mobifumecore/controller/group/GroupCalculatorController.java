@@ -2,13 +2,13 @@ package com.attestorforensics.mobifumecore.controller.group;
 
 import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.SaveDiscardCancelDialogController;
-import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedFloatTextFormatter;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -16,10 +16,8 @@ import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -74,11 +72,13 @@ public class GroupCalculatorController extends CloseableController {
 
   public void setGroup(Group group) {
     this.group = group;
-    groupName.setText(group.getName() + " - " + group.getSettings().getCycleCount());
+    groupName.setText(group.getName() + " - " + group.getCycleNumber());
 
-    Settings settings = group.getSettings();
+    GroupSettings groupSettings = group.getSettings();
+    EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
+
     roomWidth.setTextFormatter(new UnsignedFloatTextFormatter());
-    roomWidth.setText(settings.getRoomWidth() + "");
+    roomWidth.setText(evaporantSettings.roomWidth() + "");
     roomWidth.textProperty().addListener((observableValue, oldText, newText) -> {
       updateInputEvaporantAmount();
       if (focusedField == roomWidth) {
@@ -90,7 +90,7 @@ public class GroupCalculatorController extends CloseableController {
             (observableValue, oldState, focused) -> onFocus(roomWidth, roomWidthValue, focused));
 
     roomDepth.setTextFormatter(new UnsignedFloatTextFormatter());
-    roomDepth.setText(settings.getRoomDepth() + "");
+    roomDepth.setText(evaporantSettings.roomDepth() + "");
     roomDepth.textProperty().addListener((observableValue, oldText, newText) -> {
       updateInputEvaporantAmount();
       if (focusedField == roomDepth) {
@@ -102,7 +102,7 @@ public class GroupCalculatorController extends CloseableController {
             (observableValue, oldState, focused) -> onFocus(roomDepth, roomDepthValue, focused));
 
     roomHeight.setTextFormatter(new UnsignedFloatTextFormatter());
-    roomHeight.setText(settings.getRoomHeight() + "");
+    roomHeight.setText(evaporantSettings.roomHeight() + "");
     roomHeight.textProperty().addListener((observableValue, oldText, newText) -> {
       updateInputEvaporantAmount();
       if (focusedField == roomHeight) {
@@ -114,7 +114,7 @@ public class GroupCalculatorController extends CloseableController {
             (observableValue, oldState, focused) -> onFocus(roomHeight, roomHeightValue, focused));
 
     amountPerCm.setTextFormatter(new UnsignedFloatTextFormatter());
-    amountPerCm.setText(settings.getEvaporantAmountPerCm() + "");
+    amountPerCm.setText(evaporantSettings.evaporantAmountPerCm() + "");
     amountPerCm.textProperty().addListener((observableValue, oldText, newText) -> {
       updateInputEvaporantAmount();
       if (focusedField == amountPerCm) {
@@ -125,18 +125,18 @@ public class GroupCalculatorController extends CloseableController {
         .addListener((observableValue, oldState, focused) -> onFocus(amountPerCm, amountPerCmValue,
             focused));
 
+    Evaporant evaporant = evaporantSettings.evaporant();
+
     ObservableList<String> evaporants = FXCollections.observableArrayList();
     Arrays.asList(Evaporant.values())
         .forEach(evapo -> evaporants.add(
             evapo.name().substring(0, 1).toUpperCase() + evapo.name().substring(1).toLowerCase()));
-    evaporant.setItems(evaporants);
-    evaporant.getSelectionModel()
-        .select(
-            settings.getEvaporant().name().substring(0, 1).toUpperCase() + settings.getEvaporant()
-                .name()
-                .substring(1)
-                .toLowerCase());
-    evaporant.getSelectionModel()
+    this.evaporant.setItems(evaporants);
+    this.evaporant.getSelectionModel()
+        .select(evaporant.name().substring(0, 1).toUpperCase() + evaporant.name()
+            .substring(1)
+            .toLowerCase());
+    this.evaporant.getSelectionModel()
         .selectedItemProperty()
         .addListener((observableValue, oldItem, newItem) -> {
           if (newItem.isEmpty()) {
@@ -149,32 +149,33 @@ public class GroupCalculatorController extends CloseableController {
           updateInputEvaporantAmount();
         });
 
-    roomWidthValue = settings.getRoomWidth();
-    roomDepthValue = settings.getRoomDepth();
-    roomHeightValue = settings.getRoomHeight();
-    amountPerCmValue = settings.getEvaporantAmountPerCm();
-    evaporantValue = settings.getEvaporant();
+    roomWidthValue = evaporantSettings.roomWidth();
+    roomDepthValue = evaporantSettings.roomDepth();
+    roomHeightValue = evaporantSettings.roomHeight();
+    amountPerCmValue = evaporantSettings.evaporantAmountPerCm();
+    evaporantValue = evaporantSettings.evaporant();
     updateInputEvaporantAmount();
   }
 
   private boolean haveSettingsChanged() {
-    Settings settings = group.getSettings();
+    GroupSettings groupSettings = group.getSettings();
+    EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
     try {
-      if (roomWidthValue <= MAX_INPUT_VALUE && roomWidthValue != settings.getRoomWidth()) {
+      if (roomWidthValue <= MAX_INPUT_VALUE && roomWidthValue != evaporantSettings.roomWidth()) {
         return true;
       }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
     try {
-      if (roomDepthValue <= MAX_INPUT_VALUE && roomDepthValue != settings.getRoomDepth()) {
+      if (roomDepthValue <= MAX_INPUT_VALUE && roomDepthValue != evaporantSettings.roomDepth()) {
         return true;
       }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
     try {
-      if (roomHeightValue <= MAX_INPUT_VALUE && roomHeightValue != settings.getRoomHeight()) {
+      if (roomHeightValue <= MAX_INPUT_VALUE && roomHeightValue != evaporantSettings.roomHeight()) {
         return true;
       }
     } catch (NumberFormatException ignored) {
@@ -182,70 +183,78 @@ public class GroupCalculatorController extends CloseableController {
     }
     try {
       if (amountPerCmValue <= MAX_INPUT_VALUE
-          && amountPerCmValue != settings.getEvaporantAmountPerCm()) {
+          && amountPerCmValue != evaporantSettings.evaporantAmountPerCm()) {
         return true;
       }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
 
-    return evaporantValue != settings.getEvaporant();
+    return evaporantValue != evaporantSettings.evaporant();
   }
 
   private void applySettings() {
-    Settings settings = group.getSettings();
+    GroupSettings groupSettings = group.getSettings();
+    EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
+
     try {
       double roomWidthValue = Double.parseDouble(this.roomWidth.getText());
       if (roomWidthValue <= MAX_INPUT_VALUE) {
-        settings.setRoomWidth(roomWidthValue);
+        evaporantSettings = evaporantSettings.roomWidth(roomWidthValue);
       }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
+
     try {
       double roomDepthValue = Double.parseDouble(roomDepth.getText());
       if (roomDepthValue <= MAX_INPUT_VALUE) {
-        settings.setRoomDepth(roomDepthValue);
+        evaporantSettings = evaporantSettings.roomDepth(roomDepthValue);
       }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
+
     try {
       double roomHeightValue = Double.parseDouble(roomHeight.getText());
       if (roomHeightValue <= MAX_INPUT_VALUE) {
-        settings.setRoomHeight(roomHeightValue);
+        evaporantSettings = evaporantSettings.roomHeight(roomHeightValue);
       }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
+
     try {
       double amountPerCmValue = Double.parseDouble(amountPerCm.getText());
       if (amountPerCmValue <= MAX_INPUT_VALUE) {
-        settings.setEvaporantAmountPerCm(amountPerCmValue);
+        evaporantSettings = evaporantSettings.evaporantAmountPerCm(amountPerCmValue);
       }
     } catch (NumberFormatException ignored) {
       // value invalid
     }
 
-    settings.setEvaporant(evaporantValue);
+    evaporantSettings = evaporantSettings.evaporant(evaporantValue);
+    groupSettings = groupSettings.evaporantSettings(evaporantSettings);
+    group.setSettings(groupSettings);
+
     group.getLogger()
-        .info(
-            "EVAPORANT;" + settings.getEvaporant() + ";" + settings.getEvaporantAmountPerCm() + ";"
-                + settings.getRoomWidth() + ";" + settings.getRoomDepth() + ";"
-                + settings.getRoomHeight());
+        .info("EVAPORANT;" + evaporantSettings.evaporant() + ";"
+            + evaporantSettings.evaporantAmountPerCm() + ";" + evaporantSettings.roomWidth() + ";"
+            + evaporantSettings.roomDepth() + ";" + evaporantSettings.roomHeight());
   }
 
   private void resetSettings() {
-    Settings settings = group.getSettings();
-    roomWidthValue = settings.getRoomWidth();
+    GroupSettings groupSettings = group.getSettings();
+    EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
+    roomWidthValue = evaporantSettings.roomWidth();
     roomWidth.setText(roomWidthValue + "");
-    roomDepthValue = settings.getRoomDepth();
+    roomDepthValue = evaporantSettings.roomDepth();
     roomDepth.setText(roomDepthValue + "");
-    roomHeightValue = settings.getRoomHeight();
+    roomHeightValue = evaporantSettings.roomHeight();
     roomHeight.setText(roomHeightValue + "");
-    amountPerCmValue = settings.getEvaporantAmountPerCm();
+    amountPerCmValue = evaporantSettings.evaporantAmountPerCm();
     amountPerCm.setText(amountPerCmValue + "");
-    evaporantValue = settings.getEvaporant();
+    evaporantValue = evaporantSettings.evaporant();
     updateInputEvaporantAmount();
   }
 
@@ -305,9 +314,11 @@ public class GroupCalculatorController extends CloseableController {
   }
 
   private double calculateSettingsEvaporantAmount() {
-    Settings settings = group.getSettings();
-    double roomSize = settings.getRoomWidth() * settings.getRoomDepth() * settings.getRoomHeight();
-    double evaporantAmount = roomSize * settings.getEvaporantAmountPerCm();
+    GroupSettings groupSettings = group.getSettings();
+    EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
+    double roomSize =
+        evaporantSettings.roomWidth() * evaporantSettings.roomDepth() * evaporantSettings.roomHeight();
+    double evaporantAmount = roomSize * evaporantSettings.evaporantAmountPerCm();
     evaporantAmount = (double) Math.round(evaporantAmount * 100) / 100;
     return evaporantAmount;
   }

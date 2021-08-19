@@ -5,7 +5,7 @@ import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
 import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.element.node.FilterFactory;
 import com.attestorforensics.mobifumecore.model.element.node.FilterPool;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.GlobalSettings;
 import com.attestorforensics.mobifumecore.model.update.Updater;
 
 /**
@@ -23,12 +23,9 @@ public interface ModelManager {
 
   FilterFactory getFilterFactory();
 
-  /**
-   * Gets the global settings.
-   *
-   * @return the global settings
-   */
-  Settings getGlobalSettings();
+  GlobalSettings getGlobalSettings();
+
+  void setGlobalSettings(GlobalSettings globalSettings);
 
   Updater getUpdater();
 }

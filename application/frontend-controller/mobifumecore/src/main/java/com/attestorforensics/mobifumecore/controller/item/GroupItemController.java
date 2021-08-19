@@ -12,7 +12,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
@@ -50,7 +49,7 @@ public class GroupItemController extends ItemController {
     this.group = group;
 
     groupPane.setVisible(false);
-    groupPane.setText(group.getName() + " - " + group.getSettings().getCycleCount());
+    groupPane.setText(group.getName() + " - " + group.getCycleNumber());
     Platform.runLater(() -> {
       Node title = groupPane.lookup(".title");
       title.setStyle("-fx-background-color: " + color);
@@ -86,12 +85,13 @@ public class GroupItemController extends ItemController {
         int humidity = (int) group.getHumidity();
         status.setText(LocaleManager.getInstance()
             .getString("group.status.humidify", humidity >= 0 ? humidity : "-",
-                group.getSettings().getHumidifyMax()));
+                group.getSettings().humidifySettings().humiditySetpoint()));
         break;
       case EVAPORATE:
         long timePassedEvaporate = System.currentTimeMillis() - group.getEvaporateStartTime();
         long countdownEvaporate =
-            group.getSettings().getHeatTimer() * 60 * 1000 - timePassedEvaporate + 1000;
+            group.getSettings().evaporateSettings().evaporateTime() * 60 * 1000L
+                - timePassedEvaporate + 1000;
         Date dateEvaporate = new Date(countdownEvaporate - 1000 * 60 * 60L);
         String formattedEvaporate;
         if (dateEvaporate.getTime() < 0) {
@@ -105,7 +105,7 @@ public class GroupItemController extends ItemController {
       case PURGE:
         long timePassedPurge = System.currentTimeMillis() - group.getPurgeStartTime();
         long countdownPurge =
-            group.getSettings().getPurgeTimer() * 60 * 1000L - timePassedPurge + 1000L;
+            group.getSettings().purgeSettings().purgeTime() * 60 * 1000L - timePassedPurge + 1000L;
         Date datePurge = new Date(countdownPurge - 1000 * 60 * 60L);
         String formattedPurge;
         if (datePurge.getTime() < 0) {
@@ -166,7 +166,7 @@ public class GroupItemController extends ItemController {
           LocaleManager.getInstance().getString("dialog.group.remove.title", group.getName()));
       controller.setContent(LocaleManager.getInstance()
           .getString("dialog.group.remove.content",
-              group.getName() + " - " + group.getSettings().getCycleCount()));
+              group.getName() + " - " + group.getCycleNumber()));
     });
   }
 }

@@ -3,26 +3,26 @@ package com.attestorforensics.mobifumecore.model.element.group;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.attestorforensics.mobifumecore.Mobifume;
+import com.attestorforensics.mobifumecore.model.MobiModelManager;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.group.GroupCreatedEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
+import com.attestorforensics.mobifumecore.model.setting.GlobalSettings;
 import java.util.List;
-import org.apache.commons.compress.utils.Lists;
 
 public class RoomFactory implements GroupFactory {
 
-  private final Settings globalSettings;
+  private final MobiModelManager mobiModelManager;
 
-  private RoomFactory(Settings globalSettings) {
-    this.globalSettings = globalSettings;
+  private RoomFactory(MobiModelManager mobiModelManager) {
+    this.mobiModelManager = mobiModelManager;
   }
 
-  public static RoomFactory create(Settings globalSettings) {
-    return new RoomFactory(globalSettings);
+  public static RoomFactory create(MobiModelManager mobiModelManager) {
+    return new RoomFactory(mobiModelManager);
   }
 
   @Override
@@ -32,22 +32,23 @@ public class RoomFactory implements GroupFactory {
     checkArgument(!humidifiers.isEmpty(), "No humidifier provided");
     checkArgument(bases.size() == filters.size(), "Filter count does not match base count");
 
-    List<Device> devices = Lists.newArrayList();
-    devices.addAll(bases);
-    devices.addAll(humidifiers);
-    Room room = new Room(name, devices, filters, Settings.copy(globalSettings));
-    globalSettings.increaseCycleCount();
-    Settings.saveGlobalSettings(globalSettings);
+    GlobalSettings globalSettings = mobiModelManager.getGlobalSettings();
+    globalSettings = globalSettings.increaseCycleNumber();
+    mobiModelManager.setGlobalSettings(globalSettings);
+    int cycleNumber = globalSettings.cycleNumber();
+
+    Room room = new Room(name, cycleNumber, bases, humidifiers, filters,
+        globalSettings.groupTemplateSettings());
 
     CustomLogger.logGroupHeader(room);
     CustomLogger.logGroupSettings(room);
     CustomLogger.logGroupState(room);
     CustomLogger.logGroupDevices(room);
-    Settings groupSettings = room.getSettings();
+    EvaporantSettings evaporantSettings = room.getSettings().evaporantSettings();
     room.getLogger()
-        .info("DEFAULT_EVAPORANT;" + groupSettings.getEvaporant() + ";"
-            + groupSettings.getEvaporantAmountPerCm() + ";" + groupSettings.getRoomWidth() + ";"
-            + groupSettings.getRoomDepth() + ";" + groupSettings.getRoomHeight());
+        .info("DEFAULT_EVAPORANT;" + evaporantSettings.evaporant() + ";"
+            + evaporantSettings.evaporantAmountPerCm() + ";" + evaporantSettings.roomWidth() + ";"
+            + evaporantSettings.roomDepth() + ";" + evaporantSettings.roomHeight());
     room.setupStart();
     Mobifume.getInstance().getEventDispatcher().call(GroupCreatedEvent.create(room));
     return room;

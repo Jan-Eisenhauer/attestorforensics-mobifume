@@ -3,6 +3,7 @@ package com.attestorforensics.mobifumecore.model.element.group;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.util.List;
 
 public interface GroupFactory {

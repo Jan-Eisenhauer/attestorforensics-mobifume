@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -45,13 +45,13 @@ public class CustomLogger {
   }
 
   public static Logger createGroupLogger(Group group) {
-    Logger logger = Logger.getLogger(group.getSettings().getCycleCount() + "-" + group.getName());
+    Logger logger = Logger.getLogger(group.getCycleNumber() + "-" + group.getName());
 
     try {
       PatternLayout layout = new PatternLayout("[%d{yyyy-MM-dd HH:mm:ss}];%p;%m%n");
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
       String dateTime = formatter.format(new Date(System.currentTimeMillis()));
-      String cycle = String.format("%03d", group.getSettings().getCycleCount());
+      String cycle = String.format("%03d", group.getCycleNumber());
       FileAppender appender =
           new FileAppender(layout, LOG_DIRECTORY + File.separator + dateTime + "." + cycle + ".run",
               false);
@@ -65,8 +65,7 @@ public class CustomLogger {
   }
 
   public static void logGroupHeader(Group group) {
-    group.getLogger()
-        .trace(join("HEAD", version(), group.getSettings().getCycleCount(), group.getName()));
+    group.getLogger().trace(join("HEAD", version(), group.getCycleNumber(), group.getName()));
   }
 
   private static String join(Object... elements) {
@@ -84,9 +83,12 @@ public class CustomLogger {
   }
 
   public static void logGroupSettings(Group group) {
-    Settings settings = group.getSettings();
-    info(group, "SETTINGS", settings.getHumidifyMax(), settings.getHumidifyPuffer(),
-        settings.getHeaterTemperature(), settings.getHeatTimer(), settings.getPurgeTimer());
+    GroupSettings groupSettings = group.getSettings();
+    info(group, "SETTINGS", groupSettings.humidifySettings().humiditySetpoint(),
+        groupSettings.humidifySettings().humidityPuffer(),
+        groupSettings.evaporateSettings().heaterTemperature(),
+        groupSettings.evaporateSettings().evaporateTime(),
+        groupSettings.purgeSettings().purgeTime());
   }
 
   public static void info(Object... elements) {

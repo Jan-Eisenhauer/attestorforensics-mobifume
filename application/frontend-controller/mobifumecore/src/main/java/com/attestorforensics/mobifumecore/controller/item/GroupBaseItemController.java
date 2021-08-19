@@ -63,7 +63,7 @@ public class GroupBaseItemController extends ItemController {
     } else if (group.getStatus() == GroupStatus.EVAPORATE) {
       this.temperature.setText(LocaleManager.getInstance()
           .getString("group.base.temperature.setpoint", temperature,
-              group.getSettings().getHeaterTemperature()));
+              group.getSettings().evaporateSettings().heaterTemperature()));
     } else {
       this.temperature.setText(
           LocaleManager.getInstance().getString("group.base.temperature", temperature));

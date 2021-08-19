@@ -9,7 +9,11 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedIntTextFormatter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.EvaporateSettings;
+import com.attestorforensics.mobifumecore.model.setting.GlobalSettings;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
+import com.attestorforensics.mobifumecore.model.setting.HumidifySettings;
+import com.attestorforensics.mobifumecore.model.setting.PurgeSettings;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
@@ -108,16 +112,17 @@ public class GlobalSettingsController extends CloseableController {
     purgeTimeSlider.valueProperty()
         .addListener((observableValue, number, t1) -> onPurgeTimeSlider());
 
-    Settings settings = Mobifume.getInstance().getModelManager().getGlobalSettings();
+    GlobalSettings globalSettings = Mobifume.getInstance().getModelManager().getGlobalSettings();
+    GroupSettings groupSettings = globalSettings.groupTemplateSettings();
 
-    maxHumField.setText(settings.getHumidifyMax() + "");
-    maxHumSlider.setValue(settings.getHumidifyMax());
-    heaterTempField.setText(settings.getHeaterTemperature() + "");
-    heaterTempSlider.setValue(settings.getHeaterTemperature());
-    heatTimeField.setText(settings.getHeatTimer() + "");
-    heatTimeSlider.setValue(settings.getHeatTimer());
-    purgeTimeField.setText(settings.getPurgeTimer() + "");
-    purgeTimeSlider.setValue(settings.getPurgeTimer());
+    maxHumField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
+    maxHumSlider.setValue(groupSettings.humidifySettings().humiditySetpoint());
+    heaterTempField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
+    heaterTempSlider.setValue(groupSettings.evaporateSettings().heaterTemperature());
+    heatTimeField.setText(groupSettings.evaporateSettings().evaporateTime() + "");
+    heatTimeSlider.setValue(groupSettings.evaporateSettings().evaporateTime());
+    purgeTimeField.setText(groupSettings.purgeSettings().purgeTime() + "");
+    purgeTimeSlider.setValue(groupSettings.purgeSettings().purgeTime());
 
     TabTipKeyboard.onFocus(maxHumField);
     TabTipKeyboard.onFocus(heaterTempField);
@@ -129,7 +134,10 @@ public class GlobalSettingsController extends CloseableController {
     Locale locale = languages.get(item);
     if (locale != null && locale != LocaleManager.getInstance().getLocale()) {
       LocaleManager.getInstance().load(locale);
-      Mobifume.getInstance().getModelManager().getGlobalSettings().setLanguage(locale);
+      Mobifume.getInstance()
+          .getModelManager()
+          .setGlobalSettings(
+              Mobifume.getInstance().getModelManager().getGlobalSettings().locale(locale));
 
       this.<InfoDialogController>loadAndOpenDialog("InfoDialog.fxml").thenAccept(controller -> {
         controller.setTitle(LocaleManager.getInstance().getString("dialog.settings.restart.title"));
@@ -260,12 +268,25 @@ public class GlobalSettingsController extends CloseableController {
   }
 
   private void applySettings() {
-    Settings settings = Mobifume.getInstance().getModelManager().getGlobalSettings();
-    settings.setHumidifyMax(getFixedValue(maxHumSlider, maxHum));
-    settings.setHeaterTemperature(getFixedValue(heaterTempSlider, heaterTemp));
-    settings.setHeatTimer(getFixedValue(heatTimeSlider, heatTime));
-    settings.setPurgeTimer(getFixedValue(purgeTimeSlider, purgeTime));
-    Settings.saveGlobalSettings(settings);
+    GlobalSettings globalSettings = Mobifume.getInstance().getModelManager().getGlobalSettings();
+    GroupSettings groupSettings = globalSettings.groupTemplateSettings();
+
+    HumidifySettings humidifySettings = groupSettings.humidifySettings();
+    humidifySettings = humidifySettings.humiditySetpoint(getFixedValue(maxHumSlider, maxHum));
+    groupSettings = groupSettings.humidifySettings(humidifySettings);
+
+    EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
+    evaporateSettings =
+        evaporateSettings.heaterTemperature(getFixedValue(heaterTempSlider, heaterTemp));
+    evaporateSettings = evaporateSettings.evaporateTime(getFixedValue(heatTimeSlider, heatTime));
+    groupSettings = groupSettings.evaporateSettings(evaporateSettings);
+
+    PurgeSettings purgeSettings = groupSettings.purgeSettings();
+    purgeSettings = purgeSettings.purgeTime(getFixedValue(purgeTimeSlider, purgeTime));
+    groupSettings = groupSettings.purgeSettings(purgeSettings);
+
+    globalSettings = globalSettings.groupTemplateSettings(groupSettings);
+    Mobifume.getInstance().getModelManager().setGlobalSettings(globalSettings);
   }
 
   @FXML
@@ -281,11 +302,16 @@ public class GlobalSettingsController extends CloseableController {
     this.<ConfirmDialogController>loadAndOpenDialog("ConfirmDialog.fxml").thenAccept(controller -> {
       controller.setCallback(confirmResult -> {
         if (confirmResult == ConfirmResult.CONFIRM) {
-          Settings settings = Settings.create();
-          maxHumField.setText(settings.getHumidifyMax() + "");
-          heaterTempField.setText(settings.getHeaterTemperature() + "");
-          heatTimeField.setText(settings.getHeatTimer() + "");
-          purgeTimeField.setText(settings.getPurgeTimer() + "");
+          GroupSettings groupSettings = GroupSettings.getDefault();
+          GlobalSettings globalSettings = Mobifume.getInstance()
+              .getModelManager()
+              .getGlobalSettings()
+              .groupTemplateSettings(groupSettings);
+          Mobifume.getInstance().getModelManager().setGlobalSettings(globalSettings);
+          maxHumField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
+          heaterTempField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
+          heatTimeField.setText(groupSettings.evaporateSettings().evaporateTime() + "");
+          purgeTimeField.setText(groupSettings.purgeSettings().purgeTime() + "");
 
           applySettings();
         }

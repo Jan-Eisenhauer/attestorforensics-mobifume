@@ -4,13 +4,15 @@ import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.util.List;
 import org.apache.log4j.Logger;
 
 public interface Group {
 
   String getName();
+
+  int getCycleNumber();
 
   Logger getLogger();
 
@@ -26,9 +28,9 @@ public interface Group {
 
   GroupStatus getStatus();
 
-  Settings getSettings();
+  GroupSettings getSettings();
 
-  void setSettings(Settings settings);
+  void setSettings(GroupSettings settings);
 
   double getTemperature();
 

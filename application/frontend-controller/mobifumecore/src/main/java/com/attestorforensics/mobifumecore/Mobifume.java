@@ -11,7 +11,9 @@ import com.attestorforensics.mobifumecore.model.element.misc.FileApplicationLock
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.listener.EventDispatcher;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.setting.GlobalSettings;
+import com.attestorforensics.mobifumecore.model.setting.SettingsFileRepository;
+import com.attestorforensics.mobifumecore.model.setting.SettingsRepository;
 import com.attestorforensics.mobifumecore.util.FileManager;
 import com.attestorforensics.mobifumecore.view.MobiApplication;
 import java.io.IOException;
@@ -91,11 +93,12 @@ public class Mobifume {
 
     eventDispatcher = EventDispatcher.create(scheduledExecutorService);
 
-    Settings globalSettings = Settings.loadGlobalSettings();
-    Locale language = globalSettings.getLanguage();
+    SettingsRepository settingsRepository = SettingsFileRepository.create();
+    GlobalSettings globalSettings = settingsRepository.load();
+    Locale language = globalSettings.locale();
     LocaleManager.getInstance().load(language);
 
-    modelManager = new MobiModelManager(globalSettings);
+    modelManager = new MobiModelManager(globalSettings, settingsRepository);
 
     wifiConnection = WindowsWifiConnection.create(scheduledExecutorService);
 
