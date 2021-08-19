@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifumecore.model.element.group;
 
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
@@ -32,9 +33,9 @@ public interface Group {
 
   void setSettings(GroupSettings settings);
 
-  double getTemperature();
+  DoubleSensor getTemperature();
 
-  double getHumidity();
+  DoubleSensor getHumidity();
 
   void setupStart();
 

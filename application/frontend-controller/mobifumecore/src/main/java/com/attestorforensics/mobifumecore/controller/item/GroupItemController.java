@@ -7,6 +7,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogControl
 import com.attestorforensics.mobifumecore.controller.group.GroupController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.util.Date;
@@ -83,10 +84,16 @@ public class GroupItemController extends ItemController {
         status.setText(LocaleManager.getInstance().getString("group.status.setup"));
         break;
       case HUMIDIFY:
-        int humidity = (int) group.getHumidity();
-        status.setText(LocaleManager.getInstance()
-            .getString("group.status.humidify", humidity >= 0 ? humidity : "-",
-                group.getSettings().humidifySettings().humiditySetpoint()));
+        DoubleSensor humidity = group.getHumidity();
+        if (humidity.isValid()) {
+          status.setText(LocaleManager.getInstance()
+              .getString("group.status.humidify", humidity.value(),
+                  group.getSettings().humidifySettings().humiditySetpoint()));
+        } else {
+          status.setText(LocaleManager.getInstance()
+              .getString("group.status.humidify", "-",
+                  group.getSettings().humidifySettings().humiditySetpoint()));
+        }
         break;
       case EVAPORATE:
         long timePassedEvaporate = System.currentTimeMillis() - group.getEvaporateStartTime();

@@ -11,6 +11,7 @@ import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.element.group.Group;
 import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
+import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
@@ -305,15 +306,17 @@ public class GroupController extends CloseableController {
   }
 
   private void addCurrentHumidityToChart() {
+    DoubleSensor humidity = group.getHumidity();
+    double humidityChartValue = humidity.isValid() ? humidity.value() : -1;
     XYChart.Data<Double, Double> data =
-        new XYChart.Data<>((double) latestDataTimestamp, group.getHumidity());
+        new XYChart.Data<>((double) latestDataTimestamp, humidityChartValue);
     dataSeries.getData().add(data);
   }
 
   public void updateStatus() {
     String errorStyle = "error";
-    double temp = group.getTemperature();
-    if (temp == -128) {
+    DoubleSensor temp = group.getTemperature();
+    if (temp.isError()) {
       if (tempWrong == 5) {
         tempWrong = 6;
         temperature.setText(LocaleManager.getInstance().getString("group.error.temperature"));
@@ -323,12 +326,13 @@ public class GroupController extends CloseableController {
       }
     } else {
       tempWrong = 0;
-      temperature.setText(LocaleManager.getInstance().getString("group.temperature", (int) temp));
+      temperature.setText(
+          LocaleManager.getInstance().getString("group.temperature", (int) temp.value()));
       temperature.getStyleClass().remove(errorStyle);
     }
 
-    double hum = group.getHumidity();
-    if (hum < 0 || hum > 100) {
+    DoubleSensor hum = group.getHumidity();
+    if (hum.isValid()) {
       if (humWrong == 5) {
         humWrong = 6;
         humidity.setText(LocaleManager.getInstance().getString("group.error.humidity"));
@@ -338,7 +342,7 @@ public class GroupController extends CloseableController {
       }
     } else {
       humWrong = 0;
-      humidity.setText(LocaleManager.getInstance().getString("group.humidity", (int) hum));
+      humidity.setText(LocaleManager.getInstance().getString("group.humidity", (int) hum.value()));
       humidity.getStyleClass().remove(errorStyle);
     }
 
@@ -476,11 +480,12 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          if (group.getHumidity() != -128) {
+          DoubleSensor humidity = group.getHumidity();
+          if (humidity.isValid()) {
             GroupSettings groupSettings = group.getSettings();
             HumidifySettings humidifySettings = groupSettings.humidifySettings();
             humidifySettings =
-                humidifySettings.humiditySetpoint(Math.round((float) group.getHumidity()));
+                humidifySettings.humiditySetpoint(Math.round((float) humidity.value()));
             groupSettings.humidifySettings(humidifySettings);
             group.setSettings(groupSettings);
           }

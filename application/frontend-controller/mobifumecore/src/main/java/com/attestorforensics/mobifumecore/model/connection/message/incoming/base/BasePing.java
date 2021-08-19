@@ -12,7 +12,6 @@ public class BasePing implements IncomingMessage {
 
   private static final String TOPIC_PREFIX = "/MOBIfume/base/status/";
   private static final String FIRST_ARGUMENT = "P";
-  private static final int SENSOR_ERROR = -128;
 
   private final String deviceId;
   private final int rssi;

@@ -2,6 +2,7 @@ package com.attestorforensics.mobifumecore.model.element.group;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
 import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
@@ -20,6 +21,7 @@ import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
 import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalDouble;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -96,21 +98,29 @@ public class Room implements Group {
   }
 
   @Override
-  public double getTemperature() {
-    return bases.stream()
+  public DoubleSensor getTemperature() {
+    OptionalDouble average = bases.stream()
         .filter(base -> base.getTemperature().isValid() && !base.isOffline())
         .mapToDouble(base -> base.getTemperature().value())
-        .average()
-        .orElse(-128);
+        .average();
+    if (average.isPresent()) {
+      return DoubleSensor.of(average.getAsDouble());
+    } else {
+      return DoubleSensor.error();
+    }
   }
 
   @Override
-  public double getHumidity() {
-    return bases.stream()
+  public DoubleSensor getHumidity() {
+    OptionalDouble average = bases.stream()
         .filter(base -> base.getHumidity().isValid() && !base.isOffline())
         .mapToDouble(base -> base.getHumidity().value())
-        .average()
-        .orElse(-128);
+        .average();
+    if (average.isPresent()) {
+      return DoubleSensor.of(average.getAsDouble());
+    } else {
+      return DoubleSensor.error();
+    }
   }
 
   @Override
@@ -385,7 +395,7 @@ public class Room implements Group {
 
     int humiditySetpoint = settings.humidifySettings().humiditySetpoint();
     if (!isHumidifyMaxReached()) {
-      if (getHumidity() <= 100 && getHumidity() >= humiditySetpoint) {
+      if (getHumidity().isValid() && getHumidity().value() >= humiditySetpoint) {
         humidifyMaxTimes++;
         if (humidifyMaxTimes >= 5) {
           humidifyMaxReached = true;
@@ -395,12 +405,13 @@ public class Room implements Group {
       return;
     }
 
-    if (isHumidifying() && getHumidity() >= humiditySetpoint + settings.humidifySettings()
+    if (isHumidifying() && getHumidity().isValid()
+        && getHumidity().value() >= humiditySetpoint + settings.humidifySettings()
         .humidityPuffer()) {
       setHumidifying(false);
       Mobifume.getInstance().getEventDispatcher().call(HumidifyEnabledEvent.create(this));
     }
-    if (!isHumidifying() && getHumidity() <= humiditySetpoint) {
+    if (!isHumidifying() && getHumidity().isValid() && getHumidity().value() <= humiditySetpoint) {
       setHumidifying(true);
       Mobifume.getInstance().getEventDispatcher().call(HumidifyDisabledEvent.create(this));
     }
