@@ -12,7 +12,6 @@ import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.apache.commons.compress.utils.Lists;
 
 public class RoomPool implements GroupPool {
@@ -36,25 +35,16 @@ public class RoomPool implements GroupPool {
   @Override
   public void removeGroup(Group group) {
     ((Room) group).stop();
-    List<Device> offlineDevicesInGroup =
-        group.getDevices().stream().filter(Device::isOffline).collect(Collectors.toList());
-    // TODO - split bases and humidifiers in group#getBases and group#getHumidifiers
-    offlineDevicesInGroup.stream()
-        .filter(Base.class::isInstance)
-        .map(Base.class::cast)
-        .forEach(base -> {
-          devicePool.removeBase(base);
-          Mobifume.getInstance().getEventDispatcher().call(BaseDisconnectedEvent.create(base));
-        });
-    offlineDevicesInGroup.stream()
-        .filter(Humidifier.class::isInstance)
-        .map(Humidifier.class::cast)
-        .forEach(humidifier -> {
-          devicePool.removeHumidifier(humidifier);
-          Mobifume.getInstance()
-              .getEventDispatcher()
-              .call(HumidifierDisconnectedEvent.create(humidifier));
-        });
+    group.getBases().stream().filter(Device::isOffline).forEach(base -> {
+      devicePool.removeBase(base);
+      Mobifume.getInstance().getEventDispatcher().call(BaseDisconnectedEvent.create(base));
+    });
+    group.getHumidifiers().stream().filter(Device::isOffline).forEach(humidifier -> {
+      devicePool.removeHumidifier(humidifier);
+      Mobifume.getInstance()
+          .getEventDispatcher()
+          .call(HumidifierDisconnectedEvent.create(humidifier));
+    });
 
     groups.remove(group);
     CustomLogger.logGroupRemove(group);

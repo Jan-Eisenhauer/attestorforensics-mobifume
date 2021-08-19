@@ -335,7 +335,7 @@ public class GroupController extends CloseableController {
     if (hum.isValid()) {
       if (humWrong == 5) {
         humWrong = 6;
-        humidity.setText(LocaleManager.getInstance().getString("group.error.humidity"));
+        humidity.setText(LocaleManager.gegtInstance().getString("group.error.humidity"));
         humidity.getStyleClass().add(errorStyle);
       } else {
         humWrong++;

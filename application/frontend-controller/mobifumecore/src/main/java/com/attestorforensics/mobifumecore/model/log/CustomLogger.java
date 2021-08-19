@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -108,10 +109,25 @@ public class CustomLogger {
   }
 
   public static void logGroupDevices(Group group) {
-    List<String> nodeList = group.getDevices()
+    String baseList =
+        group.getBases().stream().map(Base::getDeviceId).collect(Collectors.joining(","));
+    info(group, "BASES:" + baseList);
+
+    String humidifierList = group.getHumidifiers()
         .stream()
-        .map(mapper -> mapper.getDeviceId() + "," + mapper.getClass().getSimpleName())
-        .collect(Collectors.toList());
+        .map(Humidifier::getDeviceId)
+        .collect(Collectors.joining(","));
+    info(group, "HUMIDIFIERS", humidifierList);
+
+    logOldGroupDevices(group);
+  }
+
+  @Deprecated
+  private static void logOldGroupDevices(Group group) {
+    List<String> nodeList =
+        Stream.concat(group.getBases().stream().map(mapper -> mapper.getDeviceId() + ",BASE"),
+                group.getHumidifiers().stream().map(mapper -> mapper.getDeviceId() + ",HUMIDIFIER"))
+            .collect(Collectors.toList());
     nodeList.add(0, "DEVICES");
     info(group, nodeList.toArray());
   }

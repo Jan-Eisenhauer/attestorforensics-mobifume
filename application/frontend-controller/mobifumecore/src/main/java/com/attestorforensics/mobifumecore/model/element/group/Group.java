@@ -17,8 +17,6 @@ public interface Group {
 
   Logger getLogger();
 
-  List<Device> getDevices();
-
   boolean containsDevice(Device device);
 
   List<Base> getBases();

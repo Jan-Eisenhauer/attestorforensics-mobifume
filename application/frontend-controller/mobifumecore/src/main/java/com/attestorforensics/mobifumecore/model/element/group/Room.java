@@ -24,8 +24,6 @@ import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.log4j.Logger;
 
 public class Room implements Group {
@@ -128,7 +126,8 @@ public class Room implements Group {
     status = GroupStatus.START;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
-    getDevices().forEach(Device::reset);
+    bases.forEach(Base::reset);
+    humidifiers.forEach(Humidifier::reset);
     Mobifume.getInstance().getEventDispatcher().call(SetupStartedEvent.create(this));
   }
 
@@ -289,7 +288,8 @@ public class Room implements Group {
         finish();
         break;
       default:
-        this.getDevices().forEach(Device::reset);
+        bases.forEach(Base::reset);
+        humidifiers.forEach(Humidifier::reset);
         status = GroupStatus.CANCEL;
         CustomLogger.logGroupState(this);
         Mobifume.getInstance().getEventDispatcher().call(GroupCanceledEvent.create(this));
@@ -421,7 +421,8 @@ public class Room implements Group {
     status = GroupStatus.FINISH;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
-    this.getDevices().forEach(Device::reset);
+    bases.forEach(Base::reset);
+    humidifiers.forEach(Humidifier::reset);
     Mobifume.getInstance().getEventDispatcher().call(PurgeFinishedEvent.create(this));
   }
 
@@ -429,7 +430,8 @@ public class Room implements Group {
     CustomLogger.info(this, "STOP");
     cancelEvaporateTaskIfScheduled();
     cancelPurgeTaskIfScheduled();
-    this.getDevices().forEach(Device::reset);
+    bases.forEach(Base::reset);
+    humidifiers.forEach(Humidifier::reset);
   }
 
   public String getName() {
@@ -439,10 +441,6 @@ public class Room implements Group {
   @Override
   public int getCycleNumber() {
     return cycleNumber;
-  }
-
-  public List<Device> getDevices() {
-    return Stream.concat(bases.stream(), humidifiers.stream()).collect(Collectors.toList());
   }
 
   public List<Filter> getFilters() {
