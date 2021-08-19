@@ -35,8 +35,8 @@ public class BaseCalibrationDataRoute implements MessageRoute<BaseCalibrationDat
     Base base = optionalBase.get();
     base.setCalibration(message.getHumidityCalibration().getGradient(),
         message.getHumidityCalibration().getOffset(),
-        message.getTemperatureCalibration().getGradient(),
-        message.getTemperatureCalibration().getOffset());
+        message.getHeaterCalibration().getGradient(),
+        message.getHeaterCalibration().getOffset());
     Mobifume.getInstance().getEventDispatcher().call(BaseCalibrationDataUpdatedEvent.create(base));
   }
 }

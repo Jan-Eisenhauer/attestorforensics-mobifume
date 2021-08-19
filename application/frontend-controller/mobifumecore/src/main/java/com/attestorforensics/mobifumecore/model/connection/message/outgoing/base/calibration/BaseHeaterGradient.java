@@ -2,20 +2,20 @@ package com.attestorforensics.mobifumecore.model.connection.message.outgoing.bas
 
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.OutgoingMessage;
 
-public class BaseTemperatureOffset implements OutgoingMessage {
+public class BaseHeaterGradient implements OutgoingMessage {
 
   private static final String TOPIC_PREFIX = "/MOBIfume/base/cmd/";
 
   private final String deviceId;
-  private final float temperatureOffset;
+  private final float heaterGradient;
 
-  private BaseTemperatureOffset(String deviceId, float temperatureOffset) {
+  private BaseHeaterGradient(String deviceId, float heaterGradient) {
     this.deviceId = deviceId;
-    this.temperatureOffset = temperatureOffset;
+    this.heaterGradient = heaterGradient;
   }
 
-  public static BaseTemperatureOffset create(String deviceId, float temperatureOffset) {
-    return new BaseTemperatureOffset(deviceId, temperatureOffset);
+  public static BaseHeaterGradient create(String deviceId, float heaterGradient) {
+    return new BaseHeaterGradient(deviceId, heaterGradient);
   }
 
   @Override
@@ -25,6 +25,6 @@ public class BaseTemperatureOffset implements OutgoingMessage {
 
   @Override
   public String payload() {
-    return "Z;" + temperatureOffset;
+    return "Y;" + heaterGradient;
   }
 }

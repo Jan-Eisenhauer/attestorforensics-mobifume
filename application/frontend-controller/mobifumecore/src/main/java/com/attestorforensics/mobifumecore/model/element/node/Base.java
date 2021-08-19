@@ -8,8 +8,8 @@ import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseSetpoint;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHumidityGradient;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHumidityOffset;
-import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseTemperatureGradient;
-import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseTemperatureOffset;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHeaterGradient;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHeaterOffset;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
@@ -23,7 +23,7 @@ public class Base extends Device {
   private DoubleSensor heaterTemperature;
   private Latch latch;
   private Calibration humidityCalibration;
-  private Calibration temperatureCalibration;
+  private Calibration heaterCalibration;
 
   public Base(MessageSender messageSender, final String deviceId, final int version) {
     super(messageSender, deviceId, version);
@@ -66,8 +66,8 @@ public class Base extends Device {
     return Optional.ofNullable(humidityCalibration);
   }
 
-  public Optional<Calibration> getTemperatureCalibration() {
-    return Optional.ofNullable(temperatureCalibration);
+  public Optional<Calibration> getHeaterCalibration() {
+    return Optional.ofNullable(heaterCalibration);
   }
 
   public void requestCalibrationData() {
@@ -75,14 +75,14 @@ public class Base extends Device {
   }
 
   public void setCalibration(float humidityGradient, float humidityOffset,
-      float temperatureGradient, float temperatureOffset) {
+      float heaterGradient, float heaterOffset) {
     humidityCalibration = Calibration.create(humidityGradient, humidityOffset);
-    temperatureCalibration = Calibration.create(temperatureGradient, temperatureOffset);
+    heaterCalibration = Calibration.create(heaterGradient, heaterOffset);
   }
 
   public void resetCalibration() {
     updateHumidityCalibration(Calibration.createDefault());
-    updateTemperatureCalibration(Calibration.createDefault());
+    updateheaterCalibration(Calibration.createDefault());
   }
 
   public void updateHumidityCalibration(Calibration calibration) {
@@ -91,10 +91,10 @@ public class Base extends Device {
     messageSender.send(BaseHumidityOffset.create(deviceId, calibration.getOffset()));
   }
 
-  public void updateTemperatureCalibration(Calibration calibration) {
-    temperatureCalibration = calibration;
-    messageSender.send(BaseTemperatureGradient.create(deviceId, calibration.getGradient()));
-    messageSender.send(BaseTemperatureOffset.create(deviceId, calibration.getOffset()));
+  public void updateheaterCalibration(Calibration calibration) {
+    heaterCalibration = calibration;
+    messageSender.send(BaseHeaterGradient.create(deviceId, calibration.getGradient()));
+    messageSender.send(BaseHeaterOffset.create(deviceId, calibration.getOffset()));
   }
 
   public DoubleSensor getTemperature() {

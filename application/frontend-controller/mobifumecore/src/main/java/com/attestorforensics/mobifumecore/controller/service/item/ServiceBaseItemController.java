@@ -35,9 +35,9 @@ public class ServiceBaseItemController extends ServiceItemController {
   @FXML
   private Text temperature;
   @FXML
-  private Text temperatureCalibrationGradient;
+  private Text heaterCalibrationGradient;
   @FXML
-  private Text temperatureCalibrationOffset;
+  private Text heaterCalibrationOffset;
   @FXML
   private Text humidity;
   @FXML
@@ -78,8 +78,8 @@ public class ServiceBaseItemController extends ServiceItemController {
     version.setText(base.getVersion() + "");
     rssi.setText("-");
     temperature.setText("-");
-    temperatureCalibrationGradient.setText("-");
-    temperatureCalibrationOffset.setText("");
+    heaterCalibrationGradient.setText("-");
+    heaterCalibrationOffset.setText("");
     humidity.setText("-");
     humidityCalibrationGradient.setText("-");
     humidityCalibrationOffset.setText("");
@@ -108,8 +108,8 @@ public class ServiceBaseItemController extends ServiceItemController {
   public void remove() {
     rssi.setText(LocaleManager.getInstance().getString("support.status.rssi.disconnected"));
     temperature.setText("-");
-    temperatureCalibrationGradient.setText("-");
-    temperatureCalibrationOffset.setText("");
+    heaterCalibrationGradient.setText("-");
+    heaterCalibrationOffset.setText("");
     humidity.setText("-");
     humidityCalibrationGradient.setText("-");
     humidityCalibrationOffset.setText("");
@@ -119,13 +119,13 @@ public class ServiceBaseItemController extends ServiceItemController {
   }
 
   public void updateCalibration() {
-    Optional<Calibration> optionalTemperatureCalibration = base.getTemperatureCalibration();
-    if (optionalTemperatureCalibration.isPresent()) {
-      setCalibrationText(optionalTemperatureCalibration.get(), temperatureCalibrationGradient,
-          temperatureCalibrationOffset);
+    Optional<Calibration> optionalheaterCalibration = base.getHeaterCalibration();
+    if (optionalheaterCalibration.isPresent()) {
+      setCalibrationText(optionalheaterCalibration.get(), heaterCalibrationGradient,
+          heaterCalibrationOffset);
     } else {
-      temperatureCalibrationGradient.setText("-");
-      temperatureCalibrationOffset.setText("");
+      heaterCalibrationGradient.setText("-");
+      heaterCalibrationOffset.setText("");
     }
 
     Optional<Calibration> optionalHumidityCalibration = base.getHumidityCalibration();
@@ -188,7 +188,7 @@ public class ServiceBaseItemController extends ServiceItemController {
   }
 
   @FXML
-  public void onTemperatureCalibrate() {
+  public void onHeaterCalibrate() {
     Sound.click();
 
     this.<CalibrateDialogController>loadAndOpenDialog("CalibrateDialog.fxml")
@@ -196,7 +196,7 @@ public class ServiceBaseItemController extends ServiceItemController {
           controller.setCallback(calibrateResult -> {
             if (calibrateResult.getCalibration().isPresent()) {
               Calibration calibration = calibrateResult.getCalibration().get();
-              base.updateTemperatureCalibration(calibration);
+              base.updateheaterCalibration(calibration);
               Mobifume.getInstance()
                   .getEventDispatcher()
                   .call(BaseCalibrationDataUpdatedEvent.create(base));
