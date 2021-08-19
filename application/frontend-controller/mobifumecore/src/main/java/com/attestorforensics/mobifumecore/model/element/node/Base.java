@@ -6,10 +6,10 @@ import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseRequestCalibrationData;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseReset;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseSetpoint;
-import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHumidityGradient;
-import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHumidityOffset;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHeaterGradient;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHeaterOffset;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHumidityGradient;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.calibration.BaseHumidityOffset;
 import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
@@ -74,15 +74,12 @@ public class Base extends Device {
     messageSender.send(BaseRequestCalibrationData.create(deviceId));
   }
 
-  public void setCalibration(float humidityGradient, float humidityOffset,
-      float heaterGradient, float heaterOffset) {
-    humidityCalibration = Calibration.create(humidityGradient, humidityOffset);
-    heaterCalibration = Calibration.create(heaterGradient, heaterOffset);
+  public void setHumidityCalibration(Calibration humidityCalibration) {
+    this.humidityCalibration = humidityCalibration;
   }
 
-  public void resetCalibration() {
-    updateHumidityCalibration(Calibration.createDefault());
-    updateheaterCalibration(Calibration.createDefault());
+  public void setHeaterCalibration(Calibration heaterCalibration) {
+    this.heaterCalibration = heaterCalibration;
   }
 
   public void updateHumidityCalibration(Calibration calibration) {
