@@ -46,13 +46,13 @@ public class HumidifierOnlineRoute implements MessageRoute<HumidifierOnline> {
     }
 
     Humidifier humidifier =
-        new Humidifier(messageSender, message.getDeviceId(), message.getVersion());
+        Humidifier.create(messageSender, message.getDeviceId(), message.getVersion());
     devicePool.addHumidifier(humidifier);
     deviceOnline(humidifier);
   }
 
   private void updateDeviceState(Humidifier humidifier) {
-    humidifier.setOffline(false);
+    humidifier.setOnline();
     Optional<Group> optionalGroup = groupPool.getGroupOfHumidifier(humidifier);
     if (optionalGroup.isPresent()) {
       Group group = optionalGroup.get();
@@ -66,7 +66,7 @@ public class HumidifierOnlineRoute implements MessageRoute<HumidifierOnline> {
   }
 
   private void deviceOnline(Humidifier humidifier) {
-    humidifier.setOffline(false);
+    humidifier.setOnline();
     Mobifume.getInstance().getEventDispatcher().call(HumidifierConnectedEvent.create(humidifier));
     CustomLogger.info("Humidifier online : " + humidifier.getDeviceId());
   }

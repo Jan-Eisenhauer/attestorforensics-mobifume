@@ -4,11 +4,13 @@ import com.attestorforensics.mobifumecore.model.connection.message.MessageSender
 
 public abstract class Device {
 
+  private static final int OFFLINE_RSSI = -100;
+
   protected final MessageSender messageSender;
   protected final String deviceId;
   private int version;
-  private int rssi = -100;
-  private boolean isOffline;
+  private int rssi = OFFLINE_RSSI;
+  private boolean isOnline = true;
 
   protected Device(MessageSender messageSender, String deviceId, int version) {
     this.messageSender = messageSender;
@@ -16,7 +18,9 @@ public abstract class Device {
     this.version = version;
   }
 
-  public abstract void reset();
+  public String getDeviceId() {
+    return deviceId;
+  }
 
   public String getShortId() {
     String nodeNumber = deviceId.replace("node-", "");
@@ -26,10 +30,6 @@ public abstract class Device {
     } catch (NumberFormatException e) {
       return nodeNumber;
     }
-  }
-
-  public String getDeviceId() {
-    return deviceId;
   }
 
   public int getVersion() {
@@ -48,11 +48,20 @@ public abstract class Device {
     this.rssi = rssi;
   }
 
-  public boolean isOffline() {
-    return isOffline;
+  public boolean isOnline() {
+    return isOnline;
   }
 
-  public void setOffline(boolean isOffline) {
-    this.isOffline = isOffline;
+  public boolean isOffline() {
+    return !isOnline;
+  }
+
+  public void setOnline() {
+    isOnline = true;
+  }
+
+  public void setOffline() {
+    isOnline = false;
+    rssi = OFFLINE_RSSI;
   }
 }

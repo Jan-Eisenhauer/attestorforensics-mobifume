@@ -38,7 +38,7 @@ public class HumidifierPingRoute implements MessageRoute<HumidifierPing> {
 
     Humidifier humidifier = optionalHumidifier.get();
     humidifier.setRssi(message.getRssi());
-    humidifier.setHumidify(message.isHumidifying());
+    humidifier.setHumidifying(message.isHumidifying());
     humidifier.setLed1(message.getLed1());
     humidifier.setLed2(message.getLed2());
     humidifier.setOverHeated(message.isOverHeated());

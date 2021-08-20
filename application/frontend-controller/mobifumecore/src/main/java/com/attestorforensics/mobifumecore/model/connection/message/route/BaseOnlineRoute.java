@@ -45,14 +45,14 @@ public class BaseOnlineRoute implements MessageRoute<BaseOnline> {
       return;
     }
 
-    Base base = new Base(messageSender, message.getDeviceId(), message.getVersion());
+    Base base = Base.create(messageSender, message.getDeviceId(), message.getVersion());
     devicePool.addBase(base);
     deviceOnline(base);
     base.requestCalibrationData();
   }
 
   private void updateDeviceState(Base base) {
-    base.setOffline(false);
+    base.setOnline();
     Optional<Group> optionalGroup = groupPool.getGroupOfBase(base);
     if (optionalGroup.isPresent()) {
       Group group = optionalGroup.get();
@@ -65,7 +65,7 @@ public class BaseOnlineRoute implements MessageRoute<BaseOnline> {
   }
 
   private void deviceOnline(Base base) {
-    base.setOffline(false);
+    base.setOnline();
     Mobifume.getInstance().getEventDispatcher().call(BaseConnectedEvent.create(base));
     CustomLogger.info("Base online : " + base.getDeviceId());
   }

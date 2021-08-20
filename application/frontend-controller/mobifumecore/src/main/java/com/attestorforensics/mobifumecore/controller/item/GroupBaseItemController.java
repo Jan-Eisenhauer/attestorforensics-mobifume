@@ -55,7 +55,7 @@ public class GroupBaseItemController extends ItemController {
   }
 
   public void updateHeaterTemperature() {
-    setTemperature(base.isOffline() ? DoubleSensor.error() : base.getHeaterTemperature());
+    setTemperature(base.isOnline() ? base.getHeaterTemperature() : DoubleSensor.error());
   }
 
   private void setTemperature(DoubleSensor temperature) {

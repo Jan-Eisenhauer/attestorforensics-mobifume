@@ -25,40 +25,51 @@ public class Base extends Device {
   private Calibration humidityCalibration;
   private Calibration heaterCalibration;
 
-  public Base(MessageSender messageSender, final String deviceId, final int version) {
+  private Base(MessageSender messageSender, String deviceId, int version) {
     super(messageSender, deviceId, version);
   }
 
-  @Override
-  public void reset() {
+  public static Base create(MessageSender messageSender, String deviceId, int version) {
+    return new Base(messageSender, deviceId, version);
+  }
+
+  public void sendReset() {
     messageSender.send(BaseReset.create(deviceId));
   }
 
-  public void updateHeaterSetpoint(int heaterTemperature) {
-    if (heaterSetpoint == heaterTemperature) {
+  public void sendHeaterSetpoint(int heaterSetpoint) {
+    if (this.heaterSetpoint == heaterSetpoint) {
       return;
     }
 
-    forceUpdateHeaterSetpoint(heaterTemperature);
+    forceSendHeaterSetpoint(heaterSetpoint);
   }
 
-  public void forceUpdateHeaterSetpoint(int heaterTemperature) {
-    messageSender.send(BaseSetpoint.create(deviceId, heaterTemperature));
+  public void forceSendHeaterSetpoint(int heaterSetpoint) {
+    messageSender.send(BaseSetpoint.create(deviceId, heaterSetpoint));
   }
 
-  public void updateLatch(boolean open) {
-    if (open && latch == Latch.CIRCULATING || !open && latch == Latch.PURGING) {
-      return;
+  public void sendLatchPurge() {
+    if (latch != Latch.PURGING) {
+      forceSendLatchPurge();
     }
-
-    forceUpdateLatch(open);
   }
 
-  public void forceUpdateLatch(boolean open) {
-    messageSender.send(BaseLatch.create(deviceId, open));
+  public void sendLatchCirculate() {
+    if (latch != Latch.CIRCULATING) {
+      forceSendLatchCirculate();
+    }
   }
 
-  public void updateTime(int time) {
+  public void forceSendLatchPurge() {
+    messageSender.send(BaseLatch.purge(deviceId));
+  }
+
+  public void forceSendLatchCirculate() {
+    messageSender.send(BaseLatch.circulate(deviceId));
+  }
+
+  public void sendTime(int time) {
     messageSender.send(BaseDuration.create(deviceId, time));
   }
 
@@ -82,16 +93,18 @@ public class Base extends Device {
     this.heaterCalibration = heaterCalibration;
   }
 
-  public void updateHumidityCalibration(Calibration calibration) {
+  public void sendHumidityCalibration(Calibration calibration) {
     humidityCalibration = calibration;
     messageSender.send(BaseHumidityGradient.create(deviceId, calibration.getGradient()));
     messageSender.send(BaseHumidityOffset.create(deviceId, calibration.getOffset()));
+    messageSender.send(BaseRequestCalibrationData.create(deviceId));
   }
 
-  public void updateheaterCalibration(Calibration calibration) {
+  public void sendHeaterCalibration(Calibration calibration) {
     heaterCalibration = calibration;
     messageSender.send(BaseHeaterGradient.create(deviceId, calibration.getGradient()));
     messageSender.send(BaseHeaterOffset.create(deviceId, calibration.getOffset()));
+    messageSender.send(BaseRequestCalibrationData.create(deviceId));
   }
 
   public DoubleSensor getTemperature() {

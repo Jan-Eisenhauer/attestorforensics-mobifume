@@ -105,7 +105,7 @@ public class CustomLogger {
   }
 
   public static void logGroupState(Group group) {
-    info(group, "STATE", group.getStatus(), group.isHumidifying(), group.isHumidifyMaxReached());
+    info(group, "STATE", group.getStatus(), group.isHumidifying(), group.isHumidifySetpointReached());
   }
 
   public static void logGroupDevices(Group group) {
@@ -139,7 +139,7 @@ public class CustomLogger {
   }
 
   public static void logGroupHum(Group group, Humidifier hum) {
-    info(group, "HUM", hum.getDeviceId(), hum.getRssi(), hum.isHumidify(), hum.getLed1(),
+    info(group, "HUM", hum.getDeviceId(), hum.getRssi(), hum.isHumidifying(), hum.getLed1(),
         hum.getLed2());
   }
 

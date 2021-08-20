@@ -45,7 +45,7 @@ public interface Group {
 
   void updateHumidify();
 
-  boolean isHumidifyMaxReached();
+  boolean isHumidifySetpointReached();
 
   boolean isHumidifying();
 

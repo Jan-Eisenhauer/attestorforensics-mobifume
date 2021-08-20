@@ -2,20 +2,24 @@ package com.attestorforensics.mobifumecore.model.connection.message.outgoing.hum
 
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.OutgoingMessage;
 
-public class HumidifierEnable implements OutgoingMessage {
+public class HumidifierToggle implements OutgoingMessage {
 
   private static final String TOPIC_PREFIX = "/MOBIfume/hum/cmd/";
 
   private final String deviceId;
   private final boolean enable;
 
-  private HumidifierEnable(String deviceId, boolean enable) {
+  private HumidifierToggle(String deviceId, boolean enable) {
     this.deviceId = deviceId;
     this.enable = enable;
   }
 
-  public static HumidifierEnable create(String deviceId, boolean enable) {
-    return new HumidifierEnable(deviceId, enable);
+  public static HumidifierToggle enable(String deviceId) {
+    return new HumidifierToggle(deviceId, true);
+  }
+
+  public static HumidifierToggle disable(String deviceId) {
+    return new HumidifierToggle(deviceId, false);
   }
 
   @Override

@@ -1,8 +1,8 @@
 package com.attestorforensics.mobifumecore.model.element.node;
 
 import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
-import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierEnable;
 import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierReset;
+import com.attestorforensics.mobifumecore.model.connection.message.outgoing.humidifier.HumidifierToggle;
 import com.attestorforensics.mobifumecore.model.element.misc.HumidifierWaterState;
 import com.attestorforensics.mobifumecore.model.element.misc.Led;
 
@@ -10,7 +10,7 @@ public class Humidifier extends Device {
 
   private static final int WATER_EMPTY_SIGNAL_COUNT_UNTIL_ERROR = 5;
 
-  private boolean humidify;
+  private boolean humidifying;
   private Led led1;
   private Led led2;
   private boolean overHeated;
@@ -18,30 +18,54 @@ public class Humidifier extends Device {
   private int waterEmptyPingCount;
   private HumidifierWaterState waterState;
 
-  public Humidifier(MessageSender messageSender, final String deviceId, final int version) {
+  private Humidifier(MessageSender messageSender, String deviceId, int version) {
     super(messageSender, deviceId, version);
   }
 
-  @Override
-  public void reset() {
+  public static Humidifier create(MessageSender messageSender, String deviceId, int version) {
+    return new Humidifier(messageSender, deviceId, version);
+  }
+
+  public void sendReset() {
     messageSender.send(HumidifierReset.create(deviceId));
   }
 
-  public void updateHumidify(boolean humidifying) {
-    if (humidify == humidifying) {
-      return;
+  public void sendHumidifyEnable() {
+    if (!humidifying) {
+      forceSendHumidifyEnable();
     }
-
-    forceUpdateHumidify(humidifying);
   }
 
-  public void forceUpdateHumidify(boolean humidifying) {
-    messageSender.send(HumidifierEnable.create(deviceId, humidifying));
+  public void sendHumidifyDisable() {
+    if (humidifying) {
+      forceSendHumidifyDisable();
+    }
+  }
+
+  public void forceSendHumidifyEnable() {
+    messageSender.send(HumidifierToggle.enable(deviceId));
+  }
+
+  public void forceSendHumidifyDisable() {
+    messageSender.send(HumidifierToggle.disable(deviceId));
+  }
+
+  public boolean isHumidifying() {
+    return humidifying;
+  }
+
+  public void setHumidifying(boolean humidifying) {
+    this.humidifying = humidifying;
+  }
+
+  public Led getLed1() {
+    return led1;
   }
 
   public void setLed1(Led led1) {
     this.led1 = led1;
 
+    // when multiple blinking messages were received, set water state to empty
     if (led1 == Led.BLINKING && waterEmptyPingCount < WATER_EMPTY_SIGNAL_COUNT_UNTIL_ERROR) {
       waterEmptyPingCount++;
     } else if (led1 != Led.BLINKING && waterEmptyPingCount > 0) {
@@ -56,18 +80,6 @@ public class Humidifier extends Device {
     if (waterEmptyPingCount == 0 && waterState != HumidifierWaterState.FILLED) {
       waterState = HumidifierWaterState.FILLED;
     }
-  }
-
-  public boolean isHumidify() {
-    return humidify;
-  }
-
-  public void setHumidify(boolean humidify) {
-    this.humidify = humidify;
-  }
-
-  public Led getLed1() {
-    return led1;
   }
 
   public Led getLed2() {

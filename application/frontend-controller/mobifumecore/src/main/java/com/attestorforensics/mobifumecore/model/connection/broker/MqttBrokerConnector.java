@@ -128,8 +128,7 @@ class MqttBrokerConnector {
         devicePool.removeBase(base);
       }
 
-      base.setRssi(-100);
-      base.setOffline(true);
+      base.setOffline();
       Mobifume.getInstance().getEventDispatcher().call(BaseLostEvent.create(base));
     });
 
@@ -142,8 +141,7 @@ class MqttBrokerConnector {
         devicePool.removeHumidifier(humidifier);
       }
 
-      humidifier.setRssi(-100);
-      humidifier.setOffline(true);
+      humidifier.setOffline();
       Mobifume.getInstance().getEventDispatcher().call(HumidifierLostEvent.create(humidifier));
     });
 

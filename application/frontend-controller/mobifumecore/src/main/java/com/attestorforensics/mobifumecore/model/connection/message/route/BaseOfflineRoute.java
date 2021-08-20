@@ -44,8 +44,7 @@ public class BaseOfflineRoute implements MessageRoute<BaseOffline> {
     if (optionalGroup.isPresent()) {
       Group group = optionalGroup.get();
       CustomLogger.info(group, "DISCONNECT", base.getDeviceId());
-      base.setRssi(-100);
-      base.setOffline(true);
+      base.setOffline();
       Mobifume.getInstance().getEventDispatcher().call(BaseLostEvent.create(base));
     } else {
       Mobifume.getInstance().getEventDispatcher().call(BaseDisconnectedEvent.create(base));

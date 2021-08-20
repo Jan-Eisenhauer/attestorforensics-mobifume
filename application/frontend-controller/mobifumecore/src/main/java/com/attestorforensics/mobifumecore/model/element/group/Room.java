@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 
 public class Room implements Group {
 
+  private static final int HUMIDIFY_CIRCULATE_DURATION = 30;
+
   private final Logger logger;
   private final String name;
   private final int cycleNumber;
@@ -37,7 +39,7 @@ public class Room implements Group {
   private GroupSettings settings;
 
   private GroupStatus status = GroupStatus.START;
-  private boolean humidifyMaxReached;
+  private boolean humidifySetpointReached;
   private int humidifyMaxTimes;
   private boolean humidifying;
   private ScheduledFuture<?> updateLatchTask;
@@ -98,7 +100,7 @@ public class Room implements Group {
   @Override
   public DoubleSensor getTemperature() {
     OptionalDouble average = bases.stream()
-        .filter(base -> base.getTemperature().isValid() && !base.isOffline())
+        .filter(base -> base.getTemperature().isValid() && base.isOnline())
         .mapToDouble(base -> base.getTemperature().value())
         .average();
     if (average.isPresent()) {
@@ -111,7 +113,7 @@ public class Room implements Group {
   @Override
   public DoubleSensor getHumidity() {
     OptionalDouble average = bases.stream()
-        .filter(base -> base.getHumidity().isValid() && !base.isOffline())
+        .filter(base -> base.getHumidity().isValid() && base.isOnline())
         .mapToDouble(base -> base.getHumidity().value())
         .average();
     if (average.isPresent()) {
@@ -126,8 +128,8 @@ public class Room implements Group {
     status = GroupStatus.START;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
-    bases.forEach(Base::reset);
-    humidifiers.forEach(Humidifier::reset);
+    bases.forEach(Base::sendReset);
+    humidifiers.forEach(Humidifier::sendReset);
     Mobifume.getInstance().getEventDispatcher().call(SetupStartedEvent.create(this));
   }
 
@@ -142,38 +144,50 @@ public class Room implements Group {
     CustomLogger.logGroupSettings(this);
 
     getBases().forEach(base -> {
-      base.updateTime(30);
-      base.updateHeaterSetpoint(0);
-      base.updateLatch(false);
+      base.sendTime(HUMIDIFY_CIRCULATE_DURATION);
+      base.sendHeaterSetpoint(0);
+      base.sendLatchCirculate();
     });
 
-    // send every 5 min that bases should latch open for 30 min
+    // send every 5 min that bases latch should circulate
     updateLatchTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .scheduleAtFixedRate(this::updateLatchOpened, 5, 5, TimeUnit.MINUTES);
+        .scheduleAtFixedRate(this::updateHumidifyingLatch, 5, 5, TimeUnit.MINUTES);
 
     humidifying = false;
-    setHumidifying(true);
+    enableHumidifying();
     Mobifume.getInstance().getEventDispatcher().call(HumidifyStartedEvent.create(this));
   }
 
-  private void updateLatchOpened() {
+  private void updateHumidifyingLatch() {
     if (status != GroupStatus.HUMIDIFY) {
       updateLatchTask.cancel(false);
       return;
     }
 
-    getBases().forEach(base -> base.updateTime(30));
+    getBases().forEach(base -> base.sendTime(HUMIDIFY_CIRCULATE_DURATION));
   }
 
-  private void setHumidifying(boolean humidifying) {
-    if (this.humidifying == humidifying) {
+  private void enableHumidifying() {
+    if (humidifying) {
       return;
     }
-    this.humidifying = humidifying;
-    CustomLogger.info(this, "SET_HUMIDIFY", humidifying);
+
+    humidifying = true;
+    CustomLogger.info(this, "SET_HUMIDIFY", true);
     CustomLogger.logGroupSettings(this);
-    getHumidifiers().forEach(hum -> hum.updateHumidify(humidifying));
+    getHumidifiers().forEach(Humidifier::sendHumidifyEnable);
+  }
+
+  private void disableHumidifying() {
+    if (!humidifying) {
+      return;
+    }
+
+    humidifying = false;
+    CustomLogger.info(this, "SET_HUMIDIFY", false);
+    CustomLogger.logGroupSettings(this);
+    getHumidifiers().forEach(Humidifier::sendHumidifyDisable);
   }
 
   @Override
@@ -188,14 +202,14 @@ public class Room implements Group {
         filter -> filter.addRun(cycleNumber, evaporantSettings.evaporant(), evaporantAmount,
             filters.size()));
 
-    humidifyMaxReached = true;
+    humidifySetpointReached = true;
 
     cancelEvaporateTaskIfScheduled();
     evaporateStartTime = System.currentTimeMillis();
 
-    getBases().forEach(base -> base.updateTime(settings.evaporateSettings().evaporateTime()));
+    getBases().forEach(base -> base.sendTime(settings.evaporateSettings().evaporateTime()));
     updateHeaterSetpoint();
-    getBases().forEach(base -> base.updateLatch(false));
+    getBases().forEach(Base::sendLatchCirculate);
 
     createOrUpdateEvaporateTask();
 
@@ -229,7 +243,7 @@ public class Room implements Group {
 
           long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
           int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-          getBases().forEach(base -> base.updateTime(
+          getBases().forEach(base -> base.sendTime(
               settings.evaporateSettings().evaporateTime() - passedTimeInMinutes));
         }, 60L, 60L, TimeUnit.MINUTES);
   }
@@ -244,10 +258,10 @@ public class Room implements Group {
     cancelPurgeTaskIfScheduled();
     purgeStartTime = System.currentTimeMillis();
 
-    setHumidifying(false);
+    disableHumidifying();
     getBases().forEach(base -> {
-      base.updateLatch(true);
-      base.updateHeaterSetpoint(0);
+      base.sendHeaterSetpoint(0);
+      base.sendLatchPurge();
     });
 
     createOrUpdatePurgeTask();
@@ -288,8 +302,8 @@ public class Room implements Group {
         finish();
         break;
       default:
-        bases.forEach(Base::reset);
-        humidifiers.forEach(Humidifier::reset);
+        bases.forEach(Base::sendReset);
+        humidifiers.forEach(Humidifier::sendReset);
         status = GroupStatus.CANCEL;
         CustomLogger.logGroupState(this);
         Mobifume.getInstance().getEventDispatcher().call(GroupCanceledEvent.create(this));
@@ -306,32 +320,16 @@ public class Room implements Group {
     int heaterTemperature = settings.evaporateSettings().heaterTemperature();
     CustomLogger.info(this, "UPDATE_HEATERSETPOINT", heaterTemperature);
     CustomLogger.logGroupSettings(this);
-    getBases().forEach(base -> base.updateHeaterSetpoint(heaterTemperature));
+    getBases().forEach(base -> base.sendHeaterSetpoint(heaterTemperature));
   }
 
   @Override
   public void sendState(Device device) {
     CustomLogger.info(this, "SENDSTATE", device.getDeviceId(), device.getClass().getSimpleName());
     if (device instanceof Base) {
-      Base base = (Base) device;
-      if (status == GroupStatus.EVAPORATE) {
-        long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
-        int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-        base.updateTime(settings.evaporateSettings().evaporateTime() - passedTimeInMinutes);
-        base.forceUpdateHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
-      } else {
-        base.forceUpdateHeaterSetpoint(0);
-      }
-
-      if (status == GroupStatus.HUMIDIFY) {
-        base.updateTime(30);
-      }
-
-      boolean latchOpen = status != GroupStatus.HUMIDIFY && status != GroupStatus.EVAPORATE;
-      base.forceUpdateLatch(latchOpen);
+      sendBaseState((Base) device);
     } else if (device instanceof Humidifier) {
-      Humidifier hum = (Humidifier) device;
-      hum.forceUpdateHumidify(humidifying);
+      sendHumidifierState((Humidifier) device);
     }
   }
 
@@ -346,7 +344,7 @@ public class Room implements Group {
     CustomLogger.logGroupSettings(this);
     long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
     int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-    getBases().forEach(base -> base.updateTime(evaporateTime - passedTimeInMinutes));
+    getBases().forEach(base -> base.sendTime(evaporateTime - passedTimeInMinutes));
     createOrUpdateEvaporateTask();
   }
 
@@ -394,11 +392,11 @@ public class Room implements Group {
     }
 
     int humiditySetpoint = settings.humidifySettings().humiditySetpoint();
-    if (!isHumidifyMaxReached()) {
+    if (!isHumidifySetpointReached()) {
       if (getHumidity().isValid() && getHumidity().value() >= humiditySetpoint) {
         humidifyMaxTimes++;
         if (humidifyMaxTimes >= 5) {
-          humidifyMaxReached = true;
+          humidifySetpointReached = true;
           Mobifume.getInstance().getEventDispatcher().call(HumidifyFinishedEvent.create(this));
         }
       }
@@ -408,12 +406,41 @@ public class Room implements Group {
     if (isHumidifying() && getHumidity().isValid()
         && getHumidity().value() >= humiditySetpoint + settings.humidifySettings()
         .humidityPuffer()) {
-      setHumidifying(false);
+      disableHumidifying();
       Mobifume.getInstance().getEventDispatcher().call(HumidifyEnabledEvent.create(this));
     }
     if (!isHumidifying() && getHumidity().isValid() && getHumidity().value() <= humiditySetpoint) {
-      setHumidifying(true);
+      enableHumidifying();
       Mobifume.getInstance().getEventDispatcher().call(HumidifyDisabledEvent.create(this));
+    }
+  }
+
+  private void sendBaseState(Base base) {
+    if (status == GroupStatus.EVAPORATE) {
+      long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
+      int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
+      base.sendTime(settings.evaporateSettings().evaporateTime() - passedTimeInMinutes);
+      base.forceSendHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
+    } else {
+      base.forceSendHeaterSetpoint(0);
+    }
+
+    if (status == GroupStatus.HUMIDIFY) {
+      base.sendTime(HUMIDIFY_CIRCULATE_DURATION);
+    }
+
+    if (status == GroupStatus.HUMIDIFY || status == GroupStatus.EVAPORATE) {
+      base.forceSendLatchCirculate();
+    } else {
+      base.forceSendLatchPurge();
+    }
+  }
+
+  private void sendHumidifierState(Humidifier humidifier) {
+    if (humidifying) {
+      humidifier.sendHumidifyEnable();
+    } else {
+      humidifier.sendHumidifyDisable();
     }
   }
 
@@ -421,8 +448,8 @@ public class Room implements Group {
     status = GroupStatus.FINISH;
     CustomLogger.logGroupState(this);
     CustomLogger.logGroupSettings(this);
-    bases.forEach(Base::reset);
-    humidifiers.forEach(Humidifier::reset);
+    bases.forEach(Base::sendReset);
+    humidifiers.forEach(Humidifier::sendReset);
     Mobifume.getInstance().getEventDispatcher().call(PurgeFinishedEvent.create(this));
   }
 
@@ -430,8 +457,8 @@ public class Room implements Group {
     CustomLogger.info(this, "STOP");
     cancelEvaporateTaskIfScheduled();
     cancelPurgeTaskIfScheduled();
-    bases.forEach(Base::reset);
-    humidifiers.forEach(Humidifier::reset);
+    bases.forEach(Base::sendReset);
+    humidifiers.forEach(Humidifier::sendReset);
   }
 
   public String getName() {
@@ -455,8 +482,8 @@ public class Room implements Group {
     return settings;
   }
 
-  public boolean isHumidifyMaxReached() {
-    return humidifyMaxReached;
+  public boolean isHumidifySetpointReached() {
+    return humidifySetpointReached;
   }
 
   public boolean isHumidifying() {

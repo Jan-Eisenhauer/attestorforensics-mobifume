@@ -43,8 +43,7 @@ public class HumidifierOfflineRoute implements MessageRoute<HumidifierOffline> {
     if (optionalGroup.isPresent()) {
       Group group = optionalGroup.get();
       CustomLogger.info(group, "DISCONNECT", humidifier.getDeviceId());
-      humidifier.setRssi(-100);
-      humidifier.setOffline(true);
+      humidifier.setOffline();
       Mobifume.getInstance().getEventDispatcher().call(HumidifierLostEvent.create(humidifier));
     } else {
       Mobifume.getInstance()

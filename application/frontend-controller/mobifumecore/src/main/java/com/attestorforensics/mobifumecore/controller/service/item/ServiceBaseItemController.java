@@ -1,6 +1,5 @@
 package com.attestorforensics.mobifumecore.controller.service.item;
 
-import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.dialog.CalibrateDialogController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
@@ -9,7 +8,6 @@ import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
 import com.attestorforensics.mobifumecore.model.element.misc.Latch;
 import com.attestorforensics.mobifumecore.model.element.node.Base;
 import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.event.base.BaseCalibrationDataUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -146,7 +144,7 @@ public class ServiceBaseItemController extends ServiceItemController {
   @FXML
   public void onReset() {
     Sound.click();
-    base.reset();
+    base.sendReset();
   }
 
   @FXML
@@ -159,8 +157,8 @@ public class ServiceBaseItemController extends ServiceItemController {
     try {
       int time = Integer.parseInt(timeField.getText());
       int setpoint = Integer.parseInt(setpointField.getText());
-      base.updateTime(time);
-      base.updateHeaterSetpoint(setpoint);
+      base.sendTime(time);
+      base.forceSendHeaterSetpoint(setpoint);
     } catch (NumberFormatException e) {
       e.printStackTrace();
     }
@@ -169,22 +167,26 @@ public class ServiceBaseItemController extends ServiceItemController {
   @FXML
   public void onSetpoint120() {
     Sound.click();
-    base.updateTime(60);
-    base.updateHeaterSetpoint(120);
+    base.sendTime(60);
+    base.forceSendHeaterSetpoint(120);
   }
 
   @FXML
   public void onSetpoint230() {
     Sound.click();
-    base.updateTime(60);
-    base.updateHeaterSetpoint(230);
+    base.sendTime(60);
+    base.forceSendHeaterSetpoint(230);
   }
 
   @FXML
   public void onLatch() {
     Sound.click();
-    base.updateTime(60);
-    base.updateLatch(base.getLatch() == Latch.PURGING);
+    base.sendTime(60);
+    if (base.getLatch() == Latch.PURGING) {
+      base.forceSendLatchCirculate();
+    } else {
+      base.forceSendLatchPurge();
+    }
   }
 
   @FXML
@@ -196,10 +198,7 @@ public class ServiceBaseItemController extends ServiceItemController {
           controller.setCallback(calibrateResult -> {
             if (calibrateResult.getCalibration().isPresent()) {
               Calibration calibration = calibrateResult.getCalibration().get();
-              base.updateheaterCalibration(calibration);
-              Mobifume.getInstance()
-                  .getEventDispatcher()
-                  .call(BaseCalibrationDataUpdatedEvent.create(base));
+              base.sendHeaterCalibration(calibration);
             }
           });
 
@@ -216,10 +215,7 @@ public class ServiceBaseItemController extends ServiceItemController {
           controller.setCallback(calibrateResult -> {
             if (calibrateResult.getCalibration().isPresent()) {
               Calibration calibration = calibrateResult.getCalibration().get();
-              base.updateHumidityCalibration(calibration);
-              Mobifume.getInstance()
-                  .getEventDispatcher()
-                  .call(BaseCalibrationDataUpdatedEvent.create(base));
+              base.sendHumidityCalibration(calibration);
             }
           });
 
