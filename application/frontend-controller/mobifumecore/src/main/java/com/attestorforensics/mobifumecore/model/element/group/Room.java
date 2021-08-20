@@ -71,8 +71,13 @@ public class Room implements Group {
   }
 
   @Override
-  public boolean containsDevice(Device device) {
-    return bases.contains(device) || humidifiers.contains(device);
+  public boolean containsBase(Base base) {
+    return bases.contains(base);
+  }
+
+  @Override
+  public boolean containsHumidifier(Humidifier humidifier) {
+    return humidifiers.contains(humidifier);
   }
 
   @Override

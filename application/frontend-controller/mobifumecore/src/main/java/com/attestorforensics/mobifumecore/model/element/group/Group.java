@@ -17,7 +17,9 @@ public interface Group {
 
   Logger getLogger();
 
-  boolean containsDevice(Device device);
+  boolean containsBase(Base base);
+
+  boolean containsHumidifier(Humidifier humidifier);
 
   List<Base> getBases();
 

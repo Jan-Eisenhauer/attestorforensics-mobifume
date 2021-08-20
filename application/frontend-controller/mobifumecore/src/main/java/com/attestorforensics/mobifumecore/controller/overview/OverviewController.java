@@ -179,9 +179,12 @@ public class OverviewController extends Controller {
       String groupColor = GroupColor.getNextColor();
       controller.setGroup(group, groupColor);
       ObservableList<Node> deviceChildren = devices.getChildren();
-      deviceChildren.filtered(
-              node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
-          .forEach(node -> nodeDeviceItemControllerPool.get(node).setGroup(group, groupColor));
+      deviceChildren.stream()
+          .map(nodeDeviceItemControllerPool::get)
+          .filter(deviceItemController -> deviceItemController.getDevice() instanceof Base
+              ? group.containsBase((Base) deviceItemController.getDevice())
+              : group.containsHumidifier((Humidifier) deviceItemController.getDevice()))
+          .forEach(deviceItemController -> deviceItemController.setGroup(group, groupColor));
       updateOrder();
       groupItemRoot.setExpanded(true);
     });
@@ -201,9 +204,12 @@ public class OverviewController extends Controller {
       });
 
       ObservableList<Node> deviceChildren = devices.getChildren();
-      deviceChildren.filtered(
-              node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
-          .forEach(node -> nodeDeviceItemControllerPool.get(node).clearGroup());
+      deviceChildren.stream()
+          .map(nodeDeviceItemControllerPool::get)
+          .filter(deviceItemController -> deviceItemController.getDevice() instanceof Base
+              ? group.containsBase((Base) deviceItemController.getDevice())
+              : group.containsHumidifier((Humidifier) deviceItemController.getDevice()))
+          .forEach(DeviceItemController::clearGroup);
 
       updateOrder();
     });
@@ -407,8 +413,7 @@ public class OverviewController extends Controller {
       return;
     }
 
-    if (selectedDevices.stream()
-        .noneMatch(controller -> controller.getDevice() instanceof Base)) {
+    if (selectedDevices.stream().noneMatch(controller -> controller.getDevice() instanceof Base)) {
       // no base selected
       createGroupError();
       return;

@@ -30,7 +30,7 @@ public class GroupDeviceListener implements Listener {
   @EventHandler
   public void onBaseUpdated(BaseUpdatedEvent event) {
     Base base = event.getBase();
-    if (!groupController.getGroup().containsDevice(base)) {
+    if (!groupController.getGroup().containsBase(base)) {
       return;
     }
 
@@ -63,7 +63,7 @@ public class GroupDeviceListener implements Listener {
   @EventHandler
   public void onHumidifierUpdated(HumidifierUpdatedEvent event) {
     Humidifier humidifier = event.getHumidifier();
-    if (!groupController.getGroup().containsDevice(humidifier)) {
+    if (!groupController.getGroup().containsHumidifier(humidifier)) {
       return;
     }
 

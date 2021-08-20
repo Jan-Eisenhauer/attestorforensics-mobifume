@@ -30,7 +30,7 @@ public class GroupDeviceConnectionListener implements Listener {
 
   @EventHandler
   public void onBaseLost(BaseLostEvent event) {
-    if (!groupController.getGroup().containsDevice(event.getBase())) {
+    if (!groupController.getGroup().containsBase(event.getBase())) {
       return;
     }
 
@@ -39,7 +39,7 @@ public class GroupDeviceConnectionListener implements Listener {
 
   @EventHandler
   public void onHumidifierLost(HumidifierLostEvent event) {
-    if (!groupController.getGroup().containsDevice(event.getHumidifier())) {
+    if (!groupController.getGroup().containsHumidifier(event.getHumidifier())) {
       return;
     }
 
@@ -48,7 +48,7 @@ public class GroupDeviceConnectionListener implements Listener {
 
   @EventHandler
   public void onBaseReconnected(BaseReconnectedEvent event) {
-    if (!groupController.getGroup().containsDevice(event.getBase())) {
+    if (!groupController.getGroup().containsBase(event.getBase())) {
       return;
     }
 
@@ -57,7 +57,7 @@ public class GroupDeviceConnectionListener implements Listener {
 
   @EventHandler
   public void onHumidifierReconnected(HumidifierReconnectedEvent event) {
-    if (!groupController.getGroup().containsDevice(event.getHumidifier())) {
+    if (!groupController.getGroup().containsHumidifier(event.getHumidifier())) {
       return;
     }
 
