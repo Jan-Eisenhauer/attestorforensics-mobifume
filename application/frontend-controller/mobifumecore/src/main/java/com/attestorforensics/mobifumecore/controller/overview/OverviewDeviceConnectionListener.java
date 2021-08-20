@@ -3,7 +3,7 @@ package com.attestorforensics.mobifumecore.controller.overview;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
 import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.node.Device;
 import com.attestorforensics.mobifumecore.model.event.base.BaseLostEvent;
 import com.attestorforensics.mobifumecore.model.event.base.BaseReconnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierLostEvent;

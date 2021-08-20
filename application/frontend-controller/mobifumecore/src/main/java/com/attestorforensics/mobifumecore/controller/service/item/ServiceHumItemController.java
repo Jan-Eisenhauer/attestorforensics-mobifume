@@ -1,8 +1,8 @@
 package com.attestorforensics.mobifumecore.controller.service.item;
 
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.node.Device;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.util.ResourceBundle;

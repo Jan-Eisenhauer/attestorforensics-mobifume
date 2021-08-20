@@ -4,8 +4,8 @@ import com.attestorforensics.mobifumecore.model.connection.message.InvalidMessag
 import com.attestorforensics.mobifumecore.model.connection.message.MessagePattern;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessage;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
-import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
-import com.attestorforensics.mobifumecore.model.element.misc.Latch;
+import com.attestorforensics.mobifumecore.model.node.misc.BaseLatch;
+import com.attestorforensics.mobifumecore.model.node.misc.DoubleSensor;
 import java.util.Optional;
 
 public class BasePing implements IncomingMessage {
@@ -19,17 +19,17 @@ public class BasePing implements IncomingMessage {
   private final DoubleSensor humidity;
   private final double heaterSetpoint;
   private final DoubleSensor heaterTemperature;
-  private final Latch latch;
+  private final BaseLatch baseLatch;
 
   private BasePing(String deviceId, int rssi, double temperature, double humidity,
-      double heaterSetpoint, double heaterTemperature, Latch latch) {
+      double heaterSetpoint, double heaterTemperature, BaseLatch baseLatch) {
     this.deviceId = deviceId;
     this.rssi = rssi;
     this.temperature = DoubleSensor.of(temperature);
     this.humidity = DoubleSensor.of(humidity);
     this.heaterSetpoint = heaterSetpoint;
     this.heaterTemperature = DoubleSensor.of(heaterTemperature);
-    this.latch = latch;
+    this.baseLatch = baseLatch;
   }
 
   public static BasePing createFromPayload(String topic, String[] arguments)
@@ -58,39 +58,39 @@ public class BasePing implements IncomingMessage {
       throw new InvalidMessageArgumentException("Cannot convert arguments to base ping");
     }
 
-    Latch latch;
+    BaseLatch baseLatch;
     switch (latchValue) {
       case 0:
-        latch = Latch.PURGING;
+        baseLatch = BaseLatch.PURGING;
         break;
       case 1:
-        latch = Latch.CIRCULATING;
+        baseLatch = BaseLatch.CIRCULATING;
         break;
       case -1:
-        latch = Latch.MOVING;
+        baseLatch = BaseLatch.MOVING;
         break;
       case 2:
-        latch = Latch.ERROR_OTHER;
+        baseLatch = BaseLatch.ERROR_OTHER;
         break;
       case 3:
-        latch = Latch.ERROR_NOT_REACHED;
+        baseLatch = BaseLatch.ERROR_NOT_REACHED;
         break;
       case 4:
-        latch = Latch.ERROR_BLOCKED;
+        baseLatch = BaseLatch.ERROR_BLOCKED;
         break;
       default:
-        latch = Latch.UNKNOWN;
+        baseLatch = BaseLatch.UNKNOWN;
         break;
     }
 
     return new BasePing(deviceId, rssi, temperature, humidity, heaterSetpoint, heaterTemperature,
-        latch);
+        baseLatch);
   }
 
   public static BasePing create(String deviceId, int rssi, double temperature, double humidity,
-      double heaterSetpoint, double heaterTemperature, Latch latch) {
+      double heaterSetpoint, double heaterTemperature, BaseLatch baseLatch) {
     return new BasePing(deviceId, rssi, temperature, humidity, heaterSetpoint, heaterTemperature,
-        latch);
+        baseLatch);
   }
 
   public String getDeviceId() {
@@ -117,8 +117,8 @@ public class BasePing implements IncomingMessage {
     return heaterTemperature;
   }
 
-  public Latch getLatch() {
-    return latch;
+  public BaseLatch getLatch() {
+    return baseLatch;
   }
 
   public static class Factory implements IncomingMessageFactory<BasePing> {

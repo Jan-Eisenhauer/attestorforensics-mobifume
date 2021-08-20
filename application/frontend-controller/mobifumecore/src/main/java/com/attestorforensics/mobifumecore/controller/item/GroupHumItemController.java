@@ -6,7 +6,7 @@ import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxC
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import java.net.URL;
 import java.util.NavigableMap;
 import java.util.ResourceBundle;

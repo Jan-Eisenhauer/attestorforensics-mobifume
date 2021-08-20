@@ -2,8 +2,8 @@ package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.base.BaseCalibrationData;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.event.base.BaseCalibrationDataUpdatedEvent;
 import java.util.Optional;
 

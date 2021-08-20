@@ -7,7 +7,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogControl
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.UnsignedIntTextFormatter;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.EvaporateSettings;
 import com.attestorforensics.mobifumecore.model.setting.GroupSettings;

@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.event.group.setup;
 
-import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.event.group.GroupEvent;
 
 public class SetupFinishedEvent extends GroupEvent {

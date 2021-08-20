@@ -2,8 +2,6 @@ package com.attestorforensics.mobifumecore.model.setting;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
-
 public class EvaporantSettings {
 
   private static final EvaporantSettings defaultEvaporantSettings =

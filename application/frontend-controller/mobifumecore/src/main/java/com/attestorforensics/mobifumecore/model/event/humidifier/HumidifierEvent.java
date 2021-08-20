@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.event.humidifier;
 
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.listener.Event;
 
 public abstract class HumidifierEvent implements Event {

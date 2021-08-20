@@ -1,10 +1,10 @@
 package com.attestorforensics.mobifumecore.model;
 
-import com.attestorforensics.mobifumecore.model.element.group.GroupFactory;
-import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
-import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.element.node.FilterFactory;
-import com.attestorforensics.mobifumecore.model.element.node.FilterPool;
+import com.attestorforensics.mobifumecore.model.group.GroupFactory;
+import com.attestorforensics.mobifumecore.model.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.filter.FilterFactory;
+import com.attestorforensics.mobifumecore.model.filter.FilterPool;
 import com.attestorforensics.mobifumecore.model.setting.GlobalSettings;
 import com.attestorforensics.mobifumecore.model.update.Updater;
 

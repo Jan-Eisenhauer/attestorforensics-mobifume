@@ -6,8 +6,8 @@ import com.attestorforensics.mobifumecore.model.connection.broker.BrokerConnecti
 import com.attestorforensics.mobifumecore.model.connection.broker.MqttBrokerConnection;
 import com.attestorforensics.mobifumecore.model.connection.wifi.WifiConnection;
 import com.attestorforensics.mobifumecore.model.connection.wifi.WindowsWifiConnection;
-import com.attestorforensics.mobifumecore.model.element.misc.ApplicationLock;
-import com.attestorforensics.mobifumecore.model.element.misc.FileApplicationLock;
+import com.attestorforensics.mobifumecore.util.ApplicationLock;
+import com.attestorforensics.mobifumecore.util.FileApplicationLock;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.listener.EventDispatcher;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;

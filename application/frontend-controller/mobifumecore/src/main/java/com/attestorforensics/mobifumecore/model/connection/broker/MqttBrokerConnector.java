@@ -2,9 +2,9 @@ package com.attestorforensics.mobifumecore.model.connection.broker;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.wifi.WifiConnection;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
-import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.node.DevicePool;
 import com.attestorforensics.mobifumecore.model.event.base.BaseDisconnectedEvent;
 import com.attestorforensics.mobifumecore.model.event.base.BaseLostEvent;
 import com.attestorforensics.mobifumecore.model.event.connection.broker.BrokerConnectedEvent;

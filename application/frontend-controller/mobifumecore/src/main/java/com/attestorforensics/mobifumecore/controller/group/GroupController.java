@@ -9,10 +9,10 @@ import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemControlle
 import com.attestorforensics.mobifumecore.controller.item.GroupFilterItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
-import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
-import com.attestorforensics.mobifumecore.model.element.misc.Evaporant;
+import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.group.GroupStatus;
+import com.attestorforensics.mobifumecore.model.node.misc.DoubleSensor;
+import com.attestorforensics.mobifumecore.model.setting.Evaporant;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
 import com.attestorforensics.mobifumecore.model.setting.EvaporateSettings;

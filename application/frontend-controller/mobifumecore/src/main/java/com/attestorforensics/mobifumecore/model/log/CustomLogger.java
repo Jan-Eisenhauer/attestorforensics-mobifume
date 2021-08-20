@@ -1,9 +1,9 @@
 package com.attestorforensics.mobifumecore.model.log;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.io.File;
 import java.io.IOException;

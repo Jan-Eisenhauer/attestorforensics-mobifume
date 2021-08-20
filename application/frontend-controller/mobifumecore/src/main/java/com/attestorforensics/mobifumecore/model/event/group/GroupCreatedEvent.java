@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.event.group;
 
-import com.attestorforensics.mobifumecore.model.element.group.Group;
+import com.attestorforensics.mobifumecore.model.group.Group;
 
 public class GroupCreatedEvent extends GroupEvent {
 

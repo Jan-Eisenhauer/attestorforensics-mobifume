@@ -4,10 +4,10 @@ import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemControlle
 import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
 import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.element.misc.HumidifierWaterState;
-import com.attestorforensics.mobifumecore.model.element.misc.Latch;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.node.misc.BaseLatch;
+import com.attestorforensics.mobifumecore.model.node.misc.HumidifierWaterState;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.base.BaseUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierUpdatedEvent;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
@@ -41,8 +41,8 @@ public class GroupDeviceListener implements Listener {
         return;
       }
 
-      if (base.getLatch() == Latch.ERROR_OTHER || base.getLatch() == Latch.ERROR_NOT_REACHED
-          || base.getLatch() == Latch.ERROR_BLOCKED) {
+      if (base.getLatch() == BaseLatch.ERROR_OTHER || base.getLatch() == BaseLatch.ERROR_NOT_REACHED
+          || base.getLatch() == BaseLatch.ERROR_BLOCKED) {
         String message = LocaleManager.getInstance().getString("base.error.latch");
         baseItemController.showError(message, true, ItemErrorType.BASE_LATCH);
       } else if (base.getHeaterTemperature().isError()) {

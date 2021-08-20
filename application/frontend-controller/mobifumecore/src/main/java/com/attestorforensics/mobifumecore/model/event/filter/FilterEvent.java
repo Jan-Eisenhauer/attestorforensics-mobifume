@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.event.filter;
 
-import com.attestorforensics.mobifumecore.model.element.filter.Filter;
+import com.attestorforensics.mobifumecore.model.filter.Filter;
 import com.attestorforensics.mobifumecore.model.listener.Event;
 
 public abstract class FilterEvent implements Event {

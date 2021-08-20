@@ -7,8 +7,8 @@ import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogControl
 import com.attestorforensics.mobifumecore.controller.service.item.ServiceBaseItemController;
 import com.attestorforensics.mobifumecore.controller.service.item.ServiceItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Device;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.google.common.collect.Maps;
 import java.net.URL;

@@ -4,10 +4,10 @@ import com.attestorforensics.mobifumecore.controller.dialog.CalibrateDialogContr
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
-import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
-import com.attestorforensics.mobifumecore.model.element.misc.Latch;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
+import com.attestorforensics.mobifumecore.model.node.misc.Calibration;
+import com.attestorforensics.mobifumecore.model.node.misc.BaseLatch;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Device;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -182,7 +182,7 @@ public class ServiceBaseItemController extends ServiceItemController {
   public void onLatch() {
     Sound.click();
     base.sendTime(60);
-    if (base.getLatch() == Latch.PURGING) {
+    if (base.getLatch() == BaseLatch.PURGING) {
       base.forceSendLatchCirculate();
     } else {
       base.forceSendLatchPurge();

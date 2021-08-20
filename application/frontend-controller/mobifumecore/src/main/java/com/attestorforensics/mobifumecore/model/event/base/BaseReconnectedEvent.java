@@ -1,6 +1,6 @@
 package com.attestorforensics.mobifumecore.model.event.base;
 
-import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Base;
 
 public class BaseReconnectedEvent extends BaseEvent {
 

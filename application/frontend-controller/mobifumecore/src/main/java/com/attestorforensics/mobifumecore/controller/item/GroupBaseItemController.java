@@ -6,10 +6,10 @@ import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxC
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.group.GroupStatus;
-import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
+import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.group.GroupStatus;
+import com.attestorforensics.mobifumecore.model.node.misc.DoubleSensor;
+import com.attestorforensics.mobifumecore.model.node.Base;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.util.NavigableMap;
