@@ -37,8 +37,14 @@ public class RoomFactory implements GroupFactory {
     mobiModelManager.setGlobalSettings(globalSettings);
     int cycleNumber = globalSettings.cycleNumber();
 
-    Room room = new Room(name, cycleNumber, bases, humidifiers, filters,
-        globalSettings.groupTemplateSettings());
+    Room room = Room.builder()
+        .name(name)
+        .cycleNumber(cycleNumber)
+        .bases(bases)
+        .humidifiers(humidifiers)
+        .filters(filters)
+        .settings(globalSettings.groupTemplateSettings())
+        .build();
 
     CustomLogger.logGroupHeader(room);
     CustomLogger.logGroupSettings(room);

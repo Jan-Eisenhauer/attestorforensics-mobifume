@@ -1,5 +1,8 @@
 package com.attestorforensics.mobifumecore.model.element.group;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.element.filter.Filter;
 import com.attestorforensics.mobifumecore.model.element.misc.DoubleSensor;
@@ -19,6 +22,7 @@ import com.attestorforensics.mobifumecore.model.event.group.setup.SetupStartedEv
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
 import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
+import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -49,20 +53,31 @@ public class Room implements Group {
   private long purgeStartTime;
   private ScheduledFuture<?> purgeTask;
 
-  public Room(String name, int cycleNumber, List<Base> bases, List<Humidifier> humidifiers,
-      List<Filter> filters, GroupSettings settings) {
+  private Room(RoomBuilder roomBuilder) {
     logger = CustomLogger.createGroupLogger(this);
-    this.name = name;
-    this.cycleNumber = cycleNumber;
-    this.bases = bases;
-    this.humidifiers = humidifiers;
-    this.filters = filters;
-    this.settings = settings;
+    this.name = roomBuilder.name;
+    this.cycleNumber = roomBuilder.cycleNumber;
+    this.bases = roomBuilder.bases;
+    this.humidifiers = roomBuilder.humidifiers;
+    this.filters = roomBuilder.filters;
+    this.settings = roomBuilder.settings;
 
-    if (getBases().size() != filters.size()) {
+    if (bases.isEmpty()) {
+      throw new IllegalArgumentException("No bases provided!");
+    }
+
+    if (humidifiers.isEmpty()) {
+      throw new IllegalArgumentException("No humidifiers provided!");
+    }
+
+    if (bases.size() != filters.size()) {
       throw new IllegalArgumentException(
           "The count of filters is not the same as the count of bases!");
     }
+  }
+
+  public static RoomBuilder builder() {
+    return new RoomBuilder();
   }
 
   @Override
@@ -501,5 +516,64 @@ public class Room implements Group {
 
   public long getPurgeStartTime() {
     return purgeStartTime;
+  }
+
+  public static class RoomBuilder {
+
+    private String name;
+    private Integer cycleNumber;
+    private List<Base> bases;
+    private List<Humidifier> humidifiers;
+    private List<Filter> filters;
+    private GroupSettings settings;
+
+    private RoomBuilder() {
+    }
+
+    public Room build() {
+      checkNotNull(name);
+      checkNotNull(cycleNumber);
+      checkNotNull(bases);
+      checkNotNull(humidifiers);
+      checkNotNull(filters);
+      checkNotNull(settings);
+      return new Room(this);
+    }
+
+    public RoomBuilder name(String name) {
+      checkNotNull(name);
+      checkArgument(!name.isEmpty());
+      this.name = name;
+      return this;
+    }
+
+    public RoomBuilder cycleNumber(int cycleNumber) {
+      this.cycleNumber = cycleNumber;
+      return this;
+    }
+
+    public RoomBuilder bases(List<Base> bases) {
+      checkNotNull(bases);
+      this.bases = Lists.newArrayList(bases);
+      return this;
+    }
+
+    public RoomBuilder humidifiers(List<Humidifier> humidifiers) {
+      checkNotNull(humidifiers);
+      this.humidifiers = Lists.newArrayList(humidifiers);
+      return this;
+    }
+
+    public RoomBuilder filters(List<Filter> filters) {
+      checkNotNull(filters);
+      this.filters = Lists.newArrayList(filters);
+      return this;
+    }
+
+    public RoomBuilder settings(GroupSettings settings) {
+      checkNotNull(settings);
+      this.settings = settings;
+      return this;
+    }
   }
 }
