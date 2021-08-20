@@ -624,7 +624,7 @@ public class GroupController extends CloseableController {
     evaporateSettings = evaporateSettings.evaporateTime(evaporateSettings.evaporateTime() + 5);
     groupSettings.evaporateSettings(evaporateSettings);
     group.getProcess().setSettings(groupSettings);
-    group.getProcess().updateHeatTimer();
+    group.getProcess().updateEvaporateTime();
     updateEvaporateTimer();
   }
 

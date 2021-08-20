@@ -279,7 +279,7 @@ public class GroupSettingsController extends CloseableController {
     if (heatTime != evaporateSettings.evaporateTime()) {
       evaporateSettings = evaporateSettings.evaporateTime(heatTime);
       groupSettings = groupSettings.evaporateSettings(evaporateSettings);
-      group.getProcess().resetHeatTimer();
+      group.getProcess().resetEvaporateTime();
     }
 
     PurgeSettings purgeSettings = groupSettings.purgeSettings();

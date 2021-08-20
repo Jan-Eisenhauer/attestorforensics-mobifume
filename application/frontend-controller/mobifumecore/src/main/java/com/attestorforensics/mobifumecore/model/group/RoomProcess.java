@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class RoomProcess implements GroupProcess {
 
   private static final int HUMIDIFY_CIRCULATE_DURATION = 30;
+  private static final int HUMIDIFY_SETPOINT_REACHED_COUNT = 5;
 
   private final Group group;
 
@@ -31,7 +32,7 @@ public class RoomProcess implements GroupProcess {
 
   private GroupStatus status = GroupStatus.SETUP;
   private boolean humidifySetpointReached;
-  private int humidifyMaxTimes;
+  private int humidifySetpointReachedCounter;
   private boolean humidifying;
   private ScheduledFuture<?> updateLatchTask;
   private long evaporateStartTime;
@@ -296,7 +297,7 @@ public class RoomProcess implements GroupProcess {
   }
 
   @Override
-  public void updateHeatTimer() {
+  public void updateEvaporateTime() {
     if (status != GroupStatus.EVAPORATE) {
       return;
     }
@@ -311,7 +312,7 @@ public class RoomProcess implements GroupProcess {
   }
 
   @Override
-  public void resetHeatTimer() {
+  public void resetEvaporateTime() {
     if (status != GroupStatus.EVAPORATE) {
       return;
     }
@@ -320,7 +321,7 @@ public class RoomProcess implements GroupProcess {
     CustomLogger.info(group, "RESET_HEATTIMER", evaporateStartTime,
         settings.evaporateSettings().evaporateTime());
     CustomLogger.logGroupSettings(group);
-    updateHeatTimer();
+    updateEvaporateTime();
   }
 
   @Override
@@ -366,8 +367,8 @@ public class RoomProcess implements GroupProcess {
     if (!isHumidifySetpointReached()) {
       if (group.getAverageHumidity().isValid()
           && group.getAverageHumidity().value() >= humiditySetpoint) {
-        humidifyMaxTimes++;
-        if (humidifyMaxTimes >= 5) {
+        humidifySetpointReachedCounter++;
+        if (humidifySetpointReachedCounter >= HUMIDIFY_SETPOINT_REACHED_COUNT) {
           humidifySetpointReached = true;
           Mobifume.getInstance().getEventDispatcher().call(HumidifyFinishedEvent.create(group));
         }
