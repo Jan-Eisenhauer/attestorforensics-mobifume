@@ -78,7 +78,7 @@ public class GroupSettingsController extends CloseableController {
     this.group = group;
     groupName.setText(group.getName() + " - " + group.getCycleNumber());
 
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     maxHum = groupSettings.humidifySettings().humiditySetpoint();
     heaterTemp = groupSettings.evaporateSettings().heaterTemperature();
     heatTime = groupSettings.evaporateSettings().evaporateTime();
@@ -258,14 +258,14 @@ public class GroupSettingsController extends CloseableController {
   }
 
   private void applySettings() {
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
 
     HumidifySettings humidifySettings = groupSettings.humidifySettings();
     int maxHumidity = getFixedValue(maxHumSlider, maxHum);
     if (maxHumidity != humidifySettings.humiditySetpoint()) {
       humidifySettings = humidifySettings.humiditySetpoint(maxHumidity);
       groupSettings = groupSettings.humidifySettings(humidifySettings);
-      group.updateHumidify();
+      group.getProcess().updateHumidify();
     }
 
     EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
@@ -273,23 +273,23 @@ public class GroupSettingsController extends CloseableController {
     if (heaterTemperature != evaporateSettings.heaterTemperature()) {
       evaporateSettings = evaporateSettings.heaterTemperature(heaterTemperature);
       groupSettings = groupSettings.evaporateSettings(evaporateSettings);
-      group.updateHeaterSetpoint();
+      group.getProcess().updateHeaterSetpoint();
     }
 
     if (heatTime != evaporateSettings.evaporateTime()) {
       evaporateSettings = evaporateSettings.evaporateTime(heatTime);
       groupSettings = groupSettings.evaporateSettings(evaporateSettings);
-      group.resetHeatTimer();
+      group.getProcess().resetHeatTimer();
     }
 
     PurgeSettings purgeSettings = groupSettings.purgeSettings();
     if (purgeTime != purgeSettings.purgeTime()) {
       purgeSettings = purgeSettings.purgeTime(purgeTime);
       groupSettings = groupSettings.purgeSettings(purgeSettings);
-      group.resetPurgeTimer();
+      group.getProcess().resetPurgeTimer();
     }
 
-    group.setSettings(groupSettings);
+    group.getProcess().setSettings(groupSettings);
   }
 
   @FXML

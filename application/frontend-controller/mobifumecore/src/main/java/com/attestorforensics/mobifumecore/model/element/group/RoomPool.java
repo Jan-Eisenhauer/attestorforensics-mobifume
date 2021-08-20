@@ -34,7 +34,7 @@ public class RoomPool implements GroupPool {
 
   @Override
   public void removeGroup(Group group) {
-    ((Room) group).stop();
+    group.getProcess().stop();
     group.getBases().stream().filter(Device::isOffline).forEach(base -> {
       devicePool.removeBase(base);
       Mobifume.getInstance().getEventDispatcher().call(BaseDisconnectedEvent.create(base));

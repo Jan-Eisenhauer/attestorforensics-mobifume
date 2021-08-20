@@ -82,26 +82,27 @@ public class GroupItemController extends ItemController {
   }
 
   private void updateStatus() {
-    switch (group.getStatus()) {
-      case START:
+    switch (group.getProcess().getStatus()) {
+      case SETUP:
         status.setText(LocaleManager.getInstance().getString("group.status.setup"));
         break;
       case HUMIDIFY:
-        DoubleSensor humidity = group.getHumidity();
+        DoubleSensor humidity = group.getAverageHumidity();
         if (humidity.isValid()) {
           status.setText(LocaleManager.getInstance()
               .getString("group.status.humidify", humidity.value(),
-                  group.getSettings().humidifySettings().humiditySetpoint()));
+                  group.getProcess().getSettings().humidifySettings().humiditySetpoint()));
         } else {
           status.setText(LocaleManager.getInstance()
               .getString("group.status.humidify", "-",
-                  group.getSettings().humidifySettings().humiditySetpoint()));
+                  group.getProcess().getSettings().humidifySettings().humiditySetpoint()));
         }
         break;
       case EVAPORATE:
-        long timePassedEvaporate = System.currentTimeMillis() - group.getEvaporateStartTime();
+        long timePassedEvaporate =
+            System.currentTimeMillis() - group.getProcess().getEvaporateStartTime();
         long countdownEvaporate =
-            group.getSettings().evaporateSettings().evaporateTime() * 60 * 1000L
+            group.getProcess().getSettings().evaporateSettings().evaporateTime() * 60 * 1000L
                 - timePassedEvaporate + 1000;
         Date dateEvaporate = new Date(countdownEvaporate - 1000 * 60 * 60L);
         String formattedEvaporate;
@@ -114,9 +115,10 @@ public class GroupItemController extends ItemController {
             LocaleManager.getInstance().getString("group.status.evaporate", formattedEvaporate));
         break;
       case PURGE:
-        long timePassedPurge = System.currentTimeMillis() - group.getPurgeStartTime();
+        long timePassedPurge = System.currentTimeMillis() - group.getProcess().getPurgeStartTime();
         long countdownPurge =
-            group.getSettings().purgeSettings().purgeTime() * 60 * 1000L - timePassedPurge + 1000L;
+            group.getProcess().getSettings().purgeSettings().purgeTime() * 60 * 1000L
+                - timePassedPurge + 1000L;
         Date datePurge = new Date(countdownPurge - 1000 * 60 * 60L);
         String formattedPurge;
         if (datePurge.getTime() < 0) {
@@ -126,12 +128,8 @@ public class GroupItemController extends ItemController {
         }
         status.setText(LocaleManager.getInstance().getString("group.status.purge", formattedPurge));
         break;
-      case FINISH:
+      case COMPLETE:
         status.setText(LocaleManager.getInstance().getString("group.status.finished"));
-        break;
-      case RESET:
-      case CANCEL:
-        status.setText(LocaleManager.getInstance().getString("group.status.canceled"));
         break;
       default:
         break;

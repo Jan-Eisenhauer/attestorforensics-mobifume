@@ -84,7 +84,7 @@ public class CustomLogger {
   }
 
   public static void logGroupSettings(Group group) {
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     info(group, "SETTINGS", groupSettings.humidifySettings().humiditySetpoint(),
         groupSettings.humidifySettings().humidityPuffer(),
         groupSettings.evaporateSettings().heaterTemperature(),
@@ -105,7 +105,8 @@ public class CustomLogger {
   }
 
   public static void logGroupState(Group group) {
-    info(group, "STATE", group.getStatus(), group.isHumidifying(), group.isHumidifySetpointReached());
+    info(group, "STATE", group.getProcess().getStatus(), group.getProcess().isHumidifying(),
+        group.getProcess().isHumidifySetpointReached());
   }
 
   public static void logGroupDevices(Group group) {

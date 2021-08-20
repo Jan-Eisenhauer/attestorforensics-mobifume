@@ -50,12 +50,12 @@ public class RoomFactory implements GroupFactory {
     CustomLogger.logGroupSettings(room);
     CustomLogger.logGroupState(room);
     CustomLogger.logGroupDevices(room);
-    EvaporantSettings evaporantSettings = room.getSettings().evaporantSettings();
+    EvaporantSettings evaporantSettings = room.getProcess().getSettings().evaporantSettings();
     room.getLogger()
         .info("DEFAULT_EVAPORANT;" + evaporantSettings.evaporant() + ";"
             + evaporantSettings.evaporantAmountPerCm() + ";" + evaporantSettings.roomWidth() + ";"
             + evaporantSettings.roomDepth() + ";" + evaporantSettings.roomHeight());
-    room.setupStart();
+    room.getProcess().startSetup();
     Mobifume.getInstance().getEventDispatcher().call(GroupCreatedEvent.create(room));
     return room;
   }

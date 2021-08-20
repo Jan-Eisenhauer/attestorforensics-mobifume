@@ -61,10 +61,10 @@ public class GroupBaseItemController extends ItemController {
   private void setTemperature(DoubleSensor temperature) {
     if (temperature.isError()) {
       this.temperature.setText(LocaleManager.getInstance().getString("group.error.temperature"));
-    } else if (group.getStatus() == GroupStatus.EVAPORATE) {
+    } else if (group.getProcess().getStatus() == GroupStatus.EVAPORATE) {
       this.temperature.setText(LocaleManager.getInstance()
           .getString("group.base.temperature.setpoint", temperature.value(),
-              group.getSettings().evaporateSettings().heaterTemperature()));
+              group.getProcess().getSettings().evaporateSettings().heaterTemperature()));
     } else {
       this.temperature.setText(
           LocaleManager.getInstance().getString("group.base.temperature", temperature.value()));

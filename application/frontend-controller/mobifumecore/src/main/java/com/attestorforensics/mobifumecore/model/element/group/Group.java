@@ -11,11 +11,11 @@ import org.apache.log4j.Logger;
 
 public interface Group {
 
+  Logger getLogger();
+
   String getName();
 
   int getCycleNumber();
-
-  Logger getLogger();
 
   boolean containsBase(Base base);
 
@@ -27,47 +27,9 @@ public interface Group {
 
   List<Filter> getFilters();
 
-  GroupStatus getStatus();
+  DoubleSensor getAverageTemperature();
 
-  GroupSettings getSettings();
+  DoubleSensor getAverageHumidity();
 
-  void setSettings(GroupSettings settings);
-
-  DoubleSensor getTemperature();
-
-  DoubleSensor getHumidity();
-
-  void setupStart();
-
-  void startHumidify();
-
-  void startEvaporate();
-
-  void startPurge();
-
-  void updateHumidify();
-
-  boolean isHumidifySetpointReached();
-
-  boolean isHumidifying();
-
-  long getEvaporateStartTime();
-
-  long getPurgeStartTime();
-
-  void cancel();
-
-  void updateHeaterSetpoint();
-
-  void sendBaseState(Base base);
-
-  void sendHumidifierState(Humidifier humidifier);
-
-  void updateHeatTimer();
-
-  void resetHeatTimer();
-
-  void updatePurgeTimer();
-
-  void resetPurgeTimer();
+  GroupProcess getProcess();
 }

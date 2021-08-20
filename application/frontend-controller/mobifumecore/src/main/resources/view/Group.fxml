@@ -194,20 +194,6 @@
                                                 AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="110.0"/>
                                     </children>
                                 </AnchorPane>
-                                <AnchorPane fx:id="canceledPane" layoutX="10.0" layoutY="10.0" visible="false">
-                                    <children>
-                                        <Text layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0"
-                                              styleClass="subtitleText" text="%group.canceled"
-                                              AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="8.0"/>
-                                        <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true"
-                                                   preserveRatio="true" AnchorPane.leftAnchor="16.0"
-                                                   AnchorPane.topAnchor="70.0">
-                                            <image>
-                                                <Image url="@../images/Cancel.png"/>
-                                            </image>
-                                        </ImageView>
-                                    </children>
-                                </AnchorPane>
                                 <AnchorPane fx:id="evaporantPane" visible="false" AnchorPane.rightAnchor="0.0"
                                             AnchorPane.topAnchor="0.0">
                                     <children>

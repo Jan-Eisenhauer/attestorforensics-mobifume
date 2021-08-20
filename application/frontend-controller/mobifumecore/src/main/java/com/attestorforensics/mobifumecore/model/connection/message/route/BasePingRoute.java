@@ -50,7 +50,7 @@ public class BasePingRoute implements MessageRoute<BasePing> {
     if (optionalGroup.isPresent()) {
       Group group = optionalGroup.get();
       CustomLogger.logGroupBase(group, base);
-      group.updateHumidify();
+      group.getProcess().updateHumidify();
     }
   }
 }

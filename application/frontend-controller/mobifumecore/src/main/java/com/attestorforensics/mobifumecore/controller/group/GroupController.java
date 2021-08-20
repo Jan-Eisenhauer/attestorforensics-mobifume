@@ -62,9 +62,6 @@ public class GroupController extends CloseableController {
   private Pane finishedPane;
 
   @FXML
-  private Pane canceledPane;
-
-  @FXML
   private Text evaporateTimer;
   @FXML
   private Text purgeTimer;
@@ -132,8 +129,8 @@ public class GroupController extends CloseableController {
     updateMaxHumidity();
     clearActionPane();
 
-    switch (group.getStatus()) {
-      case START:
+    switch (group.getProcess().getStatus()) {
+      case SETUP:
         startupPane.setVisible(true);
         evaporantPane.setVisible(true);
         break;
@@ -149,9 +146,7 @@ public class GroupController extends CloseableController {
         purgePane.setVisible(true);
         setupPurgeTimer();
         break;
-      case FINISH:
-      case RESET:
-      case CANCEL:
+      case COMPLETE:
         finishedPane.setVisible(true);
         break;
       default:
@@ -162,7 +157,7 @@ public class GroupController extends CloseableController {
   }
 
   private void initEvaporant() {
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
     Evaporant evaporant = evaporantSettings.evaporant();
     this.evaporant.setText(evaporant.name().substring(0, 1).toUpperCase() + evaporant.name()
@@ -177,7 +172,7 @@ public class GroupController extends CloseableController {
   private void updateMaxHumidity() {
     humidify.setText(LocaleManager.getInstance()
         .getString("group.humidify.wait",
-            group.getSettings().humidifySettings().humiditySetpoint()));
+            group.getProcess().getSettings().humidifySettings().humiditySetpoint()));
   }
 
   public void clearActionPane() {
@@ -306,7 +301,7 @@ public class GroupController extends CloseableController {
   }
 
   private void addCurrentHumidityToChart() {
-    DoubleSensor humidity = group.getHumidity();
+    DoubleSensor humidity = group.getAverageHumidity();
     double humidityChartValue = humidity.isValid() ? humidity.value() : -1;
     XYChart.Data<Double, Double> data =
         new XYChart.Data<>((double) latestDataTimestamp, humidityChartValue);
@@ -315,7 +310,7 @@ public class GroupController extends CloseableController {
 
   public void updateStatus() {
     String errorStyle = "error";
-    DoubleSensor temp = group.getTemperature();
+    DoubleSensor temp = group.getAverageTemperature();
     if (temp.isError()) {
       if (tempWrong == 5) {
         tempWrong = 6;
@@ -331,7 +326,7 @@ public class GroupController extends CloseableController {
       temperature.getStyleClass().remove(errorStyle);
     }
 
-    DoubleSensor hum = group.getHumidity();
+    DoubleSensor hum = group.getAverageHumidity();
     if (hum.isError()) {
       if (humWrong == 5) {
         humWrong = 6;
@@ -346,8 +341,9 @@ public class GroupController extends CloseableController {
       humidity.getStyleClass().remove(errorStyle);
     }
 
-    if (group.getStatus() == GroupStatus.HUMIDIFY || group.getStatus() == GroupStatus.EVAPORATE) {
-      double humGoal = group.getSettings().humidifySettings().humiditySetpoint();
+    if (group.getProcess().getStatus() == GroupStatus.HUMIDIFY
+        || group.getProcess().getStatus() == GroupStatus.EVAPORATE) {
+      double humGoal = group.getProcess().getSettings().humidifySettings().humiditySetpoint();
       humiditySetpoint.setText((int) humGoal + "%rH");
       humiditySetpointPane.setVisible(true);
     } else {
@@ -362,17 +358,19 @@ public class GroupController extends CloseableController {
   }
 
   private long updateEvaporateTimer() {
-    long timePassed = System.currentTimeMillis() - group.getEvaporateStartTime();
+    long timePassed = System.currentTimeMillis() - group.getProcess().getEvaporateStartTime();
     long countdown =
-        group.getSettings().evaporateSettings().evaporateTime() * 60 * 1000L - timePassed + 1000;
+        group.getProcess().getSettings().evaporateSettings().evaporateTime() * 60 * 1000L
+            - timePassed + 1000;
     updateCountdown(countdown, evaporateTimer);
     return countdown;
   }
 
   private long updatePurgeTimer() {
-    long timePassed = System.currentTimeMillis() - group.getPurgeStartTime();
+    long timePassed = System.currentTimeMillis() - group.getProcess().getPurgeStartTime();
     long countdown =
-        group.getSettings().purgeSettings().purgeTime() * 60 * 1000L - timePassed + 1000;
+        group.getProcess().getSettings().purgeSettings().purgeTime() * 60 * 1000L - timePassed
+            + 1000;
     updateCountdown(countdown, purgeTimer);
     return countdown;
   }
@@ -467,7 +465,7 @@ public class GroupController extends CloseableController {
   public void onStart() {
     Sound.click();
 
-    group.startHumidify();
+    group.getProcess().startHumidify();
   }
 
   @FXML
@@ -480,17 +478,17 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          DoubleSensor humidity = group.getHumidity();
+          DoubleSensor humidity = group.getAverageHumidity();
           if (humidity.isValid()) {
-            GroupSettings groupSettings = group.getSettings();
+            GroupSettings groupSettings = group.getProcess().getSettings();
             HumidifySettings humidifySettings = groupSettings.humidifySettings();
             humidifySettings =
                 humidifySettings.humiditySetpoint(Math.round((float) humidity.value()));
             groupSettings.humidifySettings(humidifySettings);
-            group.setSettings(groupSettings);
+            group.getProcess().setSettings(groupSettings);
           }
 
-          group.startEvaporate();
+          group.getProcess().startEvaporate();
         }
       });
 
@@ -509,7 +507,7 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          group.cancel();
+          group.getProcess().cancel();
         }
       });
 
@@ -529,7 +527,7 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          group.startPurge();
+          group.getProcess().startPurge();
         }
       });
 
@@ -548,7 +546,7 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          group.cancel();
+          group.getProcess().cancel();
         }
       });
 
@@ -568,7 +566,7 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          group.cancel();
+          group.getProcess().cancel();
         }
       });
 
@@ -587,7 +585,7 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          group.startPurge();
+          group.getProcess().startPurge();
         }
       });
 
@@ -603,7 +601,7 @@ public class GroupController extends CloseableController {
     this.<GroupCalculatorController>loadAndOpenView("GroupCalculator.fxml")
         .thenAccept(groupCalculatorController -> {
           groupCalculatorController.setCallback(amount -> {
-            GroupSettings groupSettings = group.getSettings();
+            GroupSettings groupSettings = group.getProcess().getSettings();
             EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
             Evaporant evaporant = evaporantSettings.evaporant();
             this.evaporant.setText(evaporant.name().substring(0, 1).toUpperCase() + evaporant.name()
@@ -621,12 +619,12 @@ public class GroupController extends CloseableController {
   public void onEvaporateTimerAdd() {
     Sound.click();
 
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
     evaporateSettings = evaporateSettings.evaporateTime(evaporateSettings.evaporateTime() + 5);
     groupSettings.evaporateSettings(evaporateSettings);
-    group.setSettings(groupSettings);
-    group.updateHeatTimer();
+    group.getProcess().setSettings(groupSettings);
+    group.getProcess().updateHeatTimer();
     updateEvaporateTimer();
   }
 
@@ -634,12 +632,12 @@ public class GroupController extends CloseableController {
   public void onPurgeTimerAdd() {
     Sound.click();
 
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     PurgeSettings purgeSettings = groupSettings.purgeSettings();
     purgeSettings = purgeSettings.purgeTime(purgeSettings.purgeTime() + 5);
     groupSettings.purgeSettings(purgeSettings);
-    group.setSettings(groupSettings);
-    group.updatePurgeTimer();
+    group.getProcess().setSettings(groupSettings);
+    group.getProcess().updatePurgeTimer();
     updatePurgeTimer();
   }
 
@@ -665,10 +663,6 @@ public class GroupController extends CloseableController {
 
   public Pane getFinishedPane() {
     return finishedPane;
-  }
-
-  public Pane getCanceledPane() {
-    return canceledPane;
   }
 
   public Pane getEvaporantPane() {

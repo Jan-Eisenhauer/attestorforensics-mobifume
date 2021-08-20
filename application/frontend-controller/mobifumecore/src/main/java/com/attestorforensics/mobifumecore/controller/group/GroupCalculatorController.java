@@ -74,7 +74,7 @@ public class GroupCalculatorController extends CloseableController {
     this.group = group;
     groupName.setText(group.getName() + " - " + group.getCycleNumber());
 
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
 
     roomWidth.setTextFormatter(new UnsignedFloatTextFormatter());
@@ -158,7 +158,7 @@ public class GroupCalculatorController extends CloseableController {
   }
 
   private boolean haveSettingsChanged() {
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
     try {
       if (roomWidthValue <= MAX_INPUT_VALUE && roomWidthValue != evaporantSettings.roomWidth()) {
@@ -194,7 +194,7 @@ public class GroupCalculatorController extends CloseableController {
   }
 
   private void applySettings() {
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
 
     try {
@@ -235,7 +235,7 @@ public class GroupCalculatorController extends CloseableController {
 
     evaporantSettings = evaporantSettings.evaporant(evaporantValue);
     groupSettings = groupSettings.evaporantSettings(evaporantSettings);
-    group.setSettings(groupSettings);
+    group.getProcess().setSettings(groupSettings);
 
     group.getLogger()
         .info("EVAPORANT;" + evaporantSettings.evaporant() + ";"
@@ -244,7 +244,7 @@ public class GroupCalculatorController extends CloseableController {
   }
 
   private void resetSettings() {
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
     roomWidthValue = evaporantSettings.roomWidth();
     roomWidth.setText(roomWidthValue + "");
@@ -314,7 +314,7 @@ public class GroupCalculatorController extends CloseableController {
   }
 
   private double calculateSettingsEvaporantAmount() {
-    GroupSettings groupSettings = group.getSettings();
+    GroupSettings groupSettings = group.getProcess().getSettings();
     EvaporantSettings evaporantSettings = groupSettings.evaporantSettings();
     double roomSize = evaporantSettings.roomWidth() * evaporantSettings.roomDepth()
         * evaporantSettings.roomHeight();

@@ -39,7 +39,7 @@ public class HumidifyListener implements Listener {
     }
 
     Platform.runLater(() -> {
-      event.getGroup().startEvaporate();
+      event.getGroup().getProcess().startEvaporate();
       groupController.updateStatus();
     });
   }
