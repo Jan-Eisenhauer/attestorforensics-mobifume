@@ -157,7 +157,7 @@ public class RoomProcess implements GroupProcess {
     cancelEvaporateTaskIfScheduled();
     evaporateStartTime = System.currentTimeMillis();
 
-    group.getBases().forEach(base -> base.sendTime(settings.evaporateSettings().evaporateTime()));
+    group.getBases().forEach(base -> base.sendTime(settings.evaporateSettings().evaporateDuration()));
     updateHeaterSetpoint();
     group.getBases().forEach(Base::sendLatchCirculate);
 
@@ -179,7 +179,7 @@ public class RoomProcess implements GroupProcess {
   private void createOrUpdateEvaporateTask() {
     cancelEvaporateTaskIfScheduled();
     long timePassed = System.currentTimeMillis() - evaporateStartTime;
-    long timeLeft = settings.evaporateSettings().evaporateTime() * 60 * 1000L - timePassed;
+    long timeLeft = settings.evaporateSettings().evaporateDuration() * 60 * 1000L - timePassed;
     evaporateTask = Mobifume.getInstance().getScheduledExecutorService().schedule(() -> {
       Mobifume.getInstance().getEventDispatcher().call(EvaporateFinishedEvent.create(group));
       startPurge();
@@ -195,7 +195,7 @@ public class RoomProcess implements GroupProcess {
           int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
           group.getBases()
               .forEach(base -> base.sendTime(
-                  settings.evaporateSettings().evaporateTime() - passedTimeInMinutes));
+                  settings.evaporateSettings().evaporateDuration() - passedTimeInMinutes));
         }, 60L, 60L, TimeUnit.MINUTES);
   }
 
@@ -239,7 +239,7 @@ public class RoomProcess implements GroupProcess {
   private void createOrUpdatePurgeTask() {
     cancelPurgeTaskIfScheduled();
     long timePassed = System.currentTimeMillis() - purgeStartTime;
-    long timeLeft = settings.purgeSettings().purgeTime() * 60 * 1000L - timePassed;
+    long timeLeft = settings.purgeSettings().purgeDuration() * 60 * 1000L - timePassed;
     purgeTask = Mobifume.getInstance()
         .getScheduledExecutorService()
         .schedule(this::startComplete, timeLeft, TimeUnit.MILLISECONDS);
@@ -268,7 +268,7 @@ public class RoomProcess implements GroupProcess {
     if (status == GroupStatus.EVAPORATE) {
       long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
       int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-      base.sendTime(settings.evaporateSettings().evaporateTime() - passedTimeInMinutes);
+      base.sendTime(settings.evaporateSettings().evaporateDuration() - passedTimeInMinutes);
       base.forceSendHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
     } else {
       base.forceSendHeaterSetpoint(0);
@@ -297,12 +297,12 @@ public class RoomProcess implements GroupProcess {
   }
 
   @Override
-  public void updateEvaporateTime() {
+  public void updateEvaporateTimer() {
     if (status != GroupStatus.EVAPORATE) {
       return;
     }
 
-    int evaporateTime = settings.evaporateSettings().evaporateTime();
+    int evaporateTime = settings.evaporateSettings().evaporateDuration();
     CustomLogger.info(group, "UPDATE_HEATTIMER", evaporateStartTime, evaporateTime);
     CustomLogger.logGroupSettings(group);
     long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
@@ -312,16 +312,16 @@ public class RoomProcess implements GroupProcess {
   }
 
   @Override
-  public void resetEvaporateTime() {
+  public void resetEvaporateTimer() {
     if (status != GroupStatus.EVAPORATE) {
       return;
     }
 
     evaporateStartTime = System.currentTimeMillis();
     CustomLogger.info(group, "RESET_HEATTIMER", evaporateStartTime,
-        settings.evaporateSettings().evaporateTime());
+        settings.evaporateSettings().evaporateDuration());
     CustomLogger.logGroupSettings(group);
-    updateEvaporateTime();
+    updateEvaporateTimer();
   }
 
   @Override
@@ -331,7 +331,7 @@ public class RoomProcess implements GroupProcess {
     }
 
     CustomLogger.info(group, "UPDATE_PURGETIMER", purgeStartTime,
-        settings.purgeSettings().purgeTime());
+        settings.purgeSettings().purgeDuration());
     CustomLogger.logGroupSettings(group);
     createOrUpdatePurgeTask();
   }
@@ -344,7 +344,7 @@ public class RoomProcess implements GroupProcess {
 
     purgeStartTime = System.currentTimeMillis();
     CustomLogger.info(group, "RESET_PURGETIMER", purgeStartTime,
-        settings.purgeSettings().purgeTime());
+        settings.purgeSettings().purgeDuration());
     CustomLogger.logGroupSettings(group);
     updatePurgeTimer();
   }

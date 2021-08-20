@@ -102,7 +102,7 @@ public class GroupItemController extends ItemController {
         long timePassedEvaporate =
             System.currentTimeMillis() - group.getProcess().getEvaporateStartTime();
         long countdownEvaporate =
-            group.getProcess().getSettings().evaporateSettings().evaporateTime() * 60 * 1000L
+            group.getProcess().getSettings().evaporateSettings().evaporateDuration() * 60 * 1000L
                 - timePassedEvaporate + 1000;
         Date dateEvaporate = new Date(countdownEvaporate - 1000 * 60 * 60L);
         String formattedEvaporate;
@@ -117,7 +117,7 @@ public class GroupItemController extends ItemController {
       case PURGE:
         long timePassedPurge = System.currentTimeMillis() - group.getProcess().getPurgeStartTime();
         long countdownPurge =
-            group.getProcess().getSettings().purgeSettings().purgeTime() * 60 * 1000L
+            group.getProcess().getSettings().purgeSettings().purgeDuration() * 60 * 1000L
                 - timePassedPurge + 1000L;
         Date datePurge = new Date(countdownPurge - 1000 * 60 * 60L);
         String formattedPurge;

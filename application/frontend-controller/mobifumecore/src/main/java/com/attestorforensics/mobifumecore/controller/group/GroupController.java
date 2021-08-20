@@ -360,7 +360,7 @@ public class GroupController extends CloseableController {
   private long updateEvaporateTimer() {
     long timePassed = System.currentTimeMillis() - group.getProcess().getEvaporateStartTime();
     long countdown =
-        group.getProcess().getSettings().evaporateSettings().evaporateTime() * 60 * 1000L
+        group.getProcess().getSettings().evaporateSettings().evaporateDuration() * 60 * 1000L
             - timePassed + 1000;
     updateCountdown(countdown, evaporateTimer);
     return countdown;
@@ -369,7 +369,7 @@ public class GroupController extends CloseableController {
   private long updatePurgeTimer() {
     long timePassed = System.currentTimeMillis() - group.getProcess().getPurgeStartTime();
     long countdown =
-        group.getProcess().getSettings().purgeSettings().purgeTime() * 60 * 1000L - timePassed
+        group.getProcess().getSettings().purgeSettings().purgeDuration() * 60 * 1000L - timePassed
             + 1000;
     updateCountdown(countdown, purgeTimer);
     return countdown;
@@ -621,10 +621,10 @@ public class GroupController extends CloseableController {
 
     GroupSettings groupSettings = group.getProcess().getSettings();
     EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
-    evaporateSettings = evaporateSettings.evaporateTime(evaporateSettings.evaporateTime() + 5);
+    evaporateSettings = evaporateSettings.evaporateDuration(evaporateSettings.evaporateDuration() + 5);
     groupSettings.evaporateSettings(evaporateSettings);
     group.getProcess().setSettings(groupSettings);
-    group.getProcess().updateEvaporateTime();
+    group.getProcess().updateEvaporateTimer();
     updateEvaporateTimer();
   }
 
@@ -634,7 +634,7 @@ public class GroupController extends CloseableController {
 
     GroupSettings groupSettings = group.getProcess().getSettings();
     PurgeSettings purgeSettings = groupSettings.purgeSettings();
-    purgeSettings = purgeSettings.purgeTime(purgeSettings.purgeTime() + 5);
+    purgeSettings = purgeSettings.purgeDuration(purgeSettings.purgeDuration() + 5);
     groupSettings.purgeSettings(purgeSettings);
     group.getProcess().setSettings(groupSettings);
     group.getProcess().updatePurgeTimer();

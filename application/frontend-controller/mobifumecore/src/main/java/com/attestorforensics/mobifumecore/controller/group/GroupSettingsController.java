@@ -81,8 +81,8 @@ public class GroupSettingsController extends CloseableController {
     GroupSettings groupSettings = group.getProcess().getSettings();
     maxHum = groupSettings.humidifySettings().humiditySetpoint();
     heaterTemp = groupSettings.evaporateSettings().heaterTemperature();
-    heatTime = groupSettings.evaporateSettings().evaporateTime();
-    purgeTime = groupSettings.purgeSettings().purgeTime();
+    heatTime = groupSettings.evaporateSettings().evaporateDuration();
+    purgeTime = groupSettings.purgeSettings().purgeDuration();
 
     maxHumField.setTextFormatter(new UnsignedIntTextFormatter());
     maxHumField.textProperty()
@@ -276,15 +276,15 @@ public class GroupSettingsController extends CloseableController {
       group.getProcess().updateHeaterSetpoint();
     }
 
-    if (heatTime != evaporateSettings.evaporateTime()) {
-      evaporateSettings = evaporateSettings.evaporateTime(heatTime);
+    if (heatTime != evaporateSettings.evaporateDuration()) {
+      evaporateSettings = evaporateSettings.evaporateDuration(heatTime);
       groupSettings = groupSettings.evaporateSettings(evaporateSettings);
-      group.getProcess().resetEvaporateTime();
+      group.getProcess().resetEvaporateTimer();
     }
 
     PurgeSettings purgeSettings = groupSettings.purgeSettings();
-    if (purgeTime != purgeSettings.purgeTime()) {
-      purgeSettings = purgeSettings.purgeTime(purgeTime);
+    if (purgeTime != purgeSettings.purgeDuration()) {
+      purgeSettings = purgeSettings.purgeDuration(purgeTime);
       groupSettings = groupSettings.purgeSettings(purgeSettings);
       group.getProcess().resetPurgeTimer();
     }
@@ -303,8 +303,8 @@ public class GroupSettingsController extends CloseableController {
               Mobifume.getInstance().getModelManager().getGlobalSettings().groupTemplateSettings();
           maxHumField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
           heaterTempField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
-          heatTimeField.setText(groupSettings.evaporateSettings().evaporateTime() + "");
-          purgeTimeField.setText(groupSettings.purgeSettings().purgeTime() + "");
+          heatTimeField.setText(groupSettings.evaporateSettings().evaporateDuration() + "");
+          purgeTimeField.setText(groupSettings.purgeSettings().purgeDuration() + "");
 
           applySettings();
         }

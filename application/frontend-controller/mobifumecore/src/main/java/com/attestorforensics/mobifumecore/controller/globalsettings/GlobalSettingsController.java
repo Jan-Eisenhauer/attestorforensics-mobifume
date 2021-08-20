@@ -30,108 +30,108 @@ import javafx.scene.control.TextField;
 public class GlobalSettingsController extends CloseableController {
 
   @FXML
-  private ComboBox<String> languageBox;
+  private ComboBox<String> localeComboBox;
   @FXML
-  private TextField maxHumField;
+  private TextField humiditySetpointTextField;
   @FXML
-  private Slider maxHumSlider;
+  private Slider humiditySetpointSlider;
   @FXML
-  private TextField heaterTempField;
+  private TextField heaterSetpointTextField;
   @FXML
-  private Slider heaterTempSlider;
+  private Slider heaterSetpointSlider;
   @FXML
-  private TextField heatTimeField;
+  private TextField evaporateDurationTextField;
   @FXML
-  private Slider heatTimeSlider;
+  private Slider evaporateDurationSlider;
   @FXML
-  private TextField purgeTimeField;
+  private TextField purgeDurationTextField;
   @FXML
-  private Slider purgeTimeSlider;
+  private Slider purgeDurationSlider;
 
-  private Map<String, Locale> languages;
+  private Map<String, Locale> locales;
 
-  private int maxHum;
-  private int heaterTemp;
-  private int heatTime;
-  private int purgeTime;
+  private int humiditySetpoint;
+  private int heaterSetpoint;
+  private int evaporateDuration;
+  private int purgeDuration;
 
   private boolean lockUpdate;
 
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
-    languages = new HashMap<>();
+    locales = new HashMap<>();
     ObservableList<String> boxItems = FXCollections.observableArrayList();
     LocaleManager.getInstance().getLanguages().forEach(locale -> {
       String display = locale.getDisplayLanguage(locale);
-      languages.put(display, locale);
+      locales.put(display, locale);
       boxItems.add(display);
     });
-    languageBox.setItems(boxItems);
+    localeComboBox.setItems(boxItems);
     String currentLanguage = LocaleManager.getInstance()
         .getLocale()
         .getDisplayLanguage(LocaleManager.getInstance().getLocale());
-    languageBox.getSelectionModel().select(currentLanguage);
-    languageBox.getSelectionModel()
+    localeComboBox.getSelectionModel().select(currentLanguage);
+    localeComboBox.getSelectionModel()
         .selectedItemProperty()
         .addListener((observableValue, oldItem, newItem) -> onLanguageChoose(newItem));
 
-    maxHumField.setTextFormatter(new UnsignedIntTextFormatter());
-    maxHumField.textProperty()
+    humiditySetpointTextField.setTextFormatter(new UnsignedIntTextFormatter());
+    humiditySetpointTextField.textProperty()
         .addListener((observableValue, oldText, newText) -> onMaxHumField(newText));
-    maxHumField.focusedProperty()
-        .addListener(
-            (observableValue, oldState, focused) -> onFocus(maxHumField, maxHumSlider, focused));
-    maxHumSlider.valueProperty().addListener((observableValue, number, t1) -> onMaxHumSlider());
+    humiditySetpointTextField.focusedProperty()
+        .addListener((observableValue, oldState, focused) -> onFocus(humiditySetpointTextField,
+            humiditySetpointSlider, focused));
+    humiditySetpointSlider.valueProperty()
+        .addListener((observableValue, number, t1) -> onMaxHumSlider());
 
-    heaterTempField.setTextFormatter(new UnsignedIntTextFormatter());
-    heaterTempField.textProperty()
+    heaterSetpointTextField.setTextFormatter(new UnsignedIntTextFormatter());
+    heaterSetpointTextField.textProperty()
         .addListener((observableValue, oldText, newText) -> onHeaterTempField(newText));
-    heaterTempField.focusedProperty()
-        .addListener(
-            (observableValue, oldState, focused) -> onFocus(heaterTempField, heaterTempSlider,
-                focused));
-    heaterTempSlider.valueProperty()
+    heaterSetpointTextField.focusedProperty()
+        .addListener((observableValue, oldState, focused) -> onFocus(heaterSetpointTextField,
+            heaterSetpointSlider, focused));
+    heaterSetpointSlider.valueProperty()
         .addListener((observableValue, number, t1) -> onHeaterTempSlider());
 
-    heatTimeField.setTextFormatter(new UnsignedIntTextFormatter());
-    heatTimeField.textProperty()
+    evaporateDurationTextField.setTextFormatter(new UnsignedIntTextFormatter());
+    evaporateDurationTextField.textProperty()
         .addListener((observableValue, oldText, newText) -> onHeatTimeField(newText));
-    heatTimeField.focusedProperty()
-        .addListener((observableValue, oldState, focused) -> onFocus(heatTimeField, heatTimeSlider,
-            focused));
-    heatTimeSlider.valueProperty().addListener((observableValue, number, t1) -> onHeatTimeSlider());
+    evaporateDurationTextField.focusedProperty()
+        .addListener((observableValue, oldState, focused) -> onFocus(evaporateDurationTextField,
+            evaporateDurationSlider, focused));
+    evaporateDurationSlider.valueProperty()
+        .addListener((observableValue, number, t1) -> onHeatTimeSlider());
 
-    purgeTimeField.setTextFormatter(new UnsignedIntTextFormatter());
-    purgeTimeField.textProperty()
+    purgeDurationTextField.setTextFormatter(new UnsignedIntTextFormatter());
+    purgeDurationTextField.textProperty()
         .addListener((observableValue, oldText, newText) -> onPurgeTimeField(newText));
-    purgeTimeField.focusedProperty()
-        .addListener(
-            (observableValue, oldState, focused) -> onFocus(purgeTimeField, purgeTimeSlider,
-                focused));
-    purgeTimeSlider.valueProperty()
+    purgeDurationTextField.focusedProperty()
+        .addListener((observableValue, oldState, focused) -> onFocus(purgeDurationTextField,
+            purgeDurationSlider, focused));
+    purgeDurationSlider.valueProperty()
         .addListener((observableValue, number, t1) -> onPurgeTimeSlider());
 
     GlobalSettings globalSettings = Mobifume.getInstance().getModelManager().getGlobalSettings();
     GroupSettings groupSettings = globalSettings.groupTemplateSettings();
 
-    maxHumField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
-    maxHumSlider.setValue(groupSettings.humidifySettings().humiditySetpoint());
-    heaterTempField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
-    heaterTempSlider.setValue(groupSettings.evaporateSettings().heaterTemperature());
-    heatTimeField.setText(groupSettings.evaporateSettings().evaporateTime() + "");
-    heatTimeSlider.setValue(groupSettings.evaporateSettings().evaporateTime());
-    purgeTimeField.setText(groupSettings.purgeSettings().purgeTime() + "");
-    purgeTimeSlider.setValue(groupSettings.purgeSettings().purgeTime());
+    humiditySetpointTextField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
+    humiditySetpointSlider.setValue(groupSettings.humidifySettings().humiditySetpoint());
+    heaterSetpointTextField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
+    heaterSetpointSlider.setValue(groupSettings.evaporateSettings().heaterTemperature());
+    evaporateDurationTextField.setText(groupSettings.evaporateSettings().evaporateDuration() + "");
+    evaporateDurationSlider.setValue(groupSettings.evaporateSettings().evaporateDuration());
+    purgeDurationTextField.setText(groupSettings.purgeSettings().purgeDuration() + "");
+    purgeDurationSlider.setValue(groupSettings.purgeSettings().purgeDuration());
 
-    TabTipKeyboard.onFocus(maxHumField);
-    TabTipKeyboard.onFocus(heaterTempField);
-    TabTipKeyboard.onFocus(heatTimeField);
-    TabTipKeyboard.onFocus(purgeTimeField);
+    TabTipKeyboard.onFocus(humiditySetpointTextField);
+    TabTipKeyboard.onFocus(heaterSetpointTextField);
+    TabTipKeyboard.onFocus(evaporateDurationTextField);
+    TabTipKeyboard.onFocus(purgeDurationTextField);
   }
 
   private void onLanguageChoose(String item) {
-    Locale locale = languages.get(item);
+    Locale locale = locales.get(item);
     if (locale != null && locale != LocaleManager.getInstance().getLocale()) {
       LocaleManager.getInstance().load(locale);
       Mobifume.getInstance()
@@ -153,8 +153,8 @@ public class GlobalSettingsController extends CloseableController {
     }
     lockUpdate = true;
     try {
-      maxHum = Integer.parseInt(value);
-      maxHumSlider.setValue(maxHum);
+      humiditySetpoint = Integer.parseInt(value);
+      humiditySetpointSlider.setValue(humiditySetpoint);
     } catch (NumberFormatException ignored) {
       // value invalid
     }
@@ -179,8 +179,8 @@ public class GlobalSettingsController extends CloseableController {
       return;
     }
     lockUpdate = true;
-    maxHum = (int) maxHumSlider.getValue();
-    maxHumField.setText(maxHum + "");
+    humiditySetpoint = (int) humiditySetpointSlider.getValue();
+    humiditySetpointTextField.setText(humiditySetpoint + "");
     lockUpdate = false;
   }
 
@@ -190,8 +190,8 @@ public class GlobalSettingsController extends CloseableController {
     }
     lockUpdate = true;
     try {
-      heaterTemp = Integer.parseInt(value);
-      heaterTempSlider.setValue(heaterTemp);
+      heaterSetpoint = Integer.parseInt(value);
+      heaterSetpointSlider.setValue(heaterSetpoint);
     } catch (NumberFormatException ignored) {
       // value invalid
     }
@@ -203,8 +203,8 @@ public class GlobalSettingsController extends CloseableController {
       return;
     }
     lockUpdate = true;
-    heaterTemp = (int) heaterTempSlider.getValue();
-    heaterTempField.setText(heaterTemp + "");
+    heaterSetpoint = (int) heaterSetpointSlider.getValue();
+    heaterSetpointTextField.setText(heaterSetpoint + "");
     lockUpdate = false;
   }
 
@@ -214,8 +214,8 @@ public class GlobalSettingsController extends CloseableController {
     }
     lockUpdate = true;
     try {
-      heatTime = Integer.parseInt(value);
-      heatTimeSlider.setValue(heatTime);
+      evaporateDuration = Integer.parseInt(value);
+      evaporateDurationSlider.setValue(evaporateDuration);
     } catch (NumberFormatException ignored) {
       // value invalid
     }
@@ -227,8 +227,8 @@ public class GlobalSettingsController extends CloseableController {
       return;
     }
     lockUpdate = true;
-    heatTime = (int) heatTimeSlider.getValue();
-    heatTimeField.setText(heatTime + "");
+    evaporateDuration = (int) evaporateDurationSlider.getValue();
+    evaporateDurationTextField.setText(evaporateDuration + "");
     lockUpdate = false;
   }
 
@@ -238,8 +238,8 @@ public class GlobalSettingsController extends CloseableController {
     }
     lockUpdate = true;
     try {
-      purgeTime = Integer.parseInt(value);
-      purgeTimeSlider.setValue(purgeTime);
+      purgeDuration = Integer.parseInt(value);
+      purgeDurationSlider.setValue(purgeDuration);
     } catch (NumberFormatException ignored) {
       // value invalid
     }
@@ -251,8 +251,8 @@ public class GlobalSettingsController extends CloseableController {
       return;
     }
     lockUpdate = true;
-    purgeTime = (int) purgeTimeSlider.getValue();
-    purgeTimeField.setText(purgeTime + "");
+    purgeDuration = (int) purgeDurationSlider.getValue();
+    purgeDurationTextField.setText(purgeDuration + "");
     lockUpdate = false;
   }
 
@@ -272,17 +272,19 @@ public class GlobalSettingsController extends CloseableController {
     GroupSettings groupSettings = globalSettings.groupTemplateSettings();
 
     HumidifySettings humidifySettings = groupSettings.humidifySettings();
-    humidifySettings = humidifySettings.humiditySetpoint(getFixedValue(maxHumSlider, maxHum));
+    humidifySettings =
+        humidifySettings.humiditySetpoint(getFixedValue(humiditySetpointSlider, humiditySetpoint));
     groupSettings = groupSettings.humidifySettings(humidifySettings);
 
     EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
     evaporateSettings =
-        evaporateSettings.heaterTemperature(getFixedValue(heaterTempSlider, heaterTemp));
-    evaporateSettings = evaporateSettings.evaporateTime(getFixedValue(heatTimeSlider, heatTime));
+        evaporateSettings.heaterTemperature(getFixedValue(heaterSetpointSlider, heaterSetpoint));
+    evaporateSettings = evaporateSettings.evaporateDuration(
+        getFixedValue(evaporateDurationSlider, evaporateDuration));
     groupSettings = groupSettings.evaporateSettings(evaporateSettings);
 
     PurgeSettings purgeSettings = groupSettings.purgeSettings();
-    purgeSettings = purgeSettings.purgeTime(getFixedValue(purgeTimeSlider, purgeTime));
+    purgeSettings = purgeSettings.purgeDuration(getFixedValue(purgeDurationSlider, purgeDuration));
     groupSettings = groupSettings.purgeSettings(purgeSettings);
 
     globalSettings = globalSettings.groupTemplateSettings(groupSettings);
@@ -308,10 +310,13 @@ public class GlobalSettingsController extends CloseableController {
               .getGlobalSettings()
               .groupTemplateSettings(groupSettings);
           Mobifume.getInstance().getModelManager().setGlobalSettings(globalSettings);
-          maxHumField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
-          heaterTempField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
-          heatTimeField.setText(groupSettings.evaporateSettings().evaporateTime() + "");
-          purgeTimeField.setText(groupSettings.purgeSettings().purgeTime() + "");
+          humiditySetpointTextField.setText(
+              groupSettings.humidifySettings().humiditySetpoint() + "");
+          heaterSetpointTextField.setText(
+              groupSettings.evaporateSettings().heaterTemperature() + "");
+          evaporateDurationTextField.setText(
+              groupSettings.evaporateSettings().evaporateDuration() + "");
+          purgeDurationTextField.setText(groupSettings.purgeSettings().purgeDuration() + "");
 
           applySettings();
         }

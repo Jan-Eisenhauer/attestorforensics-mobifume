@@ -67,7 +67,7 @@
                     <children>
                         <AnchorPane HBox.hgrow="ALWAYS">
                             <children>
-                                <ComboBox fx:id="languageBox" styleClass="contentText" AnchorPane.bottomAnchor="0.0"
+                                <ComboBox fx:id="localeComboBox" styleClass="contentText" AnchorPane.bottomAnchor="0.0"
                                           AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="0.0"
                                           AnchorPane.topAnchor="0.0">
                                     <items>
@@ -87,10 +87,10 @@
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentHeader"
                                       text="%settings.maxHum" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                                       AnchorPane.topAnchor="0.0"/>
-                                <TextField fx:id="maxHumField" prefHeight="40.0" prefWidth="100.0"
+                                <TextField fx:id="humiditySetpointTextField" prefHeight="40.0" prefWidth="100.0"
                                            styleClass="contentText" AnchorPane.bottomAnchor="20.0"
                                            AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="50.0"/>
-                                <Slider fx:id="maxHumSlider" majorTickUnit="10.0" max="90.0" min="40.0"
+                                <Slider fx:id="humiditySetpointSlider" majorTickUnit="10.0" max="90.0" min="40.0"
                                         minorTickCount="1" showTickLabels="true" showTickMarks="true"
                                         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0"
                                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
@@ -106,10 +106,10 @@
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentHeader"
                                       text="%settings.heaterTemp" AnchorPane.bottomAnchor="0.0"
                                       AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                                <TextField fx:id="heaterTempField" prefHeight="40.0" prefWidth="100.0"
+                                <TextField fx:id="heaterSetpointTextField" prefHeight="40.0" prefWidth="100.0"
                                            styleClass="contentText" AnchorPane.bottomAnchor="20.0"
                                            AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="50.0"/>
-                                <Slider fx:id="heaterTempSlider" majorTickUnit="20.0" max="230.0" min="100.0"
+                                <Slider fx:id="heaterSetpointSlider" majorTickUnit="20.0" max="230.0" min="100.0"
                                         minorTickCount="1" showTickLabels="true" showTickMarks="true"
                                         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0"
                                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
@@ -125,10 +125,10 @@
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentHeader"
                                       text="%settings.heatTime" AnchorPane.bottomAnchor="0.0"
                                       AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                                <TextField fx:id="heatTimeField" prefHeight="40.0" prefWidth="100.0"
+                                <TextField fx:id="evaporateDurationTextField" prefHeight="40.0" prefWidth="100.0"
                                            styleClass="contentText" AnchorPane.bottomAnchor="20.0"
                                            AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="50.0"/>
-                                <Slider fx:id="heatTimeSlider" majorTickUnit="15.0" max="120.0" min="15.0"
+                                <Slider fx:id="evaporateDurationSlider" majorTickUnit="15.0" max="120.0" min="15.0"
                                         minorTickCount="1" showTickLabels="true" showTickMarks="true"
                                         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0"
                                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
@@ -144,10 +144,10 @@
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentHeader"
                                       text="%settings.purgeTime" AnchorPane.bottomAnchor="0.0"
                                       AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                                <TextField fx:id="purgeTimeField" prefHeight="40.0" prefWidth="100.0"
+                                <TextField fx:id="purgeDurationTextField" prefHeight="40.0" prefWidth="100.0"
                                            styleClass="contentText" AnchorPane.bottomAnchor="20.0"
                                            AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="50.0"/>
-                                <Slider fx:id="purgeTimeSlider" majorTickUnit="15.0" max="120.0" min="15.0"
+                                <Slider fx:id="purgeDurationSlider" majorTickUnit="15.0" max="120.0" min="15.0"
                                         minorTickCount="1" showTickLabels="true" showTickMarks="true"
                                         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0"
                                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">

@@ -38,9 +38,9 @@ public interface GroupProcess {
 
   void sendHumidifierState(Humidifier humidifier);
 
-  void updateEvaporateTime();
+  void updateEvaporateTimer();
 
-  void resetEvaporateTime();
+  void resetEvaporateTimer();
 
   void updatePurgeTimer();
 

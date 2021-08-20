@@ -4,25 +4,25 @@ public class PurgeSettings {
 
   private static final PurgeSettings defaultPurgeSettings = create(60);
 
-  private final int purgeTime;
+  private final int purgeDuration;
 
-  private PurgeSettings(int purgeTime) {
-    this.purgeTime = purgeTime;
+  private PurgeSettings(int purgeDuration) {
+    this.purgeDuration = purgeDuration;
   }
 
-  public static PurgeSettings create(int purgeTime) {
-    return new PurgeSettings(purgeTime);
+  public static PurgeSettings create(int purgeDuration) {
+    return new PurgeSettings(purgeDuration);
   }
 
   public static PurgeSettings getDefault() {
     return defaultPurgeSettings;
   }
 
-  public int purgeTime() {
-    return purgeTime;
+  public int purgeDuration() {
+    return purgeDuration;
   }
 
-  public PurgeSettings purgeTime(int purgeTime) {
-    return create(purgeTime);
+  public PurgeSettings purgeDuration(int purgeDuration) {
+    return create(purgeDuration);
   }
 }

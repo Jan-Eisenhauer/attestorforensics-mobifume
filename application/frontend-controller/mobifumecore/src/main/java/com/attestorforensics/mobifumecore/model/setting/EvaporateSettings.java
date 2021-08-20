@@ -5,15 +5,15 @@ public class EvaporateSettings {
   private static final EvaporateSettings defaultEvaporateSettings = create(120, 30);
 
   private final int heaterTemperature;
-  private final int evaporateTime;
+  private final int evaporateDuration;
 
-  private EvaporateSettings(int heaterTemperature, int evaporateTime) {
+  private EvaporateSettings(int heaterTemperature, int evaporateDuration) {
     this.heaterTemperature = heaterTemperature;
-    this.evaporateTime = evaporateTime;
+    this.evaporateDuration = evaporateDuration;
   }
 
-  public static EvaporateSettings create(int heaterTemperature, int evaporateTime) {
-    return new EvaporateSettings(heaterTemperature, evaporateTime);
+  public static EvaporateSettings create(int heaterTemperature, int evaporateDuration) {
+    return new EvaporateSettings(heaterTemperature, evaporateDuration);
   }
 
   public static EvaporateSettings getDefault() {
@@ -25,14 +25,14 @@ public class EvaporateSettings {
   }
 
   public EvaporateSettings heaterTemperature(int heaterTemperature) {
-    return create(heaterTemperature, evaporateTime);
+    return create(heaterTemperature, evaporateDuration);
   }
 
-  public int evaporateTime() {
-    return evaporateTime;
+  public int evaporateDuration() {
+    return evaporateDuration;
   }
 
-  public EvaporateSettings evaporateTime(int evaporateTime) {
-    return create(heaterTemperature, evaporateTime);
+  public EvaporateSettings evaporateDuration(int evaporateDuration) {
+    return create(heaterTemperature, evaporateDuration);
   }
 }

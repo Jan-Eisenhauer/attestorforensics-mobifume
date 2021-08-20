@@ -88,8 +88,8 @@ public class CustomLogger {
     info(group, "SETTINGS", groupSettings.humidifySettings().humiditySetpoint(),
         groupSettings.humidifySettings().humidityPuffer(),
         groupSettings.evaporateSettings().heaterTemperature(),
-        groupSettings.evaporateSettings().evaporateTime(),
-        groupSettings.purgeSettings().purgeTime());
+        groupSettings.evaporateSettings().evaporateDuration(),
+        groupSettings.purgeSettings().purgeDuration());
   }
 
   public static void info(Object... elements) {
