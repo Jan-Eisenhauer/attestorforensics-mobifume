@@ -23,6 +23,7 @@ import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
 import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -97,12 +98,12 @@ public class Room implements Group {
 
   @Override
   public List<Base> getBases() {
-    return bases;
+    return Collections.unmodifiableList(bases);
   }
 
   @Override
   public List<Humidifier> getHumidifiers() {
-    return humidifiers;
+    return Collections.unmodifiableList(humidifiers);
   }
 
   @Override
@@ -491,7 +492,7 @@ public class Room implements Group {
   }
 
   public List<Filter> getFilters() {
-    return filters;
+    return Collections.unmodifiableList(filters);
   }
 
   public GroupStatus getStatus() {
