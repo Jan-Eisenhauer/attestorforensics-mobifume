@@ -58,7 +58,7 @@ public class BaseOnlineRoute implements MessageRoute<BaseOnline> {
       Group group = optionalGroup.get();
       CustomLogger.info(group, "RECONNECT", base.getDeviceId());
       CustomLogger.info("Reconnect " + base.getDeviceId());
-      group.sendState(base);
+      group.sendBaseState(base);
 
       Mobifume.getInstance().getEventDispatcher().call(BaseReconnectedEvent.create(base));
     }

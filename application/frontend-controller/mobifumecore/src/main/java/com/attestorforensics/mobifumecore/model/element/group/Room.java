@@ -345,12 +345,37 @@ public class Room implements Group {
   }
 
   @Override
-  public void sendState(Device device) {
-    CustomLogger.info(this, "SENDSTATE", device.getDeviceId(), device.getClass().getSimpleName());
-    if (device instanceof Base) {
-      sendBaseState((Base) device);
-    } else if (device instanceof Humidifier) {
-      sendHumidifierState((Humidifier) device);
+  public void sendBaseState(Base base) {
+    CustomLogger.info(this, "SENDSTATE", base.getDeviceId(), "BASE");
+
+    if (status == GroupStatus.EVAPORATE) {
+      long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
+      int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
+      base.sendTime(settings.evaporateSettings().evaporateTime() - passedTimeInMinutes);
+      base.forceSendHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
+    } else {
+      base.forceSendHeaterSetpoint(0);
+    }
+
+    if (status == GroupStatus.HUMIDIFY) {
+      base.sendTime(HUMIDIFY_CIRCULATE_DURATION);
+    }
+
+    if (status == GroupStatus.HUMIDIFY || status == GroupStatus.EVAPORATE) {
+      base.forceSendLatchCirculate();
+    } else {
+      base.forceSendLatchPurge();
+    }
+  }
+
+  @Override
+  public void sendHumidifierState(Humidifier humidifier) {
+    CustomLogger.info(this, "SENDSTATE", humidifier.getDeviceId(), "HUMIDIFIER");
+
+    if (humidifying) {
+      humidifier.sendHumidifyEnable();
+    } else {
+      humidifier.sendHumidifyDisable();
     }
   }
 
@@ -433,35 +458,6 @@ public class Room implements Group {
     if (!isHumidifying() && getHumidity().isValid() && getHumidity().value() <= humiditySetpoint) {
       enableHumidifying();
       Mobifume.getInstance().getEventDispatcher().call(HumidifyDisabledEvent.create(this));
-    }
-  }
-
-  private void sendBaseState(Base base) {
-    if (status == GroupStatus.EVAPORATE) {
-      long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
-      int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
-      base.sendTime(settings.evaporateSettings().evaporateTime() - passedTimeInMinutes);
-      base.forceSendHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
-    } else {
-      base.forceSendHeaterSetpoint(0);
-    }
-
-    if (status == GroupStatus.HUMIDIFY) {
-      base.sendTime(HUMIDIFY_CIRCULATE_DURATION);
-    }
-
-    if (status == GroupStatus.HUMIDIFY || status == GroupStatus.EVAPORATE) {
-      base.forceSendLatchCirculate();
-    } else {
-      base.forceSendLatchPurge();
-    }
-  }
-
-  private void sendHumidifierState(Humidifier humidifier) {
-    if (humidifying) {
-      humidifier.sendHumidifyEnable();
-    } else {
-      humidifier.sendHumidifyDisable();
     }
   }
 

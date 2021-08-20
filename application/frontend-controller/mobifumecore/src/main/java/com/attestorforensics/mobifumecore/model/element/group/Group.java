@@ -59,7 +59,9 @@ public interface Group {
 
   void updateHeaterSetpoint();
 
-  void sendState(Device device);
+  void sendBaseState(Base base);
+
+  void sendHumidifierState(Humidifier humidifier);
 
   void updateHeatTimer();
 

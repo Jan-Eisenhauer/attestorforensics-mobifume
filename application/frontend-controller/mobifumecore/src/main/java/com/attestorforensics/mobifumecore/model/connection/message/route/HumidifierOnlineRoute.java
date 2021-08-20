@@ -58,7 +58,7 @@ public class HumidifierOnlineRoute implements MessageRoute<HumidifierOnline> {
       Group group = optionalGroup.get();
       CustomLogger.info(group, "RECONNECT", humidifier.getDeviceId());
       CustomLogger.info("Reconnect " + humidifier.getDeviceId());
-      group.sendState(humidifier);
+      group.sendHumidifierState(humidifier);
       Mobifume.getInstance()
           .getEventDispatcher()
           .call(HumidifierReconnectedEvent.create(humidifier));
