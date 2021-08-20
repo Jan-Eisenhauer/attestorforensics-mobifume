@@ -52,8 +52,11 @@ public class GroupItemController extends ItemController {
     groupPane.setVisible(false);
     groupPane.setText(group.getName() + " - " + group.getCycleNumber());
     Platform.runLater(() -> {
-      Node title = groupPane.lookup(".title");
-      title.setStyle("-fx-background-color: " + color);
+      // TODO - Bug: sometimes the title is null because the group pane has not been loaded in time
+      Node title = groupPane.lookup("*.title");
+      if (title != null) {
+        title.setStyle("-fx-background-color: " + color);
+      }
 
       groupPane.setVisible(true);
     });
