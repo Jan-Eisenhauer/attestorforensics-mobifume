@@ -1,9 +1,6 @@
 package com.attestorforensics.mobifumecore.model.group;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.filter.Filter;
-import com.attestorforensics.mobifumecore.model.node.Base;
-import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateFinishedEvent;
 import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateStartedEvent;
 import com.attestorforensics.mobifumecore.model.event.group.humidify.HumidifyFinishedEvent;
@@ -13,7 +10,10 @@ import com.attestorforensics.mobifumecore.model.event.group.purge.HumidifyEnable
 import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeFinishedEvent;
 import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeStartedEvent;
 import com.attestorforensics.mobifumecore.model.event.group.setup.SetupStartedEvent;
+import com.attestorforensics.mobifumecore.model.filter.Filter;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
 import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.util.List;
@@ -219,6 +219,16 @@ public class RoomProcess implements GroupProcess {
     Mobifume.getInstance().getEventDispatcher().call(PurgeStartedEvent.create(group));
   }
 
+  @Override
+  public void startComplete() {
+    status = GroupStatus.COMPLETE;
+    CustomLogger.logGroupState(group);
+    CustomLogger.logGroupSettings(group);
+    group.getBases().forEach(Base::sendReset);
+    group.getHumidifiers().forEach(Humidifier::sendReset);
+    Mobifume.getInstance().getEventDispatcher().call(PurgeFinishedEvent.create(group));
+  }
+
   private void cancelPurgeTaskIfScheduled() {
     if (Objects.nonNull(purgeTask) && !purgeTask.isDone()) {
       purgeTask.cancel(false);
@@ -231,29 +241,11 @@ public class RoomProcess implements GroupProcess {
     long timeLeft = settings.purgeSettings().purgeTime() * 60 * 1000L - timePassed;
     purgeTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .schedule(this::finish, timeLeft, TimeUnit.MILLISECONDS);
+        .schedule(this::startComplete, timeLeft, TimeUnit.MILLISECONDS);
   }
 
   public void updateHumidify() {
     checkHumidify();
-  }
-
-  @Override
-  public void cancel() {
-    CustomLogger.info(group, "CANCEL");
-    switch (status) {
-      case HUMIDIFY:
-        startSetup();
-        break;
-      case EVAPORATE:
-        startPurge();
-        break;
-      case PURGE:
-        finish();
-        break;
-      default:
-        throw new IllegalStateException("Deprecated state: cancel");
-    }
   }
 
   @Override
@@ -394,15 +386,6 @@ public class RoomProcess implements GroupProcess {
       enableHumidifying();
       Mobifume.getInstance().getEventDispatcher().call(HumidifyDisabledEvent.create(group));
     }
-  }
-
-  private void finish() {
-    status = GroupStatus.COMPLETE;
-    CustomLogger.logGroupState(group);
-    CustomLogger.logGroupSettings(group);
-    group.getBases().forEach(Base::sendReset);
-    group.getHumidifiers().forEach(Humidifier::sendReset);
-    Mobifume.getInstance().getEventDispatcher().call(PurgeFinishedEvent.create(group));
   }
 
   public boolean isHumidifySetpointReached() {

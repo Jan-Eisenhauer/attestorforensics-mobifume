@@ -20,6 +20,8 @@ public interface GroupProcess {
 
   void startPurge();
 
+  void startComplete();
+
   void updateHumidify();
 
   boolean isHumidifySetpointReached();
@@ -29,8 +31,6 @@ public interface GroupProcess {
   long getEvaporateStartTime();
 
   long getPurgeStartTime();
-
-  void cancel();
 
   void updateHeaterSetpoint();
 

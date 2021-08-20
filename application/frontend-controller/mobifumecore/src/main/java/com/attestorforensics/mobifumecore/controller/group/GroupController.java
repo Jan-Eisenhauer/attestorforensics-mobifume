@@ -11,9 +11,9 @@ import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.group.GroupStatus;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.node.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.setting.Evaporant;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
 import com.attestorforensics.mobifumecore.model.setting.EvaporateSettings;
 import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
@@ -507,7 +507,7 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          group.getProcess().cancel();
+          group.getProcess().startSetup();
         }
       });
 
@@ -546,7 +546,7 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          group.getProcess().cancel();
+          group.getProcess().startPurge();
         }
       });
 
@@ -566,7 +566,7 @@ public class GroupController extends CloseableController {
       controller.setCallback(confirmResult -> {
         currentDialog = null;
         if (confirmResult == ConfirmResult.CONFIRM) {
-          group.getProcess().cancel();
+          group.getProcess().startComplete();
         }
       });
 
