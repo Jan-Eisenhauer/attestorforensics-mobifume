@@ -102,7 +102,7 @@ public class ServiceBaseItemController extends ServiceItemController {
         .getString("support.status.latch.value", base.getLatch().ordinal()));
   }
 
-  @Overrideg
+  @Override
   public void remove() {
     rssi.setText(LocaleManager.getInstance().getString("support.status.rssi.disconnected"));
     temperature.setText("-");
