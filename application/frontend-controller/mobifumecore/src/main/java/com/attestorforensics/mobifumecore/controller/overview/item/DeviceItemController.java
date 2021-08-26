@@ -67,6 +67,7 @@ public class DeviceItemController extends ItemController {
   }
 
   public void setDevice(Device device) {
+    System.out.println("DeviceItemController.setDevice " + device);
     this.device = device;
     updateDevice();
   }

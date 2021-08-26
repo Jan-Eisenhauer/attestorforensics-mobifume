@@ -77,7 +77,6 @@ public class GroupItemController extends ItemController {
       this.groupController = controller;
       Parent groupRoot = controller.getRoot();
       controller.setGroup(group);
-      groupRoot.getProperties().put("controller", controller);
     });
   }
 

@@ -7,9 +7,9 @@ import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogControl
 import com.attestorforensics.mobifumecore.controller.service.item.ServiceBaseItemController;
 import com.attestorforensics.mobifumecore.controller.service.item.ServiceItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.node.Base;
 import com.attestorforensics.mobifumecore.model.node.Device;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.google.common.collect.Maps;
 import java.net.URL;
 import java.util.Map;
@@ -82,7 +82,6 @@ public class ServiceController extends CloseableController {
           .thenAccept(serviceItemController -> {
             Parent serviceItemRoot = serviceItemController.getRoot();
             serviceItemController.setDevice(device);
-            serviceItemRoot.getProperties().put("controller", serviceItemController);
             serviceItemControllers.put(device.getDeviceId(), serviceItemController);
             devices.getChildren().add(serviceItemRoot);
           });

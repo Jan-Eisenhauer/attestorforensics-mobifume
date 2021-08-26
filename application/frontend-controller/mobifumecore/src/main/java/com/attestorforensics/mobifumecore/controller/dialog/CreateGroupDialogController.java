@@ -6,16 +6,18 @@ import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.model.filter.Filter;
 import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.node.Base;
 import com.attestorforensics.mobifumecore.model.node.Device;
 import com.attestorforensics.mobifumecore.model.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import com.google.common.collect.Maps;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -57,7 +59,7 @@ public class CreateGroupDialogController extends DialogController {
   private Button ok;
 
   private Map<String, Filter> filterMap;
-  private List<Node> filterNodes;
+  private final Map<Node, CreateGroupDialogFilterItemController> filterNodes = Maps.newHashMap();
 
   public void setDevices(List<Device> devices) {
     this.devices = devices;
@@ -115,16 +117,14 @@ public class CreateGroupDialogController extends DialogController {
 
   private void createFilterBoxes(int count) {
     filtersPane.getChildren().clear();
-    filterNodes = new ArrayList<>();
 
     for (int i = 0; i < count; i++) {
       this.<CreateGroupDialogFilterItemController>loadItem("CreateGroupDialogFilterItem.fxml")
           .thenAccept(controller -> {
             controller.init(this);
             Parent createGroupDialogFilterItemRoot = controller.getRoot();
-            createGroupDialogFilterItemRoot.getProperties().put("controller", controller);
             filtersPane.getChildren().add(createGroupDialogFilterItemRoot);
-            filterNodes.add(createGroupDialogFilterItemRoot);
+            filterNodes.put(createGroupDialogFilterItemRoot, controller);
             updateFilters();
           });
     }
@@ -146,22 +146,21 @@ public class CreateGroupDialogController extends DialogController {
     List<String> filters = new ArrayList<>(filterMap.keySet());
     filters.sort(Comparator.naturalOrder());
     List<String> selectedFilters = getSelectedFilters();
-    filterNodes.forEach(node -> ((CreateGroupDialogFilterItemController) node.getProperties()
-        .get("controller")).updateItems(new ArrayList<>(filters),
-        new ArrayList<>(selectedFilters)));
+    filterNodes.values()
+        .forEach(controller -> controller.updateItems(new ArrayList<>(filters),
+            new ArrayList<>(selectedFilters)));
     checkOkButton();
   }
 
   private List<String> getSelectedFilters() {
     List<String> selectedFilters = new ArrayList<>();
-    for (Node filterNode : filterNodes) {
-      CreateGroupDialogFilterItemController controller =
-          (CreateGroupDialogFilterItemController) filterNode.getProperties().get("controller");
-      String selected = controller.getSelected();
+    for (Entry<Node, CreateGroupDialogFilterItemController> filterNode : filterNodes.entrySet()) {
+      String selected = filterNode.getValue().getSelected();
       if (selected != null && !selected.isEmpty()) {
         selectedFilters.add(selected);
       }
     }
+
     return selectedFilters;
   }
 
@@ -178,13 +177,14 @@ public class CreateGroupDialogController extends DialogController {
       return;
     }
 
-    for (Node filterNode : filterNodes) {
-      CreateGroupDialogFilterItemController controller =
-          (CreateGroupDialogFilterItemController) filterNode.getProperties().get("controller");
-      if (controller.getSelected() == null || controller.getSelected().isEmpty()) {
+    for (Entry<Node, CreateGroupDialogFilterItemController> filterNode : filterNodes.entrySet()) {
+      if (filterNode.getValue().getSelected() == null || filterNode.getValue()
+          .getSelected()
+          .isEmpty()) {
         return;
       }
-      Filter filter = filterMap.get(controller.getSelected());
+
+      Filter filter = filterMap.get(filterNode.getValue().getSelected());
       if (!filter.isUsable()) {
         return;
       }
@@ -247,9 +247,7 @@ public class CreateGroupDialogController extends DialogController {
 
     List<Filter> filters = new ArrayList<>();
 
-    filterNodes.forEach(node -> {
-      CreateGroupDialogFilterItemController controller =
-          (CreateGroupDialogFilterItemController) node.getProperties().get("controller");
+    filterNodes.values().forEach(controller -> {
       String selected = controller.getSelected();
       if (selected == null || selected.isEmpty()) {
         return;

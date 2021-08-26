@@ -154,7 +154,6 @@ public class GroupController extends CloseableController {
             .thenAccept(groupBaseItemController -> {
               Parent groupBaseItemRoot = groupBaseItemController.getRoot();
               groupBaseItemController.setBase(group, base);
-              groupBaseItemRoot.getProperties().put("controller", groupBaseItemController);
               basesBox.getChildren().add(groupBaseItemRoot);
             }));
   }
@@ -165,7 +164,6 @@ public class GroupController extends CloseableController {
             .thenAccept(groupHumidifierItemController -> {
               Parent groupHumItemRoot = groupHumidifierItemController.getRoot();
               groupHumidifierItemController.setHumidifier(group, hum);
-              groupHumItemRoot.getProperties().put("controller", groupHumidifierItemController);
               humidifiersBox.getChildren().add(groupHumItemRoot);
             }));
   }
@@ -176,7 +174,6 @@ public class GroupController extends CloseableController {
             .thenAccept(groupFilterItemController -> {
               Parent groupFilterItemRoot = groupFilterItemController.getRoot();
               groupFilterItemController.setFilter(filter);
-              groupFilterItemRoot.getProperties().put("controller", groupFilterItemController);
               filtersBox.getChildren().add(groupFilterItemRoot);
             }));
   }
@@ -205,22 +202,6 @@ public class GroupController extends CloseableController {
   void onRemove() {
     unregisterListeners();
     updateTask.cancel(true);
-
-    humidifiersBox.getChildren()
-        .filtered(child -> child.getProperties().containsKey("controller"))
-        .forEach(child -> child.getProperties().remove("controller"));
-    humidifiersBox.getChildren().clear();
-
-    basesBox.getChildren()
-        .filtered(child -> child.getProperties().containsKey("controller"))
-        .forEach(child -> child.getProperties().remove("controller"));
-    basesBox.getChildren().clear();
-
-    filtersBox.getChildren()
-        .filtered(child -> child.getProperties().containsKey("controller"))
-        .forEach(child -> child.getProperties().remove("controller"));
-    filtersBox.getChildren().clear();
-
     close();
   }
 

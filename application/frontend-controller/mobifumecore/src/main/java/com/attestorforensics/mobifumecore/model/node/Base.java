@@ -16,11 +16,11 @@ import java.util.Optional;
 
 public class Base extends Device {
 
-  private DoubleSensor temperature;
-  private DoubleSensor humidity;
+  private DoubleSensor temperature = DoubleSensor.uninitialized();
+  private DoubleSensor humidity = DoubleSensor.uninitialized();
   private double heaterSetpoint;
-  private DoubleSensor heaterTemperature;
-  private BaseLatch baseLatch;
+  private DoubleSensor heaterTemperature = DoubleSensor.uninitialized();
+  private BaseLatch latch;
   private Calibration humidityCalibration;
   private Calibration heaterCalibration;
 
@@ -49,25 +49,27 @@ public class Base extends Device {
   }
 
   public void sendLatchPurge() {
-    if (baseLatch != BaseLatch.PURGING) {
+    if (latch != BaseLatch.PURGING) {
       forceSendLatchPurge();
     }
   }
 
   public void sendLatchCirculate() {
-    if (baseLatch != BaseLatch.CIRCULATING) {
+    if (latch != BaseLatch.CIRCULATING) {
       forceSendLatchCirculate();
     }
   }
 
   public void forceSendLatchPurge() {
     messageSender.send(
-        com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseLatch.purge(deviceId));
+        com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseLatch.purge(
+            deviceId));
   }
 
   public void forceSendLatchCirculate() {
     messageSender.send(
-        com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseLatch.circulate(deviceId));
+        com.attestorforensics.mobifumecore.model.connection.message.outgoing.base.BaseLatch.circulate(
+            deviceId));
   }
 
   public void sendTime(int time) {
@@ -141,10 +143,10 @@ public class Base extends Device {
   }
 
   public BaseLatch getLatch() {
-    return baseLatch;
+    return latch;
   }
 
-  public void setLatch(BaseLatch baseLatch) {
-    this.baseLatch = baseLatch;
+  public void setLatch(BaseLatch latch) {
+    this.latch = latch;
   }
 }
