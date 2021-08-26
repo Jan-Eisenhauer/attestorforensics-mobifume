@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" xmlns="http://javafx.com/javafx/8.0.191"
-      fx:controller="com.attestorforensics.mobifumecore.controller.item.GroupFilterItemController">
+      fx:controller="com.attestorforensics.mobifumecore.controller.group.item.GroupFilterItemController">
     <children>
         <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
             <image>

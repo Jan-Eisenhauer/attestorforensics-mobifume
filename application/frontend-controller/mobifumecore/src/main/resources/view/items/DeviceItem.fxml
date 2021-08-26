@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Text?>
 <AnchorPane fx:id="deviceItem" onMouseClicked="#onMouseClicked" styleClass="roundItem"
             xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.191"
-            fx:controller="com.attestorforensics.mobifumecore.controller.item.DeviceItemController">
+            fx:controller="com.attestorforensics.mobifumecore.controller.overview.item.DeviceItemController">
     <children>
         <ImageView fx:id="deviceImage" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true"
                    AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"

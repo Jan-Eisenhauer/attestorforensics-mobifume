@@ -6,10 +6,10 @@ import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogControl
 import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogController.ConfirmResult;
 import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
 import com.attestorforensics.mobifumecore.controller.group.calculator.GroupCalculatorController;
+import com.attestorforensics.mobifumecore.controller.group.item.GroupBaseItemController;
+import com.attestorforensics.mobifumecore.controller.group.item.GroupFilterItemController;
+import com.attestorforensics.mobifumecore.controller.group.item.GroupHumidifierItemController;
 import com.attestorforensics.mobifumecore.controller.group.settings.GroupSettingsController;
-import com.attestorforensics.mobifumecore.controller.item.GroupBaseItemController;
-import com.attestorforensics.mobifumecore.controller.item.GroupFilterItemController;
-import com.attestorforensics.mobifumecore.controller.item.GroupHumItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
@@ -103,8 +104,7 @@ public class GroupController extends CloseableController {
   private long latestHumidityDataTimestamp;
 
   private final Collection<Listener> groupListeners =
-      ImmutableList.of(GroupDeviceConnectionListener.create(this), GroupDeviceListener.create(this),
-          GroupSettingsChangedListener.create(this), SetupListener.create(this),
+      ImmutableList.of(GroupSettingsChangedListener.create(this), SetupListener.create(this),
           HumidifyListener.create(this), EvaporateListener.create(this), PurgeListener.create(this),
           CompleteListener.create(this));
 
@@ -124,7 +124,8 @@ public class GroupController extends CloseableController {
 
   @Override
   protected void onLateLoad() {
-    groupNameLabel.setText(LocaleManager.getInstance().getString("group.title", group.getName(), group.getCycleNumber()));
+    groupNameLabel.setText(LocaleManager.getInstance()
+        .getString("group.title", group.getName(), group.getCycleNumber()));
     loadBases();
     loadHumidifiers();
     loadFilters();
@@ -135,7 +136,8 @@ public class GroupController extends CloseableController {
   private void startUpdateTask() {
     updateTask = Mobifume.getInstance()
         .getScheduledExecutorService()
-        .scheduleAtFixedRate(this::update, 500L, 500L, TimeUnit.MILLISECONDS);
+        .scheduleAtFixedRate(() -> Platform.runLater(this::update), 500L, 500L,
+            TimeUnit.MILLISECONDS);
   }
 
   private void update() {
@@ -159,11 +161,11 @@ public class GroupController extends CloseableController {
 
   private void loadHumidifiers() {
     group.getHumidifiers()
-        .forEach(hum -> this.<GroupHumItemController>loadItem("GroupHumItem.fxml")
-            .thenAccept(groupHumItemController -> {
-              Parent groupHumItemRoot = groupHumItemController.getRoot();
-              groupHumItemController.setHumidifier(hum);
-              groupHumItemRoot.getProperties().put("controller", groupHumItemController);
+        .forEach(hum -> this.<GroupHumidifierItemController>loadItem("GroupHumItem.fxml")
+            .thenAccept(groupHumidifierItemController -> {
+              Parent groupHumItemRoot = groupHumidifierItemController.getRoot();
+              groupHumidifierItemController.setHumidifier(group, hum);
+              groupHumItemRoot.getProperties().put("controller", groupHumidifierItemController);
               humidifiersBox.getChildren().add(groupHumItemRoot);
             }));
   }
@@ -218,6 +220,7 @@ public class GroupController extends CloseableController {
         .filtered(child -> child.getProperties().containsKey("controller"))
         .forEach(child -> child.getProperties().remove("controller"));
     filtersBox.getChildren().clear();
+
     close();
   }
 

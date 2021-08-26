@@ -9,7 +9,7 @@ public class ImageHolder {
 
   private static final ImageHolder instance = new ImageHolder();
 
-  private Map<String, Image> images = new HashMap<>();
+  private final Map<String, Image> images = new HashMap<>();
 
   public static ImageHolder getInstance() {
     return instance;

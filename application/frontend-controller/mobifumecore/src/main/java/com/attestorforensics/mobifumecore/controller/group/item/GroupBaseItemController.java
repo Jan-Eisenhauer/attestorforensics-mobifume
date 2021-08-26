@@ -1,5 +1,6 @@
-package com.attestorforensics.mobifumecore.controller.item;
+package com.attestorforensics.mobifumecore.controller.group.item;
 
+import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.ItemController;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
@@ -8,12 +9,13 @@ import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.group.GroupStatus;
-import com.attestorforensics.mobifumecore.model.node.misc.DoubleSensor;
-import com.attestorforensics.mobifumecore.model.node.Base;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
-import java.net.URL;
+import com.attestorforensics.mobifumecore.model.listener.Listener;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.misc.DoubleSensor;
+import com.google.common.collect.ImmutableList;
+import java.util.Collection;
 import java.util.NavigableMap;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -34,15 +36,21 @@ public class GroupBaseItemController extends ItemController {
   @FXML
   private ImageView errorIcon;
 
-  private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+  private final NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+
+  private final Collection<Listener> groupBaseItemListeners =
+      ImmutableList.of(GroupBaseConnectionListener.create(this));
 
   @Override
-  @FXML
-  public void initialize(URL location, ResourceBundle resources) {
-    // nothing to initialize
+  protected void onLoad() {
+    registerListeners();
   }
 
-  public Base getBase() {
+  Group getGroup() {
+    return group;
+  }
+
+  Base getBase() {
     return base;
   }
 
@@ -51,11 +59,22 @@ public class GroupBaseItemController extends ItemController {
     this.base = base;
     nodeId.setText(base.getShortId());
     updateHeaterTemperature();
-    GroupItemControllerHolder.getInstance().addBaseController(base, this);
   }
 
   public void updateHeaterTemperature() {
     setTemperature(base.isOnline() ? base.getHeaterTemperature() : DoubleSensor.error());
+  }
+
+  void onRemove() {
+    unregisterListeners();
+  }
+
+  private void registerListeners() {
+    groupBaseItemListeners.forEach(Mobifume.getInstance().getEventDispatcher()::registerListener);
+  }
+
+  private void unregisterListeners() {
+    groupBaseItemListeners.forEach(Mobifume.getInstance().getEventDispatcher()::unregisterListener);
   }
 
   private void setTemperature(DoubleSensor temperature) {

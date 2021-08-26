@@ -7,17 +7,22 @@ import com.attestorforensics.mobifumecore.controller.item.FilterItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.filter.Filter;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import com.google.common.collect.Maps;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 
 public class FilterController extends CloseableController {
 
   @FXML
-  private Pane filters;
+  private Pane filtersPane;
+
+  private final Map<Filter, Node> nodeFilterItemControllerPool = Maps.newHashMap();
 
   private FilterListener filterListener;
 
@@ -79,17 +84,14 @@ public class FilterController extends CloseableController {
   void addFilter(Filter filter) {
     this.<FilterItemController>loadItem("FilterItem.fxml").thenAccept(filterItemController -> {
       Parent filterItemRoot = filterItemController.getRoot();
-      filters.getChildren().add(filterItemRoot);
+      filtersPane.getChildren().add(filterItemRoot);
       filterItemController.setFilter(filter);
-      filterItemRoot.getProperties().put("controller", filterItemController);
+      nodeFilterItemControllerPool.put(filter, filterItemRoot);
     });
   }
 
   void removeFilter(Filter filter) {
-    filters.getChildren()
-        .removeIf(
-            node -> ((FilterItemController) node.getProperties().get("controller")).getFilter()
-                == filter);
+    filtersPane.getChildren().remove(nodeFilterItemControllerPool.get(filter));
   }
 
   private boolean isFilterIdValid(String value) {

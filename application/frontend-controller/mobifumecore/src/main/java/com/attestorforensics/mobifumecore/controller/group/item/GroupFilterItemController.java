@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.controller.item;
+package com.attestorforensics.mobifumecore.controller.group.item;
 
 import com.attestorforensics.mobifumecore.controller.ItemController;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;

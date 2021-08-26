@@ -1,24 +1,28 @@
-package com.attestorforensics.mobifumecore.controller.item;
+package com.attestorforensics.mobifumecore.controller.group.item;
 
+import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.ItemController;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.util.ErrorWarning;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
+import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.listener.Listener;
 import com.attestorforensics.mobifumecore.model.node.Humidifier;
-import java.net.URL;
+import com.google.common.collect.ImmutableList;
+import java.util.Collection;
 import java.util.NavigableMap;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
-public class GroupHumItemController extends ItemController {
+public class GroupHumidifierItemController extends ItemController {
 
-  private Humidifier hum;
+  private Group group;
+  private Humidifier humidifier;
 
   @FXML
   private Text nodeId;
@@ -27,22 +31,41 @@ public class GroupHumItemController extends ItemController {
   @FXML
   private ImageView errorIcon;
 
-  private NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+  private final NavigableMap<ItemErrorType, ErrorWarning> errors = new TreeMap<>();
+
+  private final Collection<Listener> groupHumidifierListeners =
+      ImmutableList.of(GroupHumidifierConnectionListener.create(this));
 
   @Override
-  @FXML
-  public void initialize(URL location, ResourceBundle resources) {
-    // nothing to initialize
+  protected void onLoad() {
+    registerListeners();
   }
 
-  public Humidifier getHumidifier() {
-    return hum;
+  Group getGroup() {
+    return group;
   }
 
-  public void setHumidifier(Humidifier hum) {
-    this.hum = hum;
-    nodeId.setText(hum.getShortId());
-    GroupItemControllerHolder.getInstance().addHumController(hum, this);
+  Humidifier getHumidifier() {
+    return humidifier;
+  }
+
+  public void setHumidifier(Group group, Humidifier humidifier) {
+    this.group = group;
+    this.humidifier = humidifier;
+    nodeId.setText(humidifier.getShortId());
+  }
+
+  void onRemove() {
+    unregisterListeners();
+  }
+
+  private void registerListeners() {
+    groupHumidifierListeners.forEach(Mobifume.getInstance().getEventDispatcher()::registerListener);
+  }
+
+  private void unregisterListeners() {
+    groupHumidifierListeners.forEach(
+        Mobifume.getInstance().getEventDispatcher()::unregisterListener);
   }
 
   @FXML

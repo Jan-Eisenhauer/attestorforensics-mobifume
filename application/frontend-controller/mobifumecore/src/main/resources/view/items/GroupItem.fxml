@@ -16,7 +16,7 @@
             contentDisplay="CENTER"
             maxWidth="-Infinity" minWidth="0" onMouseClicked="#onMouseClicked" wrapText="true"
             xmlns="http://javafx.com/javafx/8.0.191"
-            fx:controller="com.attestorforensics.mobifumecore.controller.item.GroupItemController">
+            fx:controller="com.attestorforensics.mobifumecore.controller.overview.item.GroupItemController">
     <content>
         <VBox spacing="8.0">
             <children>

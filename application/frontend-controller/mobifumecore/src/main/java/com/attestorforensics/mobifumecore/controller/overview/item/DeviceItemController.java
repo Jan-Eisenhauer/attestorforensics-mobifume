@@ -1,5 +1,6 @@
-package com.attestorforensics.mobifumecore.controller.item;
+package com.attestorforensics.mobifumecore.controller.overview.item;
 
+import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.ItemController;
 import com.attestorforensics.mobifumecore.controller.detailbox.ErrorDetailBoxController;
 import com.attestorforensics.mobifumecore.controller.detailbox.WarningDetailBoxController;
@@ -8,9 +9,16 @@ import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.ItemErrorType;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.listener.Listener;
 import com.attestorforensics.mobifumecore.model.node.Base;
 import com.attestorforensics.mobifumecore.model.node.Device;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.node.misc.BaseLatch;
+import com.attestorforensics.mobifumecore.model.node.misc.HumidifierWaterState;
+import com.google.common.collect.ImmutableList;
 import java.net.URL;
+import java.util.Collection;
 import java.util.NavigableMap;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -40,11 +48,18 @@ public class DeviceItemController extends ItemController {
   @FXML
   private ImageView errorIcon;
 
+  private final Collection<Listener> deviceItemListeners =
+      ImmutableList.of(DeviceItemConnectionListener.create(this));
 
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
     setSelected(true);
+  }
+
+  @Override
+  protected void onLoad() {
+    registerListeners();
   }
 
   public Device getDevice() {
@@ -53,11 +68,19 @@ public class DeviceItemController extends ItemController {
 
   public void setDevice(Device device) {
     this.device = device;
-    updateConnection();
-    DeviceItemControllerHolder.getInstance().addController(device, this);
+    updateDevice();
   }
 
-  public void updateConnection() {
+  void onRemove() {
+    unregisterListeners();
+  }
+
+  void updateDevice() {
+    updateConnection();
+    updateErrors();
+  }
+
+  private void updateConnection() {
     String strength = getConnectionStrength(device.getRssi());
     if (currentStrength != null && currentStrength.equals(strength)) {
       return;
@@ -70,6 +93,51 @@ public class DeviceItemController extends ItemController {
     nodeId.setText(device.getShortId());
   }
 
+  private void updateErrors() {
+    if (device instanceof Base) {
+      updateBaseErrors((Base) device);
+    }
+
+    if (device instanceof Humidifier) {
+      updateHumidifierErrors((Humidifier) device);
+    }
+  }
+
+  private void updateBaseErrors(Base base) {
+    if (base.isOffline()) {
+      String message = LocaleManager.getInstance().getString("device.error.connection");
+      showError(message, true, ItemErrorType.DEVICE_CONNECTION_LOST);
+    } else if (base.getLatch() == BaseLatch.ERROR_OTHER
+        || base.getLatch() == BaseLatch.ERROR_NOT_REACHED
+        || base.getLatch() == BaseLatch.ERROR_BLOCKED) {
+      String message = LocaleManager.getInstance().getString("base.error.latch");
+      showError(message, true, ItemErrorType.BASE_LATCH);
+    } else if (base.getHeaterTemperature().isError()) {
+      String message = LocaleManager.getInstance().getString("base.error.heater");
+      showError(message, true, ItemErrorType.BASE_HEATER);
+    } else if (base.getTemperature().isError()) {
+      String message = LocaleManager.getInstance().getString("base.error.temperature");
+      showError(message, true, ItemErrorType.BASE_TEMPERATURE);
+    } else if (base.getHumidity().isError()) {
+      String message = LocaleManager.getInstance().getString("base.error.humidity");
+      showError(message, true, ItemErrorType.BASE_HUMIDITY);
+    } else {
+      hideAllError();
+    }
+  }
+
+  private void updateHumidifierErrors(Humidifier humidifier) {
+    if (humidifier.isOffline()) {
+      String message = LocaleManager.getInstance().getString("device.error.connection");
+      showError(message, true, ItemErrorType.DEVICE_CONNECTION_LOST);
+    } else if (humidifier.getWaterState() == HumidifierWaterState.EMPTY) {
+      String message = LocaleManager.getInstance().getString("hum.error.water");
+      showError(message, true, ItemErrorType.HUMIDIFIER_WATER);
+    } else {
+      hideError(ItemErrorType.HUMIDIFIER_WATER);
+    }
+  }
+
   private String getConnectionStrength(int rssi) {
     if (rssi > -70) {
       return "Good";
@@ -78,6 +146,14 @@ public class DeviceItemController extends ItemController {
       return "Moderate";
     }
     return "Bad";
+  }
+
+  private void registerListeners() {
+    deviceItemListeners.forEach(Mobifume.getInstance().getEventDispatcher()::registerListener);
+  }
+
+  private void unregisterListeners() {
+    deviceItemListeners.forEach(Mobifume.getInstance().getEventDispatcher()::unregisterListener);
   }
 
   @FXML

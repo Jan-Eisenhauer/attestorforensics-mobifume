@@ -1,6 +1,5 @@
 package com.attestorforensics.mobifumecore.controller.group;
 
-import com.attestorforensics.mobifumecore.controller.item.GroupItemControllerHolder;
 import com.attestorforensics.mobifumecore.model.event.group.GroupRemovedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
@@ -24,8 +23,5 @@ public class GroupRemoveListener implements Listener {
     }
 
     groupController.onRemove();
-
-    // TODO - move to own group item listener
-    GroupItemControllerHolder.getInstance().removeGroupItems(event.getGroup());
   }
 }
