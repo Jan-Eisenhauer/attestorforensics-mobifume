@@ -35,6 +35,7 @@ public class SceneTransition {
     if (locked) {
       return;
     }
+
     locked = true;
     TranslateTransition transition = new TranslateTransition(new Duration(350), root);
     transition.setFromX(0);

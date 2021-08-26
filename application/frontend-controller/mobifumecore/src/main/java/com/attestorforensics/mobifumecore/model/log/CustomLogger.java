@@ -95,18 +95,15 @@ public class CustomLogger {
   public static void info(Object... elements) {
     String info = join(elements);
     Mobifume.getInstance().getLogger().info(info);
-    System.out.println(info);
   }
 
   public static void info(Group group, Object... elements) {
     String info = join(elements);
     group.getLogger().info(info);
-    System.out.println(info);
   }
 
   public static void logGroupState(Group group) {
-    info(group, "STATE", group.getProcess().getStatus(), group.getProcess().isHumidifying(),
-        group.getProcess().isHumidifySetpointReached());
+    info(group, "STATE", group.getProcess().getStatus());
   }
 
   public static void logGroupDevices(Group group) {

@@ -114,7 +114,7 @@
           </GridPane.margin>
         </Button>
         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
-          text="%support.status.baseLatch"
+          text="%support.status.latch"
           GridPane.rowIndex="8"/>
         <Text fx:id="baseLatch" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
           GridPane.columnIndex="1" GridPane.rowIndex="8"/>
@@ -126,7 +126,7 @@
           </GridPane.margin>
         </Button>
         <Button mnemonicParsing="false" onAction="#onLatch" styleClass="textButton"
-          text="%support.action.baseLatch"
+          text="%support.action.latch"
           GridPane.columnIndex="2" GridPane.rowIndex="8">
           <GridPane.margin>
             <Insets left="16.0"/>

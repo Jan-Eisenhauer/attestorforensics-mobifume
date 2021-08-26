@@ -4,11 +4,11 @@ import com.attestorforensics.mobifumecore.controller.dialog.CalibrateDialogContr
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
 import com.attestorforensics.mobifumecore.controller.util.textformatter.SignedIntTextFormatter;
-import com.attestorforensics.mobifumecore.model.node.misc.Calibration;
-import com.attestorforensics.mobifumecore.model.node.misc.BaseLatch;
+import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import com.attestorforensics.mobifumecore.model.node.Base;
 import com.attestorforensics.mobifumecore.model.node.Device;
-import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.node.misc.BaseLatch;
+import com.attestorforensics.mobifumecore.model.node.misc.Calibration;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Optional;
@@ -102,7 +102,7 @@ public class ServiceBaseItemController extends ServiceItemController {
         .getString("support.status.latch.value", base.getLatch().ordinal()));
   }
 
-  @Override
+  @Overrideg
   public void remove() {
     rssi.setText(LocaleManager.getInstance().getString("support.status.rssi.disconnected"));
     temperature.setText("-");

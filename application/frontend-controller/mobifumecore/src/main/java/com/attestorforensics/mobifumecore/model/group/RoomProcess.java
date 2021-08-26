@@ -1,21 +1,23 @@
 package com.attestorforensics.mobifumecore.model.group;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateFinishedEvent;
-import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateStartedEvent;
-import com.attestorforensics.mobifumecore.model.event.group.humidify.HumidifyFinishedEvent;
-import com.attestorforensics.mobifumecore.model.event.group.humidify.HumidifyStartedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.complete.CompleteEvent;
+import com.attestorforensics.mobifumecore.model.event.group.evaporate.EvaporateEvent;
+import com.attestorforensics.mobifumecore.model.event.group.humidify.HumidifyEvent;
 import com.attestorforensics.mobifumecore.model.event.group.purge.HumidifyDisabledEvent;
 import com.attestorforensics.mobifumecore.model.event.group.purge.HumidifyEnabledEvent;
-import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeFinishedEvent;
-import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeStartedEvent;
-import com.attestorforensics.mobifumecore.model.event.group.setup.SetupStartedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.purge.PurgeEvent;
+import com.attestorforensics.mobifumecore.model.event.group.settings.GroupSettingsChangedEvent;
+import com.attestorforensics.mobifumecore.model.event.group.setup.SetupEvent;
 import com.attestorforensics.mobifumecore.model.filter.Filter;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import com.attestorforensics.mobifumecore.model.node.Base;
 import com.attestorforensics.mobifumecore.model.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.node.misc.DoubleSensor;
 import com.attestorforensics.mobifumecore.model.setting.EvaporantSettings;
+import com.attestorforensics.mobifumecore.model.setting.EvaporateSettings;
 import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
+import com.attestorforensics.mobifumecore.model.setting.PurgeSettings;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
@@ -24,15 +26,12 @@ import java.util.concurrent.TimeUnit;
 public class RoomProcess implements GroupProcess {
 
   private static final int HUMIDIFY_CIRCULATE_DURATION = 30;
-  private static final int HUMIDIFY_SETPOINT_REACHED_COUNT = 5;
 
   private final Group group;
 
   private GroupSettings settings;
 
   private GroupStatus status = GroupStatus.SETUP;
-  private boolean humidifySetpointReached;
-  private int humidifySetpointReachedCounter;
   private boolean humidifying;
   private ScheduledFuture<?> updateLatchTask;
   private long evaporateStartTime;
@@ -57,14 +56,32 @@ public class RoomProcess implements GroupProcess {
 
   @Override
   public void setSettings(GroupSettings settings) {
+    GroupSettings previousSettings = this.settings;
     this.settings = settings;
-    if (Objects.nonNull(evaporateTask) && !evaporateTask.isDone()) {
-      createOrUpdateEvaporateTask();
+
+    if (previousSettings.humidifySettings().humiditySetpoint() != settings.humidifySettings()
+        .humiditySetpoint()
+        || previousSettings.humidifySettings().humidityPuffer() != settings.humidifySettings()
+        .humidityPuffer()) {
+      updateHumidifying();
     }
 
-    if (Objects.nonNull(purgeTask) && !purgeTask.isDone()) {
-      createOrUpdatePurgeTask();
+    if (previousSettings.evaporateSettings().heaterSetpoint() != settings.evaporateSettings()
+        .heaterSetpoint()) {
+      updateHeaterSetpoint();
     }
+
+    if (previousSettings.evaporateSettings().evaporateDuration() != settings.evaporateSettings()
+        .evaporateDuration()) {
+      resetEvaporateTimer();
+    }
+
+    if (previousSettings.purgeSettings().purgeDuration() != settings.purgeSettings()
+        .purgeDuration()) {
+      resetPurgeTimer();
+    }
+
+    Mobifume.getInstance().getEventDispatcher().call(GroupSettingsChangedEvent.create(group));
   }
 
   @Override
@@ -79,14 +96,12 @@ public class RoomProcess implements GroupProcess {
     CustomLogger.logGroupSettings(group);
     group.getBases().forEach(Base::sendReset);
     group.getHumidifiers().forEach(Humidifier::sendReset);
-    Mobifume.getInstance().getEventDispatcher().call(SetupStartedEvent.create(group));
+    Mobifume.getInstance().getEventDispatcher().call(SetupEvent.create(group));
   }
 
   @Override
   public void startHumidify() {
-    if (status != GroupStatus.SETUP) {
-      return;
-    }
+    System.out.println("RoomProcess.startHumidify");
 
     status = GroupStatus.HUMIDIFY;
     CustomLogger.logGroupState(group);
@@ -105,7 +120,9 @@ public class RoomProcess implements GroupProcess {
 
     humidifying = false;
     enableHumidifying();
-    Mobifume.getInstance().getEventDispatcher().call(HumidifyStartedEvent.create(group));
+    Mobifume.getInstance().getEventDispatcher().call(HumidifyEvent.create(group));
+
+    updateHumidifying();
   }
 
   private void updateHumidifyingLatch() {
@@ -141,6 +158,7 @@ public class RoomProcess implements GroupProcess {
 
   @Override
   public void startEvaporate() {
+    System.out.println("RoomProcess.startEvaporate");
     status = GroupStatus.EVAPORATE;
     CustomLogger.logGroupState(group);
     CustomLogger.logGroupSettings(group);
@@ -152,18 +170,17 @@ public class RoomProcess implements GroupProcess {
     filters.forEach(filter -> filter.addRun(group.getCycleNumber(), evaporantSettings.evaporant(),
         evaporantAmount, filterCount));
 
-    humidifySetpointReached = true;
-
     cancelEvaporateTaskIfScheduled();
     evaporateStartTime = System.currentTimeMillis();
 
-    group.getBases().forEach(base -> base.sendTime(settings.evaporateSettings().evaporateDuration()));
+    group.getBases()
+        .forEach(base -> base.sendTime(settings.evaporateSettings().evaporateDuration()));
     updateHeaterSetpoint();
     group.getBases().forEach(Base::sendLatchCirculate);
 
     createOrUpdateEvaporateTask();
 
-    Mobifume.getInstance().getEventDispatcher().call(EvaporateStartedEvent.create(group));
+    Mobifume.getInstance().getEventDispatcher().call(EvaporateEvent.create(group));
   }
 
   private void cancelEvaporateTaskIfScheduled() {
@@ -181,9 +198,8 @@ public class RoomProcess implements GroupProcess {
     long timePassed = System.currentTimeMillis() - evaporateStartTime;
     long timeLeft = settings.evaporateSettings().evaporateDuration() * 60 * 1000L - timePassed;
     evaporateTask = Mobifume.getInstance().getScheduledExecutorService().schedule(() -> {
-      Mobifume.getInstance().getEventDispatcher().call(EvaporateFinishedEvent.create(group));
-      startPurge();
       evaporateTimeTask.cancel(false);
+      startPurge();
     }, timeLeft, TimeUnit.MILLISECONDS);
     evaporateTimeTask =
         Mobifume.getInstance().getScheduledExecutorService().scheduleAtFixedRate(() -> {
@@ -217,7 +233,7 @@ public class RoomProcess implements GroupProcess {
 
     createOrUpdatePurgeTask();
 
-    Mobifume.getInstance().getEventDispatcher().call(PurgeStartedEvent.create(group));
+    Mobifume.getInstance().getEventDispatcher().call(PurgeEvent.create(group));
   }
 
   @Override
@@ -227,7 +243,7 @@ public class RoomProcess implements GroupProcess {
     CustomLogger.logGroupSettings(group);
     group.getBases().forEach(Base::sendReset);
     group.getHumidifiers().forEach(Humidifier::sendReset);
-    Mobifume.getInstance().getEventDispatcher().call(PurgeFinishedEvent.create(group));
+    Mobifume.getInstance().getEventDispatcher().call(CompleteEvent.create(group));
   }
 
   private void cancelPurgeTaskIfScheduled() {
@@ -245,12 +261,35 @@ public class RoomProcess implements GroupProcess {
         .schedule(this::startComplete, timeLeft, TimeUnit.MILLISECONDS);
   }
 
-  public void updateHumidify() {
-    checkHumidify();
+  @Override
+  public void updateHumidifying() {
+    if (status != GroupStatus.HUMIDIFY && status != GroupStatus.EVAPORATE) {
+      return;
+    }
+
+    DoubleSensor humidity = group.getAverageHumidity();
+    if (humidity.isError()) {
+      return;
+    }
+
+    int humiditySetpoint = settings.humidifySettings().humiditySetpoint();
+    double humidityPuffer = settings.humidifySettings().humidityPuffer();
+    if (status == GroupStatus.HUMIDIFY && humidity.value() >= humiditySetpoint) {
+      startEvaporate();
+    }
+
+    if (humidifying && humidity.value() >= humiditySetpoint + humidityPuffer) {
+      disableHumidifying();
+      Mobifume.getInstance().getEventDispatcher().call(HumidifyDisabledEvent.create(group));
+    }
+
+    if (!humidifying && humidity.value() <= humiditySetpoint) {
+      enableHumidifying();
+      Mobifume.getInstance().getEventDispatcher().call(HumidifyEnabledEvent.create(group));
+    }
   }
 
-  @Override
-  public void updateHeaterSetpoint() {
+  private void updateHeaterSetpoint() {
     if (status != GroupStatus.EVAPORATE) {
       return;
     }
@@ -297,7 +336,56 @@ public class RoomProcess implements GroupProcess {
   }
 
   @Override
-  public void updateEvaporateTimer() {
+  public long getEvaporateStartTime() {
+    return evaporateStartTime;
+  }
+
+  @Override
+  public void increaseEvaporateDuration(int duration) {
+    EvaporateSettings evaporateSettings = settings.evaporateSettings();
+    evaporateSettings =
+        evaporateSettings.evaporateDuration(evaporateSettings.evaporateDuration() + duration);
+    settings = settings.evaporateSettings(evaporateSettings);
+    updateEvaporateTimer();
+    Mobifume.getInstance().getEventDispatcher().call(GroupSettingsChangedEvent.create(group));
+  }
+
+  @Override
+  public long getPurgeStartTime() {
+    return purgeStartTime;
+  }
+
+  @Override
+  public void increasePurgeDuration(int duration) {
+    PurgeSettings purgeSettings = settings.purgeSettings();
+    purgeSettings = purgeSettings.purgeDuration(purgeSettings.purgeDuration() + duration);
+    settings = settings.purgeSettings(purgeSettings);
+    updatePurgeTimer();
+    Mobifume.getInstance().getEventDispatcher().call(GroupSettingsChangedEvent.create(group));
+  }
+
+  @Override
+  public void stop() {
+    CustomLogger.info(group, "STOP");
+    cancelEvaporateTaskIfScheduled();
+    cancelPurgeTaskIfScheduled();
+    group.getBases().forEach(Base::sendReset);
+    group.getHumidifiers().forEach(Humidifier::sendReset);
+  }
+
+  private void resetEvaporateTimer() {
+    if (status != GroupStatus.EVAPORATE) {
+      return;
+    }
+
+    evaporateStartTime = System.currentTimeMillis();
+    CustomLogger.info(group, "RESET_HEATTIMER", evaporateStartTime,
+        settings.evaporateSettings().evaporateDuration());
+    CustomLogger.logGroupSettings(group);
+    updateEvaporateTimer();
+  }
+
+  private void updateEvaporateTimer() {
     if (status != GroupStatus.EVAPORATE) {
       return;
     }
@@ -311,33 +399,7 @@ public class RoomProcess implements GroupProcess {
     createOrUpdateEvaporateTask();
   }
 
-  @Override
-  public void resetEvaporateTimer() {
-    if (status != GroupStatus.EVAPORATE) {
-      return;
-    }
-
-    evaporateStartTime = System.currentTimeMillis();
-    CustomLogger.info(group, "RESET_HEATTIMER", evaporateStartTime,
-        settings.evaporateSettings().evaporateDuration());
-    CustomLogger.logGroupSettings(group);
-    updateEvaporateTimer();
-  }
-
-  @Override
-  public void updatePurgeTimer() {
-    if (status != GroupStatus.PURGE) {
-      return;
-    }
-
-    CustomLogger.info(group, "UPDATE_PURGETIMER", purgeStartTime,
-        settings.purgeSettings().purgeDuration());
-    CustomLogger.logGroupSettings(group);
-    createOrUpdatePurgeTask();
-  }
-
-  @Override
-  public void resetPurgeTimer() {
+  private void resetPurgeTimer() {
     if (status != GroupStatus.PURGE) {
       return;
     }
@@ -349,60 +411,14 @@ public class RoomProcess implements GroupProcess {
     updatePurgeTimer();
   }
 
-  @Override
-  public void stop() {
-    CustomLogger.info(group, "STOP");
-    cancelEvaporateTaskIfScheduled();
-    cancelPurgeTaskIfScheduled();
-    group.getBases().forEach(Base::sendReset);
-    group.getHumidifiers().forEach(Humidifier::sendReset);
-  }
-
-  private void checkHumidify() {
-    if (status != GroupStatus.HUMIDIFY && status != GroupStatus.EVAPORATE) {
+  private void updatePurgeTimer() {
+    if (status != GroupStatus.PURGE) {
       return;
     }
 
-    int humiditySetpoint = settings.humidifySettings().humiditySetpoint();
-    if (!isHumidifySetpointReached()) {
-      if (group.getAverageHumidity().isValid()
-          && group.getAverageHumidity().value() >= humiditySetpoint) {
-        humidifySetpointReachedCounter++;
-        if (humidifySetpointReachedCounter >= HUMIDIFY_SETPOINT_REACHED_COUNT) {
-          humidifySetpointReached = true;
-          Mobifume.getInstance().getEventDispatcher().call(HumidifyFinishedEvent.create(group));
-        }
-      }
-      return;
-    }
-
-    if (isHumidifying() && group.getAverageHumidity().isValid()
-        && group.getAverageHumidity().value() >= humiditySetpoint + settings.humidifySettings()
-        .humidityPuffer()) {
-      disableHumidifying();
-      Mobifume.getInstance().getEventDispatcher().call(HumidifyEnabledEvent.create(group));
-    }
-    if (!isHumidifying() && group.getAverageHumidity().isValid()
-        && group.getAverageHumidity().value() <= humiditySetpoint) {
-      enableHumidifying();
-      Mobifume.getInstance().getEventDispatcher().call(HumidifyDisabledEvent.create(group));
-    }
+    CustomLogger.info(group, "UPDATE_PURGETIMER", purgeStartTime,
+        settings.purgeSettings().purgeDuration());
+    CustomLogger.logGroupSettings(group);
+    createOrUpdatePurgeTask();
   }
-
-  public boolean isHumidifySetpointReached() {
-    return humidifySetpointReached;
-  }
-
-  public boolean isHumidifying() {
-    return humidifying;
-  }
-
-  public long getEvaporateStartTime() {
-    return evaporateStartTime;
-  }
-
-  public long getPurgeStartTime() {
-    return purgeStartTime;
-  }
-
 }

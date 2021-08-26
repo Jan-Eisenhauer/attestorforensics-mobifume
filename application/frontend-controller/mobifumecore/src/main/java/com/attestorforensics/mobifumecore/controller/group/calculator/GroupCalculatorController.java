@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.controller.group;
+package com.attestorforensics.mobifumecore.controller.group.calculator;
 
 import com.attestorforensics.mobifumecore.controller.CloseableController;
 import com.attestorforensics.mobifumecore.controller.dialog.SaveDiscardCancelDialogController;

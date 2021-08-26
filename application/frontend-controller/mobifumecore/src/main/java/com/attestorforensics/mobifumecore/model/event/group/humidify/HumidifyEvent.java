@@ -3,13 +3,13 @@ package com.attestorforensics.mobifumecore.model.event.group.humidify;
 import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.event.group.GroupEvent;
 
-public class HumidifyFinishedEvent extends GroupEvent {
+public class HumidifyEvent extends GroupEvent {
 
-  private HumidifyFinishedEvent(Group group) {
+  private HumidifyEvent(Group group) {
     super(group);
   }
 
-  public static HumidifyFinishedEvent create(Group group) {
-    return new HumidifyFinishedEvent(group);
+  public static HumidifyEvent create(Group group) {
+    return new HumidifyEvent(group);
   }
 }

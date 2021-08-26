@@ -3,13 +3,13 @@ package com.attestorforensics.mobifumecore.model.event.group.evaporate;
 import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.event.group.GroupEvent;
 
-public class EvaporateStartedEvent extends GroupEvent {
+public class EvaporateEvent extends GroupEvent {
 
-  private EvaporateStartedEvent(Group group) {
+  private EvaporateEvent(Group group) {
     super(group);
   }
 
-  public static EvaporateStartedEvent create(Group group) {
-    return new EvaporateStartedEvent(group);
+  public static EvaporateEvent create(Group group) {
+    return new EvaporateEvent(group);
   }
 }

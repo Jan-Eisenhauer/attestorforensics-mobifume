@@ -1,4 +1,4 @@
-package com.attestorforensics.mobifumecore.controller.group;
+package com.attestorforensics.mobifumecore.controller.group.settings;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.CloseableController;
@@ -28,7 +28,6 @@ public class GroupSettingsController extends CloseableController {
 
   @FXML
   Parent root;
-  private Consumer<?> callback;
   private Group group;
   @FXML
   private Label groupName;
@@ -64,10 +63,6 @@ public class GroupSettingsController extends CloseableController {
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
     // nothing to initialize
-  }
-
-  void setCallback(Consumer<?> callback) {
-    this.callback = callback;
   }
 
   public Group getGroup() {
@@ -250,44 +245,30 @@ public class GroupSettingsController extends CloseableController {
   @FXML
   public void onBack(ActionEvent event) {
     Sound.click();
-
     applySettings();
-
     close();
-    callback.accept(null);
   }
 
   private void applySettings() {
     GroupSettings groupSettings = group.getProcess().getSettings();
 
+    // apply humidify settings
     HumidifySettings humidifySettings = groupSettings.humidifySettings();
-    int maxHumidity = getFixedValue(maxHumSlider, maxHum);
-    if (maxHumidity != humidifySettings.humiditySetpoint()) {
-      humidifySettings = humidifySettings.humiditySetpoint(maxHumidity);
-      groupSettings = groupSettings.humidifySettings(humidifySettings);
-      group.getProcess().updateHumidify();
-    }
+    int humiditySetpoint = getFixedValue(maxHumSlider, maxHum);
+    humidifySettings = humidifySettings.humiditySetpoint(humiditySetpoint);
+    groupSettings = groupSettings.humidifySettings(humidifySettings);
 
+    // apply evaporate settings
     EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
     int heaterTemperature = getFixedValue(heaterTempSlider, heaterTemp);
-    if (heaterTemperature != evaporateSettings.heaterSetpoint()) {
-      evaporateSettings = evaporateSettings.heaterSetpoint(heaterTemperature);
-      groupSettings = groupSettings.evaporateSettings(evaporateSettings);
-      group.getProcess().updateHeaterSetpoint();
-    }
+    evaporateSettings =
+        evaporateSettings.heaterSetpoint(heaterTemperature).evaporateDuration(heatTime);
+    groupSettings = groupSettings.evaporateSettings(evaporateSettings);
 
-    if (heatTime != evaporateSettings.evaporateDuration()) {
-      evaporateSettings = evaporateSettings.evaporateDuration(heatTime);
-      groupSettings = groupSettings.evaporateSettings(evaporateSettings);
-      group.getProcess().resetEvaporateTimer();
-    }
-
+    // apply purge settings
     PurgeSettings purgeSettings = groupSettings.purgeSettings();
-    if (purgeTime != purgeSettings.purgeDuration()) {
-      purgeSettings = purgeSettings.purgeDuration(purgeTime);
-      groupSettings = groupSettings.purgeSettings(purgeSettings);
-      group.getProcess().resetPurgeTimer();
-    }
+    purgeSettings = purgeSettings.purgeDuration(purgeTime);
+    groupSettings = groupSettings.purgeSettings(purgeSettings);
 
     group.getProcess().setSettings(groupSettings);
   }

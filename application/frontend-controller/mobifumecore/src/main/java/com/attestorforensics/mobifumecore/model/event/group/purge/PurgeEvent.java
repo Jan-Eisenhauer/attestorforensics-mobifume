@@ -3,13 +3,13 @@ package com.attestorforensics.mobifumecore.model.event.group.purge;
 import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.event.group.GroupEvent;
 
-public class PurgeFinishedEvent extends GroupEvent {
+public class PurgeEvent extends GroupEvent {
 
-  private PurgeFinishedEvent(Group group) {
+  private PurgeEvent(Group group) {
     super(group);
   }
 
-  public static PurgeFinishedEvent create(Group group) {
-    return new PurgeFinishedEvent(group);
+  public static PurgeEvent create(Group group) {
+    return new PurgeEvent(group);
   }
 }

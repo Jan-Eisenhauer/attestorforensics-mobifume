@@ -22,29 +22,19 @@ public interface GroupProcess {
 
   void startComplete();
 
-  void updateHumidify();
-
-  boolean isHumidifySetpointReached();
-
-  boolean isHumidifying();
+  void updateHumidifying();
 
   long getEvaporateStartTime();
 
+  void increaseEvaporateDuration(int duration);
+
   long getPurgeStartTime();
 
-  void updateHeaterSetpoint();
+  void increasePurgeDuration(int duration);
 
   void sendBaseState(Base base);
 
   void sendHumidifierState(Humidifier humidifier);
-
-  void updateEvaporateTimer();
-
-  void resetEvaporateTimer();
-
-  void updatePurgeTimer();
-
-  void resetPurgeTimer();
 
   void stop();
 }

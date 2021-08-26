@@ -7,6 +7,7 @@ import com.attestorforensics.mobifumecore.controller.dialog.DialogController;
 import com.attestorforensics.mobifumecore.controller.util.SceneTransition;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import javafx.application.Platform;
@@ -38,7 +39,14 @@ public abstract class Controller implements Initializable {
     this.root = root;
   }
 
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+  }
+
   protected void onLoad() {
+  }
+
+  protected void onLateLoad() {
   }
 
   protected void onShow() {
@@ -61,6 +69,7 @@ public abstract class Controller implements Initializable {
       T controller = loadResource(VIEW_RESOURCE + viewResource);
       controller.onLoad();
       completableFuture.complete(controller);
+      controller.onLateLoad();
       controller.onShow();
       SceneTransition.playForward(getRoot().getScene(), controller.getRoot());
     });
@@ -74,6 +83,7 @@ public abstract class Controller implements Initializable {
       T controller = loadResource(VIEW_RESOURCE + viewResource);
       controller.onLoad();
       completableFuture.complete(controller);
+      controller.onLateLoad();
     });
 
     return completableFuture;
@@ -86,6 +96,7 @@ public abstract class Controller implements Initializable {
       controller.setParentController(this);
       controller.onLoad();
       completableFuture.complete(controller);
+      controller.onLateLoad();
     });
 
     return completableFuture;
@@ -99,6 +110,7 @@ public abstract class Controller implements Initializable {
       createStage(controller);
       controller.onLoad();
       completableFuture.complete(controller);
+      controller.onLateLoad();
       controller.onShow();
       openDialog(controller);
     });
@@ -119,6 +131,7 @@ public abstract class Controller implements Initializable {
 
       controller.onLoad();
       completableFuture.complete(controller);
+      controller.onLateLoad();
       controller.onShow();
       showDetailBox(controller, bounds);
     });
