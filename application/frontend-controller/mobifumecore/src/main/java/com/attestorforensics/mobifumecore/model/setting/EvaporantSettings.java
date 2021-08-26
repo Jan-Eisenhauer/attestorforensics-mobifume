@@ -29,6 +29,10 @@ public class EvaporantSettings {
     return new EvaporantSettingsBuilder();
   }
 
+  public static EvaporantSettingsBuilder builder(EvaporantSettings evaporantSettings) {
+    return new EvaporantSettingsBuilder(evaporantSettings);
+  }
+
   public static EvaporantSettings getDefault() {
     return defaultEvaporantSettings;
   }
@@ -38,12 +42,7 @@ public class EvaporantSettings {
   }
 
   public EvaporantSettings evaporant(Evaporant evaporant) {
-    return builder().evaporant(evaporant)
-        .evaporantAmountPerCm(evaporantAmountPerCm)
-        .roomWidth(roomWidth)
-        .roomDepth(roomDepth)
-        .roomHeight(roomHeight)
-        .build();
+    return builder(this).evaporant(evaporant).build();
   }
 
   public double evaporantAmountPerCm() {
@@ -51,12 +50,7 @@ public class EvaporantSettings {
   }
 
   public EvaporantSettings evaporantAmountPerCm(double evaporantAmountPerCm) {
-    return builder().evaporant(evaporant)
-        .evaporantAmountPerCm(evaporantAmountPerCm)
-        .roomWidth(roomWidth)
-        .roomDepth(roomDepth)
-        .roomHeight(roomHeight)
-        .build();
+    return builder(this).evaporantAmountPerCm(evaporantAmountPerCm).build();
   }
 
   public double roomWidth() {
@@ -64,12 +58,7 @@ public class EvaporantSettings {
   }
 
   public EvaporantSettings roomWidth(double roomWidth) {
-    return builder().evaporant(evaporant)
-        .evaporantAmountPerCm(evaporantAmountPerCm)
-        .roomWidth(roomWidth)
-        .roomDepth(roomDepth)
-        .roomHeight(roomHeight)
-        .build();
+    return builder(this).roomWidth(roomWidth).build();
   }
 
   public double roomDepth() {
@@ -77,12 +66,7 @@ public class EvaporantSettings {
   }
 
   public EvaporantSettings roomDepth(double roomDepth) {
-    return builder().evaporant(evaporant)
-        .evaporantAmountPerCm(evaporantAmountPerCm)
-        .roomWidth(roomWidth)
-        .roomDepth(roomDepth)
-        .roomHeight(roomHeight)
-        .build();
+    return builder(this).roomDepth(roomDepth).build();
   }
 
   public double roomHeight() {
@@ -90,12 +74,7 @@ public class EvaporantSettings {
   }
 
   public EvaporantSettings roomHeight(double roomHeight) {
-    return builder().evaporant(evaporant)
-        .evaporantAmountPerCm(evaporantAmountPerCm)
-        .roomWidth(roomWidth)
-        .roomDepth(roomDepth)
-        .roomHeight(roomHeight)
-        .build();
+    return builder(this).roomHeight(roomHeight).build();
   }
 
   public static class EvaporantSettingsBuilder {
@@ -107,6 +86,14 @@ public class EvaporantSettings {
     private Double roomHeight;
 
     private EvaporantSettingsBuilder() {
+    }
+
+    private EvaporantSettingsBuilder(EvaporantSettings evaporantSettings) {
+      evaporant = evaporantSettings.evaporant;
+      evaporantAmountPerCm = evaporantSettings.evaporantAmountPerCm;
+      roomWidth = evaporantSettings.roomWidth;
+      roomDepth = evaporantSettings.roomDepth;
+      roomHeight = evaporantSettings.roomHeight;
     }
 
     public EvaporantSettings build() {

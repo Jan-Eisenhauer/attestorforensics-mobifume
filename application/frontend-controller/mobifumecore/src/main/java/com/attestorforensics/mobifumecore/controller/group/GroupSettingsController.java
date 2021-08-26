@@ -80,7 +80,7 @@ public class GroupSettingsController extends CloseableController {
 
     GroupSettings groupSettings = group.getProcess().getSettings();
     maxHum = groupSettings.humidifySettings().humiditySetpoint();
-    heaterTemp = groupSettings.evaporateSettings().heaterTemperature();
+    heaterTemp = groupSettings.evaporateSettings().heaterSetpoint();
     heatTime = groupSettings.evaporateSettings().evaporateDuration();
     purgeTime = groupSettings.purgeSettings().purgeDuration();
 
@@ -270,8 +270,8 @@ public class GroupSettingsController extends CloseableController {
 
     EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
     int heaterTemperature = getFixedValue(heaterTempSlider, heaterTemp);
-    if (heaterTemperature != evaporateSettings.heaterTemperature()) {
-      evaporateSettings = evaporateSettings.heaterTemperature(heaterTemperature);
+    if (heaterTemperature != evaporateSettings.heaterSetpoint()) {
+      evaporateSettings = evaporateSettings.heaterSetpoint(heaterTemperature);
       groupSettings = groupSettings.evaporateSettings(evaporateSettings);
       group.getProcess().updateHeaterSetpoint();
     }
@@ -302,7 +302,7 @@ public class GroupSettingsController extends CloseableController {
           GroupSettings groupSettings =
               Mobifume.getInstance().getModelManager().getGlobalSettings().groupTemplateSettings();
           maxHumField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
-          heaterTempField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
+          heaterTempField.setText(groupSettings.evaporateSettings().heaterSetpoint() + "");
           heatTimeField.setText(groupSettings.evaporateSettings().evaporateDuration() + "");
           purgeTimeField.setText(groupSettings.purgeSettings().purgeDuration() + "");
 

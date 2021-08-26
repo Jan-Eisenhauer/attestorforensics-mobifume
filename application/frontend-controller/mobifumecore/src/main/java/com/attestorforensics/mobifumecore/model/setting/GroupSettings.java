@@ -16,15 +16,19 @@ public class GroupSettings {
   private final EvaporantSettings evaporantSettings;
   private final PurgeSettings purgeSettings;
 
-  private GroupSettings(SettingsBuilder settingsBuilder) {
-    this.humidifySettings = settingsBuilder.humidifySettings;
-    this.evaporateSettings = settingsBuilder.evaporateSettings;
-    this.evaporantSettings = settingsBuilder.evaporantSettings;
-    this.purgeSettings = settingsBuilder.purgeSettings;
+  private GroupSettings(GroupSettingsBuilder groupSettingsBuilder) {
+    this.humidifySettings = groupSettingsBuilder.humidifySettings;
+    this.evaporateSettings = groupSettingsBuilder.evaporateSettings;
+    this.evaporantSettings = groupSettingsBuilder.evaporantSettings;
+    this.purgeSettings = groupSettingsBuilder.purgeSettings;
   }
 
-  public static SettingsBuilder builder() {
-    return new SettingsBuilder();
+  public static GroupSettingsBuilder builder() {
+    return new GroupSettingsBuilder();
+  }
+
+  public static GroupSettingsBuilder builder(GroupSettings groupSettings) {
+    return new GroupSettingsBuilder(groupSettings);
   }
 
   public static GroupSettings getDefault() {
@@ -36,11 +40,7 @@ public class GroupSettings {
   }
 
   public GroupSettings humidifySettings(HumidifySettings humidifySettings) {
-    return builder().humidifySettings(humidifySettings)
-        .evaporateSettings(evaporateSettings)
-        .evaporantSettings(evaporantSettings)
-        .purgeSettings(purgeSettings)
-        .build();
+    return builder(this).humidifySettings(humidifySettings).build();
   }
 
   public EvaporateSettings evaporateSettings() {
@@ -48,11 +48,7 @@ public class GroupSettings {
   }
 
   public GroupSettings evaporateSettings(EvaporateSettings evaporateSettings) {
-    return builder().humidifySettings(humidifySettings)
-        .evaporateSettings(evaporateSettings)
-        .evaporantSettings(evaporantSettings)
-        .purgeSettings(purgeSettings)
-        .build();
+    return builder(this).evaporateSettings(evaporateSettings).build();
   }
 
   public EvaporantSettings evaporantSettings() {
@@ -60,11 +56,7 @@ public class GroupSettings {
   }
 
   public GroupSettings evaporantSettings(EvaporantSettings evaporantSettings) {
-    return builder().humidifySettings(humidifySettings)
-        .evaporateSettings(evaporateSettings)
-        .evaporantSettings(evaporantSettings)
-        .purgeSettings(purgeSettings)
-        .build();
+    return builder(this).evaporantSettings(evaporantSettings).build();
   }
 
   public PurgeSettings purgeSettings() {
@@ -72,21 +64,24 @@ public class GroupSettings {
   }
 
   public GroupSettings purgeSettings(PurgeSettings purgeSettings) {
-    return builder().humidifySettings(humidifySettings)
-        .evaporateSettings(evaporateSettings)
-        .evaporantSettings(evaporantSettings)
-        .purgeSettings(purgeSettings)
-        .build();
+    return builder(this).purgeSettings(purgeSettings).build();
   }
 
-  public static class SettingsBuilder {
+  public static class GroupSettingsBuilder {
 
     private HumidifySettings humidifySettings;
     private EvaporateSettings evaporateSettings;
     private EvaporantSettings evaporantSettings;
     private PurgeSettings purgeSettings;
 
-    private SettingsBuilder() {
+    private GroupSettingsBuilder() {
+    }
+
+    private GroupSettingsBuilder(GroupSettings groupSettings) {
+      humidifySettings = groupSettings.humidifySettings;
+      evaporateSettings = groupSettings.evaporateSettings;
+      evaporantSettings = groupSettings.evaporantSettings;
+      purgeSettings = groupSettings.purgeSettings;
     }
 
     public GroupSettings build() {
@@ -97,25 +92,25 @@ public class GroupSettings {
       return new GroupSettings(this);
     }
 
-    public SettingsBuilder humidifySettings(HumidifySettings humidifySettings) {
+    public GroupSettingsBuilder humidifySettings(HumidifySettings humidifySettings) {
       checkNotNull(humidifySettings);
       this.humidifySettings = humidifySettings;
       return this;
     }
 
-    public SettingsBuilder evaporateSettings(EvaporateSettings evaporateSettings) {
+    public GroupSettingsBuilder evaporateSettings(EvaporateSettings evaporateSettings) {
       checkNotNull(evaporateSettings);
       this.evaporateSettings = evaporateSettings;
       return this;
     }
 
-    public SettingsBuilder evaporantSettings(EvaporantSettings evaporantSettings) {
+    public GroupSettingsBuilder evaporantSettings(EvaporantSettings evaporantSettings) {
       checkNotNull(evaporantSettings);
       this.evaporantSettings = evaporantSettings;
       return this;
     }
 
-    public SettingsBuilder purgeSettings(PurgeSettings purgeSettings) {
+    public GroupSettingsBuilder purgeSettings(PurgeSettings purgeSettings) {
       checkNotNull(purgeSettings);
       this.purgeSettings = purgeSettings;
       return this;

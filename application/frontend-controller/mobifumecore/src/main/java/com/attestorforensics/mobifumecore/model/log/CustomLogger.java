@@ -87,7 +87,7 @@ public class CustomLogger {
     GroupSettings groupSettings = group.getProcess().getSettings();
     info(group, "SETTINGS", groupSettings.humidifySettings().humiditySetpoint(),
         groupSettings.humidifySettings().humidityPuffer(),
-        groupSettings.evaporateSettings().heaterTemperature(),
+        groupSettings.evaporateSettings().heaterSetpoint(),
         groupSettings.evaporateSettings().evaporateDuration(),
         groupSettings.purgeSettings().purgeDuration());
   }

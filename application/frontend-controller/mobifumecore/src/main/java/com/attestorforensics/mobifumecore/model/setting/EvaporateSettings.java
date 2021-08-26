@@ -1,31 +1,38 @@
 package com.attestorforensics.mobifumecore.model.setting;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class EvaporateSettings {
 
-  private static final EvaporateSettings defaultEvaporateSettings = create(120, 30);
+  private static final EvaporateSettings defaultEvaporateSettings =
+      builder().heaterSetpoint(120).evaporateDuration(30).build();
 
-  private final int heaterTemperature;
+  private final int heaterSetpoint;
   private final int evaporateDuration;
 
-  private EvaporateSettings(int heaterTemperature, int evaporateDuration) {
-    this.heaterTemperature = heaterTemperature;
-    this.evaporateDuration = evaporateDuration;
+  private EvaporateSettings(EvaporateSettingsBuilder evaporateSettingsBuilder) {
+    this.heaterSetpoint = evaporateSettingsBuilder.heaterSetpoint;
+    this.evaporateDuration = evaporateSettingsBuilder.evaporateDuration;
   }
 
-  public static EvaporateSettings create(int heaterTemperature, int evaporateDuration) {
-    return new EvaporateSettings(heaterTemperature, evaporateDuration);
+  public static EvaporateSettingsBuilder builder() {
+    return new EvaporateSettingsBuilder();
+  }
+
+  public static EvaporateSettingsBuilder builder(EvaporateSettings evaporateSettings) {
+    return new EvaporateSettingsBuilder(evaporateSettings);
   }
 
   public static EvaporateSettings getDefault() {
     return defaultEvaporateSettings;
   }
 
-  public int heaterTemperature() {
-    return heaterTemperature;
+  public int heaterSetpoint() {
+    return heaterSetpoint;
   }
 
-  public EvaporateSettings heaterTemperature(int heaterTemperature) {
-    return create(heaterTemperature, evaporateDuration);
+  public EvaporateSettings heaterSetpoint(int heaterSetpoint) {
+    return builder(this).heaterSetpoint(heaterSetpoint).build();
   }
 
   public int evaporateDuration() {
@@ -33,6 +40,36 @@ public class EvaporateSettings {
   }
 
   public EvaporateSettings evaporateDuration(int evaporateDuration) {
-    return create(heaterTemperature, evaporateDuration);
+    return builder(this).evaporateDuration(evaporateDuration).build();
+  }
+
+  public static class EvaporateSettingsBuilder {
+
+    private Integer heaterSetpoint;
+    private Integer evaporateDuration;
+
+    private EvaporateSettingsBuilder() {
+    }
+
+    private EvaporateSettingsBuilder(EvaporateSettings evaporateSettings) {
+      heaterSetpoint = evaporateSettings.heaterSetpoint;
+      evaporateDuration = evaporateSettings.evaporateDuration;
+    }
+
+    public EvaporateSettings build() {
+      checkNotNull(heaterSetpoint);
+      checkNotNull(evaporateDuration);
+      return new EvaporateSettings(this);
+    }
+
+    public EvaporateSettingsBuilder heaterSetpoint(int heaterSetpoint) {
+      this.heaterSetpoint = heaterSetpoint;
+      return this;
+    }
+
+    public EvaporateSettingsBuilder evaporateDuration(int evaporateDuration) {
+      this.evaporateDuration = evaporateDuration;
+      return this;
+    }
   }
 }

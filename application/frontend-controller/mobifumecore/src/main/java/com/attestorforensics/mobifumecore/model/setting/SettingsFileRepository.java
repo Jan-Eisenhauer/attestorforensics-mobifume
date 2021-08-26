@@ -92,10 +92,14 @@ public class SettingsFileRepository implements SettingsRepository {
   }
 
   private GlobalSettings migrateOldSettings(Settings oldSettings) {
-    HumidifySettings humidifySettings =
-        HumidifySettings.create(oldSettings.getHumidifyMax(), oldSettings.getHumidifyPuffer());
-    EvaporateSettings evaporateSettings =
-        EvaporateSettings.create(oldSettings.getHeaterTemperature(), oldSettings.getHeatTimer());
+    HumidifySettings humidifySettings = HumidifySettings.builder()
+        .humiditySetpoint(oldSettings.getHumidifyMax())
+        .humidityPuffer(oldSettings.getHumidifyPuffer())
+        .build();
+    EvaporateSettings evaporateSettings = EvaporateSettings.builder()
+        .heaterSetpoint(oldSettings.getHeaterTemperature())
+        .evaporateDuration(oldSettings.getHeatTimer())
+        .build();
     EvaporantSettings evaporantSettings = EvaporantSettings.builder()
         .evaporant(oldSettings.getEvaporant())
         .evaporantAmountPerCm(oldSettings.getEvaporantAmountPerCm())
@@ -103,16 +107,19 @@ public class SettingsFileRepository implements SettingsRepository {
         .roomDepth(oldSettings.getRoomDepth())
         .roomHeight(oldSettings.getRoomHeight())
         .build();
-    PurgeSettings purgeSettings = PurgeSettings.create(oldSettings.getPurgeTimer());
+    PurgeSettings purgeSettings =
+        PurgeSettings.builder().purgeDuration(oldSettings.getPurgeTimer()).build();
     GroupSettings groupTemplateSettings = GroupSettings.builder()
         .humidifySettings(humidifySettings)
         .evaporateSettings(evaporateSettings)
         .evaporantSettings(evaporantSettings)
         .purgeSettings(purgeSettings)
         .build();
-    GlobalSettings globalSettings =
-        GlobalSettings.create(groupTemplateSettings, oldSettings.getLanguage(),
-            oldSettings.getCycleCount());
+    GlobalSettings globalSettings = GlobalSettings.builder()
+        .groupTemplateSettings(groupTemplateSettings)
+        .locale(oldSettings.getLanguage())
+        .cycleNumber(oldSettings.getCycleCount())
+        .build();
 
     save(globalSettings);
     return globalSettings;

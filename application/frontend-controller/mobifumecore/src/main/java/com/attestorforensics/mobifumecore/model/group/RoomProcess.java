@@ -255,7 +255,7 @@ public class RoomProcess implements GroupProcess {
       return;
     }
 
-    int heaterTemperature = settings.evaporateSettings().heaterTemperature();
+    int heaterTemperature = settings.evaporateSettings().heaterSetpoint();
     CustomLogger.info(group, "UPDATE_HEATERSETPOINT", heaterTemperature);
     CustomLogger.logGroupSettings(group);
     group.getBases().forEach(base -> base.sendHeaterSetpoint(heaterTemperature));
@@ -269,7 +269,7 @@ public class RoomProcess implements GroupProcess {
       long alreadyPassedTime = System.currentTimeMillis() - evaporateStartTime;
       int passedTimeInMinutes = (int) (alreadyPassedTime / (1000 * 60f));
       base.sendTime(settings.evaporateSettings().evaporateDuration() - passedTimeInMinutes);
-      base.forceSendHeaterSetpoint(settings.evaporateSettings().heaterTemperature());
+      base.forceSendHeaterSetpoint(settings.evaporateSettings().heaterSetpoint());
     } else {
       base.forceSendHeaterSetpoint(0);
     }

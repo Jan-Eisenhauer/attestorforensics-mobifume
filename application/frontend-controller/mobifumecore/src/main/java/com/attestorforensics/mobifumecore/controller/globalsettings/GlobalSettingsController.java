@@ -117,8 +117,8 @@ public class GlobalSettingsController extends CloseableController {
 
     humiditySetpointTextField.setText(groupSettings.humidifySettings().humiditySetpoint() + "");
     humiditySetpointSlider.setValue(groupSettings.humidifySettings().humiditySetpoint());
-    heaterSetpointTextField.setText(groupSettings.evaporateSettings().heaterTemperature() + "");
-    heaterSetpointSlider.setValue(groupSettings.evaporateSettings().heaterTemperature());
+    heaterSetpointTextField.setText(groupSettings.evaporateSettings().heaterSetpoint() + "");
+    heaterSetpointSlider.setValue(groupSettings.evaporateSettings().heaterSetpoint());
     evaporateDurationTextField.setText(groupSettings.evaporateSettings().evaporateDuration() + "");
     evaporateDurationSlider.setValue(groupSettings.evaporateSettings().evaporateDuration());
     purgeDurationTextField.setText(groupSettings.purgeSettings().purgeDuration() + "");
@@ -278,7 +278,7 @@ public class GlobalSettingsController extends CloseableController {
 
     EvaporateSettings evaporateSettings = groupSettings.evaporateSettings();
     evaporateSettings =
-        evaporateSettings.heaterTemperature(getFixedValue(heaterSetpointSlider, heaterSetpoint));
+        evaporateSettings.heaterSetpoint(getFixedValue(heaterSetpointSlider, heaterSetpoint));
     evaporateSettings = evaporateSettings.evaporateDuration(
         getFixedValue(evaporateDurationSlider, evaporateDuration));
     groupSettings = groupSettings.evaporateSettings(evaporateSettings);
@@ -312,8 +312,7 @@ public class GlobalSettingsController extends CloseableController {
           Mobifume.getInstance().getModelManager().setGlobalSettings(globalSettings);
           humiditySetpointTextField.setText(
               groupSettings.humidifySettings().humiditySetpoint() + "");
-          heaterSetpointTextField.setText(
-              groupSettings.evaporateSettings().heaterTemperature() + "");
+          heaterSetpointTextField.setText(groupSettings.evaporateSettings().heaterSetpoint() + "");
           evaporateDurationTextField.setText(
               groupSettings.evaporateSettings().evaporateDuration() + "");
           purgeDurationTextField.setText(groupSettings.purgeSettings().purgeDuration() + "");
