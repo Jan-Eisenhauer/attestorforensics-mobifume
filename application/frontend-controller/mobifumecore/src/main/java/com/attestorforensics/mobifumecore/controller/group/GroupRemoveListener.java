@@ -24,7 +24,6 @@ public class GroupRemoveListener implements Listener {
     }
 
     groupController.onRemove();
-    GroupControllerHolder.getInstance().removeController(event.getGroup());
 
     // TODO - move to own group item listener
     GroupItemControllerHolder.getInstance().removeGroupItems(event.getGroup());
