@@ -116,7 +116,7 @@
         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
           text="%support.status.latch"
           GridPane.rowIndex="8"/>
-        <Text fx:id="baseLatch" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+        <Text fx:id="latch" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
           GridPane.columnIndex="1" GridPane.rowIndex="8"/>
         <Button mnemonicParsing="false" onAction="#onReset" styleClass="textButton"
           text="%support.action.reset"
