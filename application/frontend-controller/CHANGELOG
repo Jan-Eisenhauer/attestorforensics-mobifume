@@ -8,13 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Calculation result after save (was not updated in group view)
 
+### Added
+- Log messages
+
 ### Changed
 - Classes packages to domain-oriented packages
 - Cleanup code (improve code quality)
 - Refactor events and separate events
 - Refactor settings
 - Refactor device errors
-- Logs (changed log information, also added new log messages)
+- Log information and details
 
 ## [2.5.3] - 2021-08-17
 ### Fixed
