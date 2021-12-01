@@ -2,13 +2,6 @@ package com.attestorforensics.mobifumecore.view;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.overview.OverviewController;
-import com.attestorforensics.mobifumecore.controller.listener.BaseErrorListener;
-import com.attestorforensics.mobifumecore.controller.listener.DeviceConnectionListener;
-import com.attestorforensics.mobifumecore.controller.listener.EvaporateListener;
-import com.attestorforensics.mobifumecore.controller.listener.GroupListener;
-import com.attestorforensics.mobifumecore.controller.listener.HumidifyListener;
-import com.attestorforensics.mobifumecore.controller.listener.PurgeListener;
-import com.attestorforensics.mobifumecore.controller.listener.WaterErrorListener;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,8 +54,6 @@ public class MobiApplication extends Application {
     OverviewController controller = loader.getController();
     controller.setRoot(root);
 
-    registerListener(controller);
-
     setupStage(primaryStage);
 
     Mobifume.getInstance().getWifiConnection().connect();
@@ -106,22 +97,5 @@ public class MobiApplication extends Application {
     stage.setHeight(fullScreenHeight);
     stage.setX(0);
     stage.setY(0);
-  }
-
-  private void registerListener(OverviewController overviewController) {
-    BaseErrorListener baseErrorListener = new BaseErrorListener();
-    Mobifume.getInstance().getEventDispatcher().registerListener(baseErrorListener);
-    WaterErrorListener waterErrorListener = new WaterErrorListener();
-    Mobifume.getInstance().getEventDispatcher().registerListener(waterErrorListener);
-    Mobifume.getInstance().getEventDispatcher().registerListener(new EvaporateListener());
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .registerListener(
-            new GroupListener(baseErrorListener, waterErrorListener));
-    Mobifume.getInstance().getEventDispatcher().registerListener(new HumidifyListener());
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .registerListener(new DeviceConnectionListener());
-    Mobifume.getInstance().getEventDispatcher().registerListener(new PurgeListener());
   }
 }

@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.model.connection.message.InvalidMessag
 import com.attestorforensics.mobifumecore.model.connection.message.MessagePattern;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessage;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
-import com.attestorforensics.mobifumecore.model.element.misc.Led;
+import com.attestorforensics.mobifumecore.model.node.misc.Led;
 import java.util.Optional;
 
 public class HumidifierPing implements IncomingMessage {

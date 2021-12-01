@@ -58,7 +58,7 @@
                 </Button>
                 <Button ellipsisString="" mnemonicParsing="false" onAction="#onWifi" prefHeight="80.0" prefWidth="80.0">
                     <graphic>
-                        <ImageView fx:id="wifi" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true"
+                        <ImageView fx:id="wifiImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true"
                                    preserveRatio="true">
                             <viewport>
                                 <Rectangle2D/>
@@ -71,7 +71,7 @@
                 </Button>
                 <StackPane>
                     <children>
-                        <Text fx:id="battery" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" />
+                        <Text fx:id="batteryText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" />
                         <ImageView fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@../images/Battery.png"/>
@@ -126,7 +126,7 @@
                                             AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                                             AnchorPane.topAnchor="80.0">
                                     <content>
-                                        <FlowPane fx:id="devices" hgap="15.0" prefWidth="${devices.parent.width}"
+                                        <FlowPane fx:id="devicesPane" hgap="15.0" prefWidth="${devicesPane.parent.width}"
                                                   vgap="15.0"/>
                                     </content>
                                 </ScrollPane>
@@ -165,7 +165,7 @@
                                             AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                                             AnchorPane.topAnchor="80.0">
                                     <content>
-                                        <Accordion fx:id="groups" prefWidth="${groups.parent.width}">
+                                        <Accordion fx:id="groupsAccordion" prefWidth="${groupsAccordion.parent.width}">
                                             <panes>
                                             </panes>
                                         </Accordion>

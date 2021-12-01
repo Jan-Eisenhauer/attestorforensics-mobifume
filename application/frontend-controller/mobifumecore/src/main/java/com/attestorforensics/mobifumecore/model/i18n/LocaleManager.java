@@ -1,7 +1,7 @@
 package com.attestorforensics.mobifumecore.model.i18n;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.event.LocaleChangeEvent;
+import com.attestorforensics.mobifumecore.model.event.locale.LocaleChangeEvent;
 import com.google.common.collect.ImmutableList;
 import java.text.MessageFormat;
 import java.util.List;
@@ -32,7 +32,7 @@ public class LocaleManager {
     this.locale = locale;
     resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, locale, getClass().getClassLoader(),
         new Utf8Control());
-    Mobifume.getInstance().getEventDispatcher().call(new LocaleChangeEvent(locale));
+    Mobifume.getInstance().getEventDispatcher().call(LocaleChangeEvent.create(locale));
   }
 
   public String getString(String key) {

@@ -1,6 +1,9 @@
 package com.attestorforensics.mobifumecore.controller.overview;
 
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseConnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseDisconnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierConnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierDisconnectedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 
@@ -17,17 +20,22 @@ public class OverviewDeviceListener implements Listener {
   }
 
   @EventHandler
-  public void onDevice(DeviceConnectionEvent event) {
-    switch (event.getStatus()) {
-      case CONNECTED:
-        overviewController.addDevice(event.getDevice());
-        break;
-      case DISCONNECTED:
-        overviewController.removeDevice(event.getDevice());
-        break;
-      default:
-        overviewController.updateDevice(event.getDevice());
-        break;
-    }
+  public void onBaseConnected(BaseConnectedEvent event) {
+    overviewController.addBase(event.getBase());
+  }
+
+  @EventHandler
+  public void onHumidifierConnected(HumidifierConnectedEvent event) {
+    overviewController.addHumidifier(event.getHumidifier());
+  }
+
+  @EventHandler
+  public void onBaseDisconnected(BaseDisconnectedEvent event) {
+    overviewController.removeBase(event.getBase());
+  }
+
+  @EventHandler
+  public void onHumidifierDisconnected(HumidifierDisconnectedEvent event) {
+    overviewController.removeHumidifier(event.getHumidifier());
   }
 }

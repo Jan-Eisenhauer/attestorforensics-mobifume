@@ -1,6 +1,7 @@
 package com.attestorforensics.mobifumecore.controller.filter;
 
-import com.attestorforensics.mobifumecore.model.event.FilterEvent;
+import com.attestorforensics.mobifumecore.model.event.filter.FilterAddedEvent;
+import com.attestorforensics.mobifumecore.model.event.filter.FilterRemovedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 import javafx.application.Platform;
@@ -17,20 +18,13 @@ public class FilterListener implements Listener {
     return new FilterListener(filterController);
   }
 
+  @EventHandler
+  public void onFilterAdded(FilterAddedEvent event) {
+    Platform.runLater(() -> filterController.addFilter(event.getFilter()));
+  }
 
   @EventHandler
-  public void onFilter(FilterEvent event) {
-    Platform.runLater(() -> {
-      switch (event.getStatus()) {
-        case ADDED:
-          filterController.addFilter(event.getFilter());
-          break;
-        case REMOVED:
-          filterController.removeFilter(event.getFilter());
-          break;
-        default:
-          break;
-      }
-    });
+  public void onFilterRemoved(FilterRemovedEvent event) {
+    Platform.runLater(() -> filterController.removeFilter(event.getFilter()));
   }
 }

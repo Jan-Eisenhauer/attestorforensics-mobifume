@@ -100,13 +100,13 @@
           text="%support.status.heater.calibrate" GridPane.rowIndex="7"/>
         <HBox alignment="CENTER_LEFT" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
           <children>
-            <Text fx:id="temperatureCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0"
+            <Text fx:id="heaterCalibrationGradient" strokeType="OUTSIDE" strokeWidth="0.0"
               styleClass="contentText"/>
-            <Text fx:id="temperatureCalibrationOffset" strokeType="OUTSIDE" strokeWidth="0.0"
+            <Text fx:id="heaterCalibrationOffset" strokeType="OUTSIDE" strokeWidth="0.0"
               styleClass="contentText"/>
           </children>
         </HBox>
-        <Button mnemonicParsing="false" onAction="#onTemperatureCalibrate" styleClass="textButton"
+        <Button mnemonicParsing="false" onAction="#onHeaterCalibrate" styleClass="textButton"
           text="%support.action.heater.calibrate" GridPane.columnIndex="2"
           GridPane.rowIndex="7">
           <GridPane.margin>
@@ -116,7 +116,7 @@
         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
           text="%support.status.latch"
           GridPane.rowIndex="8"/>
-        <Text fx:id="latch" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
+        <Text fx:id="baseLatch" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="contentText"
           GridPane.columnIndex="1" GridPane.rowIndex="8"/>
         <Button mnemonicParsing="false" onAction="#onReset" styleClass="textButton"
           text="%support.action.reset"

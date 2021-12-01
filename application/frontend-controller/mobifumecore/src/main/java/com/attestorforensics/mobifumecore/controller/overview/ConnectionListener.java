@@ -1,6 +1,9 @@
 package com.attestorforensics.mobifumecore.controller.overview;
 
-import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.broker.BrokerConnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.broker.BrokerLostEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.broker.BrokerTimeoutEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.wifi.WifiConnectionFailedEvent;
 import com.attestorforensics.mobifumecore.model.listener.EventHandler;
 import com.attestorforensics.mobifumecore.model.listener.Listener;
 
@@ -17,20 +20,26 @@ public class ConnectionListener implements Listener {
   }
 
   @EventHandler
-  public void onConnection(ConnectionEvent event) {
-    switch (event.getStatus()) {
-      case BROKER_CONNECTED:
-        overviewController.onBrokerConnected();
-        break;
-      case WIFI_CONNECT_ERROR:
-      case BROKER_CONNECT_TIMEOUT:
-      case BROKER_CONNECTION_LOST:
-        overviewController.onBrokerLost();
-        break;
-      default:
-        break;
-    }
+  public void onBrokerConnected(BrokerConnectedEvent event) {
+    overviewController.onBrokerConnected();
+    overviewController.updateConnection();
+  }
 
+  @EventHandler
+  public void onWifiConnectionFailed(WifiConnectionFailedEvent event) {
+    overviewController.onBrokerLost();
+    overviewController.updateConnection();
+  }
+
+  @EventHandler
+  public void onBrokerTimeout(BrokerTimeoutEvent event) {
+    overviewController.onBrokerLost();
+    overviewController.updateConnection();
+  }
+
+  @EventHandler
+  public void onBrokerLost(BrokerLostEvent event) {
+    overviewController.onBrokerLost();
     overviewController.updateConnection();
   }
 }

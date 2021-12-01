@@ -50,14 +50,14 @@ Dem Broker gesendete oder vom Broker empfangene Nachrichten werden über einen C
 - id: Geräte-Id
 
 #### Ping einer Heizplatte
-> /MOBIfume/base/status/{id};P;{rssi};{temperature};{humidity};{heater-setpoint};{heater-temperature};{latch}
+> /MOBIfume/base/status/{id};P;{rssi};{temperature};{humidity};{heater-setpoint};{heater-temperature};{baseLatch}
 - id: Geräte-Id
 - rssi (int): Verbindungsstärke zum Router (Wlan); je näher an 0, desto besser die Verbindung
 - temperature (double): Aktuell gemessene Raumtemperatur (-128: Sensorfehler)
 - humidity (double): Aktuell gemessene Raumluftfeuchtigkeit (-128: Sensorfehler)
 - heater-setpoint (double): Eingestellte Soll-Heizplattentemperatur
 - heater-temperature (double): Aktuelle Heizplattentemperatur (-128: Sensorfehler)
-- latch (int): Zustand der Verriegelung für die Filterung/Reinigung
+- baseLatch (int): Zustand der Verriegelung für die Filterung/Reinigung
   - -1: In Bewegung
   - 0: geschlossen
   - 1: geöffnet (Reinigung aktiv)
@@ -188,14 +188,14 @@ Wird bei jedem Zustandswechsel des Prozesses ausgegeben.
 - is-humidify-max-reached (bool): Soll-Luftfeuchtigkeit erreicht
 
 ### Ping einer Heizplatte
-> BASE;{id};{rssi};{temperature};{humidity};{heater-setpoint};{heater-temperature};{latch}
+> BASE;{id};{rssi};{temperature};{humidity};{heater-setpoint};{heater-temperature};{baseLatch}
 - id: Geräte-Id
 - rssi (int): Verbindungsstärke zum Router (Wlan); je näher an 0, desto besser die Verbindung
 - temperature (double): Aktuell gemessene Raumtemperatur (-128: Sensorfehler)
 - humidity (double): Aktuell gemessene Raumluftfeuchtigkeit (-128: Sensorfehler)
 - heater-setpoint (double): Eingestellte Soll-Heizplattentemperatur
 - heater-temperature (double): Aktuelle Heizplattentemperatur (-128: Sensorfehler)
-- latch (int): Zustand der Verriegelung für die Filterung/Reinigung
+- baseLatch (int): Zustand der Verriegelung für die Filterung/Reinigung
   - -1: In Bewegung
   - 0: geschlossen
   - 1: geöffnet (Reinigung aktiv)

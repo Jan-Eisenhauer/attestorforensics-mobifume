@@ -46,9 +46,6 @@ public abstract class ChildStageController extends Controller {
     return stage;
   }
 
-  protected void onOpen() {
-  }
-
   @Override
   protected <T extends DialogController> CompletableFuture<T> loadAndOpenDialog(
       String dialogResource) {

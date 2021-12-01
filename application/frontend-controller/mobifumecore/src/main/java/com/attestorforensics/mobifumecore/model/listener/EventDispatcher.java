@@ -61,7 +61,7 @@ public class EventDispatcher implements ListenerRegistry, EventCaller {
 
     Class<?> eventType = parameters[0];
     // check if class of parameter implements Event
-    if (!Arrays.asList(eventType.getInterfaces()).contains(Event.class)) {
+    if (!Event.class.isAssignableFrom(eventType)) {
       return;
     }
 

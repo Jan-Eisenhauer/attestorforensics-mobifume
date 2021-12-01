@@ -17,8 +17,8 @@ import com.attestorforensics.mobifumecore.model.connection.message.route.Humidif
 import com.attestorforensics.mobifumecore.model.connection.message.route.HumidifierOnlineRoute;
 import com.attestorforensics.mobifumecore.model.connection.message.route.HumidifierPingRoute;
 import com.attestorforensics.mobifumecore.model.connection.message.route.MessageRoute;
-import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
-import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.node.DevicePool;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 

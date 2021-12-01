@@ -1,16 +1,17 @@
 package com.attestorforensics.mobifumecore.model.log;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.setting.Settings;
+import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.setting.GroupSettings;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -45,13 +46,13 @@ public class CustomLogger {
   }
 
   public static Logger createGroupLogger(Group group) {
-    Logger logger = Logger.getLogger(group.getSettings().getCycleCount() + "-" + group.getName());
+    Logger logger = Logger.getLogger(group.getCycleNumber() + "-" + group.getName());
 
     try {
       PatternLayout layout = new PatternLayout("[%d{yyyy-MM-dd HH:mm:ss}];%p;%m%n");
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
       String dateTime = formatter.format(new Date(System.currentTimeMillis()));
-      String cycle = String.format("%03d", group.getSettings().getCycleCount());
+      String cycle = String.format("%03d", group.getCycleNumber());
       FileAppender appender =
           new FileAppender(layout, LOG_DIRECTORY + File.separator + dateTime + "." + cycle + ".run",
               false);
@@ -65,8 +66,7 @@ public class CustomLogger {
   }
 
   public static void logGroupHeader(Group group) {
-    group.getLogger()
-        .trace(join("HEAD", version(), group.getSettings().getCycleCount(), group.getName()));
+    group.getLogger().trace(join("HEAD", version(), group.getCycleNumber(), group.getName()));
   }
 
   private static String join(Object... elements) {
@@ -84,43 +84,60 @@ public class CustomLogger {
   }
 
   public static void logGroupSettings(Group group) {
-    Settings settings = group.getSettings();
-    info(group, "SETTINGS", settings.getHumidifyMax(), settings.getHumidifyPuffer(),
-        settings.getHeaterTemperature(), settings.getHeatTimer(), settings.getPurgeTimer());
+    GroupSettings groupSettings = group.getProcess().getSettings();
+    info(group, "SETTINGS", groupSettings.humidifySettings().humiditySetpoint(),
+        groupSettings.humidifySettings().humidityPuffer(),
+        groupSettings.evaporateSettings().heaterSetpoint(),
+        groupSettings.evaporateSettings().evaporateDuration(),
+        groupSettings.purgeSettings().purgeDuration());
   }
 
   public static void info(Object... elements) {
     String info = join(elements);
     Mobifume.getInstance().getLogger().info(info);
-    System.out.println(info);
   }
 
   public static void info(Group group, Object... elements) {
     String info = join(elements);
     group.getLogger().info(info);
-    System.out.println(info);
   }
 
   public static void logGroupState(Group group) {
-    info(group, "STATE", group.getStatus(), group.isHumidifying(), group.isHumidifyMaxReached());
+    info(group, "STATE", group.getProcess().getStatus());
   }
 
   public static void logGroupDevices(Group group) {
-    List<String> nodeList = group.getDevices()
+    String baseList =
+        group.getBases().stream().map(Base::getDeviceId).collect(Collectors.joining(","));
+    info(group, "BASES:" + baseList);
+
+    String humidifierList = group.getHumidifiers()
         .stream()
-        .map(mapper -> mapper.getDeviceId() + "," + mapper.getType())
-        .collect(Collectors.toList());
+        .map(Humidifier::getDeviceId)
+        .collect(Collectors.joining(","));
+    info(group, "HUMIDIFIERS", humidifierList);
+
+    logOldGroupDevices(group);
+  }
+
+  @Deprecated
+  private static void logOldGroupDevices(Group group) {
+    List<String> nodeList =
+        Stream.concat(group.getBases().stream().map(mapper -> mapper.getDeviceId() + ",BASE"),
+                group.getHumidifiers().stream().map(mapper -> mapper.getDeviceId() + ",HUMIDIFIER"))
+            .collect(Collectors.toList());
     nodeList.add(0, "DEVICES");
     info(group, nodeList.toArray());
   }
 
   public static void logGroupBase(Group group, Base base) {
-    info(group, "BASE", base.getDeviceId(), base.getRssi(), base.getTemperature(),
-        base.getHumidity(), base.getHeaterSetpoint(), base.getHeaterTemperature(), base.getLatch());
+    info(group, "BASE", base.getDeviceId(), base.getRssi(), base.getTemperature().value(),
+        base.getHumidity().value(), base.getHeaterSetpoint(), base.getHeaterTemperature().value(),
+        base.getLatch());
   }
 
   public static void logGroupHum(Group group, Humidifier hum) {
-    info(group, "HUM", hum.getDeviceId(), hum.getRssi(), hum.isHumidify(), hum.getLed1(),
+    info(group, "HUM", hum.getDeviceId(), hum.getRssi(), hum.isHumidifying(), hum.getLed1(),
         hum.getLed2());
   }
 

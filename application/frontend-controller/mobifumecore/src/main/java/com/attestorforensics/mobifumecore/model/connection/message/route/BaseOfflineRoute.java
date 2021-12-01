@@ -2,11 +2,12 @@ package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.base.BaseOffline;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.event.base.BaseDisconnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.base.BaseLostEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Optional;
 
@@ -43,15 +44,10 @@ public class BaseOfflineRoute implements MessageRoute<BaseOffline> {
     if (optionalGroup.isPresent()) {
       Group group = optionalGroup.get();
       CustomLogger.info(group, "DISCONNECT", base.getDeviceId());
-      base.setRssi(-100);
-      base.setOffline(true);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.LOST));
+      base.setOffline();
+      Mobifume.getInstance().getEventDispatcher().call(BaseLostEvent.create(base));
     } else {
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new DeviceConnectionEvent(base, DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
+      Mobifume.getInstance().getEventDispatcher().call(BaseDisconnectedEvent.create(base));
       devicePool.removeBase(base);
     }
   }

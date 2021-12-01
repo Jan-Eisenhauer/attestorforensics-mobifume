@@ -4,10 +4,9 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageRouter;
 import com.attestorforensics.mobifumecore.model.connection.message.MessageSender;
 import com.attestorforensics.mobifumecore.model.connection.message.MqttMessageRouter;
-import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
-import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
-import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;
+import com.attestorforensics.mobifumecore.model.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.event.connection.broker.BrokerLostEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -31,9 +30,7 @@ class MqttBrokerCallback implements MqttCallback {
 
   @Override
   public void connectionLost(Throwable cause) {
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new ConnectionEvent(ConnectionStatus.BROKER_CONNECTION_LOST));
+    Mobifume.getInstance().getEventDispatcher().call(BrokerLostEvent.create());
     mqttBrokerConnector.connect();
   }
 

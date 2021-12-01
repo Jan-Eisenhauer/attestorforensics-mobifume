@@ -4,17 +4,20 @@ import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.controller.item.CreateGroupDialogFilterItemController;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
 import com.attestorforensics.mobifumecore.controller.util.TabTipKeyboard;
-import com.attestorforensics.mobifumecore.model.element.filter.Filter;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
+import com.attestorforensics.mobifumecore.model.filter.Filter;
+import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Device;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
+import com.google.common.collect.Maps;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -56,13 +59,13 @@ public class CreateGroupDialogController extends DialogController {
   private Button ok;
 
   private Map<String, Filter> filterMap;
-  private List<Node> filterNodes;
+  private final Map<Node, CreateGroupDialogFilterItemController> filterNodes = Maps.newHashMap();
 
   public void setDevices(List<Device> devices) {
     this.devices = devices;
     displayDeviceCounts();
 
-    long bases = devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
+    long bases = devices.stream().filter(Base.class::isInstance).count();
     createFilterBoxes((int) bases);
   }
 
@@ -94,19 +97,18 @@ public class CreateGroupDialogController extends DialogController {
   }
 
   @Override
-  protected void onOpen() {
+  protected void onShow() {
     getStage().setWidth(getStage().getOwner().getWidth() * 0.9);
   }
 
   private void displayDeviceCounts() {
-    long bases = devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
+    long bases = devices.stream().filter(Base.class::isInstance).count();
     baseCount.setText(
         LocaleManager.getInstance().getString("dialog.group.create.count.base", bases));
     if (bases == 0) {
       baseCount.getStyleClass().add("deviceCountError");
     }
-    long hums =
-        devices.stream().filter(device -> device.getType() == DeviceType.HUMIDIFIER).count();
+    long hums = devices.stream().filter(Humidifier.class::isInstance).count();
     humCount.setText(LocaleManager.getInstance().getString("dialog.group.create.count.hum", hums));
     if (hums == 0) {
       humCount.getStyleClass().add("deviceCountError");
@@ -115,16 +117,14 @@ public class CreateGroupDialogController extends DialogController {
 
   private void createFilterBoxes(int count) {
     filtersPane.getChildren().clear();
-    filterNodes = new ArrayList<>();
 
     for (int i = 0; i < count; i++) {
       this.<CreateGroupDialogFilterItemController>loadItem("CreateGroupDialogFilterItem.fxml")
           .thenAccept(controller -> {
             controller.init(this);
             Parent createGroupDialogFilterItemRoot = controller.getRoot();
-            createGroupDialogFilterItemRoot.getProperties().put("controller", controller);
             filtersPane.getChildren().add(createGroupDialogFilterItemRoot);
-            filterNodes.add(createGroupDialogFilterItemRoot);
+            filterNodes.put(createGroupDialogFilterItemRoot, controller);
             updateFilters();
           });
     }
@@ -146,22 +146,21 @@ public class CreateGroupDialogController extends DialogController {
     List<String> filters = new ArrayList<>(filterMap.keySet());
     filters.sort(Comparator.naturalOrder());
     List<String> selectedFilters = getSelectedFilters();
-    filterNodes.forEach(node -> ((CreateGroupDialogFilterItemController) node.getProperties()
-        .get("controller")).updateItems(new ArrayList<>(filters),
-        new ArrayList<>(selectedFilters)));
+    filterNodes.values()
+        .forEach(controller -> controller.updateItems(new ArrayList<>(filters),
+            new ArrayList<>(selectedFilters)));
     checkOkButton();
   }
 
   private List<String> getSelectedFilters() {
     List<String> selectedFilters = new ArrayList<>();
-    for (Node filterNode : filterNodes) {
-      CreateGroupDialogFilterItemController controller =
-          (CreateGroupDialogFilterItemController) filterNode.getProperties().get("controller");
-      String selected = controller.getSelected();
+    for (Entry<Node, CreateGroupDialogFilterItemController> filterNode : filterNodes.entrySet()) {
+      String selected = filterNode.getValue().getSelected();
       if (selected != null && !selected.isEmpty()) {
         selectedFilters.add(selected);
       }
     }
+
     return selectedFilters;
   }
 
@@ -171,20 +170,21 @@ public class CreateGroupDialogController extends DialogController {
       return;
     }
 
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.BASE)) {
+    if (devices.stream().noneMatch(device -> device instanceof Base)) {
       return;
     }
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.HUMIDIFIER)) {
+    if (devices.stream().noneMatch(device -> device instanceof Humidifier)) {
       return;
     }
 
-    for (Node filterNode : filterNodes) {
-      CreateGroupDialogFilterItemController controller =
-          (CreateGroupDialogFilterItemController) filterNode.getProperties().get("controller");
-      if (controller.getSelected() == null || controller.getSelected().isEmpty()) {
+    for (Entry<Node, CreateGroupDialogFilterItemController> filterNode : filterNodes.entrySet()) {
+      if (filterNode.getValue().getSelected() == null || filterNode.getValue()
+          .getSelected()
+          .isEmpty()) {
         return;
       }
-      Filter filter = filterMap.get(controller.getSelected());
+
+      Filter filter = filterMap.get(filterNode.getValue().getSelected());
       if (!filter.isUsable()) {
         return;
       }
@@ -201,8 +201,8 @@ public class CreateGroupDialogController extends DialogController {
     devices.remove(device);
     displayDeviceCounts();
 
-    if (device.getType() == DeviceType.BASE) {
-      long bases = devices.stream().filter(d -> d.getType() == DeviceType.BASE).count();
+    if (device instanceof Base) {
+      long bases = devices.stream().filter(d -> d instanceof Base).count();
       createFilterBoxes((int) bases);
     }
     checkOkButton();
@@ -247,9 +247,7 @@ public class CreateGroupDialogController extends DialogController {
 
     List<Filter> filters = new ArrayList<>();
 
-    filterNodes.forEach(node -> {
-      CreateGroupDialogFilterItemController controller =
-          (CreateGroupDialogFilterItemController) node.getProperties().get("controller");
+    filterNodes.values().forEach(controller -> {
       String selected = controller.getSelected();
       if (selected == null || selected.isEmpty()) {
         return;
@@ -260,15 +258,14 @@ public class CreateGroupDialogController extends DialogController {
       }
     });
 
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.BASE)) {
+    if (devices.stream().noneMatch(device -> device instanceof Base)) {
       return;
     }
-    if (devices.stream().noneMatch(device -> device.getType() == DeviceType.HUMIDIFIER)) {
+    if (devices.stream().noneMatch(device -> device instanceof Humidifier)) {
       return;
     }
 
-    long deviceCount =
-        devices.stream().filter(device -> device.getType() == DeviceType.BASE).count();
+    long deviceCount = devices.stream().filter(Base.class::isInstance).count();
     if (filters.size() != deviceCount) {
       return;
     }

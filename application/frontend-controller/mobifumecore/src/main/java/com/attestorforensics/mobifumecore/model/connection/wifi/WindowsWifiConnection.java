@@ -1,8 +1,11 @@
 package com.attestorforensics.mobifumecore.model.connection.wifi;
 
 import com.attestorforensics.mobifumecore.Mobifume;
-import com.attestorforensics.mobifumecore.model.event.ConnectionEvent;
-import com.attestorforensics.mobifumecore.model.event.ConnectionEvent.ConnectionStatus;
+import com.attestorforensics.mobifumecore.model.event.connection.wifi.WifiConnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.wifi.WifiConnectingEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.wifi.WifiConnectionFailedEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.wifi.WifiDisconnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.connection.wifi.WifiDisconnectingEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,18 +50,14 @@ public class WindowsWifiConnection implements WifiConnection {
       return null;
     }
 
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new ConnectionEvent(ConnectionStatus.WIFI_CONNECTING));
+    Mobifume.getInstance().getEventDispatcher().call(WifiConnectingEvent.create());
 
     connectingTask = CompletableFuture.runAsync(() -> {
       long start = System.currentTimeMillis();
       while (Boolean.FALSE.equals(isConnected().join())) {
         if (start > 0 && System.currentTimeMillis() - start >= WIFI_CONNECT_TIMEOUT) {
           start = 0;
-          Mobifume.getInstance()
-              .getEventDispatcher()
-              .call(new ConnectionEvent(ConnectionStatus.WIFI_CONNECT_ERROR));
+          Mobifume.getInstance().getEventDispatcher().call(WifiConnectionFailedEvent.create());
         }
 
         if (Thread.interrupted()) {
@@ -69,9 +68,7 @@ public class WindowsWifiConnection implements WifiConnection {
         executeConnect();
       }
 
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new ConnectionEvent(ConnectionStatus.WIFI_CONNECTED));
+      Mobifume.getInstance().getEventDispatcher().call(WifiConnectedEvent.create());
       semaphore.release();
     }, executorService);
     return connectingTask;
@@ -92,9 +89,7 @@ public class WindowsWifiConnection implements WifiConnection {
       return null;
     }
 
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.WIFI_DISCONNECTING));
+    Mobifume.getInstance().getEventDispatcher().call(WifiDisconnectingEvent.create());
     return CompletableFuture.runAsync(this::executeDisconnect, executorService);
   }
 
@@ -156,9 +151,7 @@ public class WindowsWifiConnection implements WifiConnection {
       return;
     }
 
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new ConnectionEvent(ConnectionEvent.ConnectionStatus.WIFI_DISCONNECTED));
+    Mobifume.getInstance().getEventDispatcher().call(WifiDisconnectedEvent.create());
     semaphore.release();
   }
 

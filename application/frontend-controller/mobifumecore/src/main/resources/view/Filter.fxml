@@ -70,7 +70,7 @@
                 <ScrollPane hbarPolicy="NEVER" styleClass="primaryLight" AnchorPane.bottomAnchor="0.0"
                             AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="80.0">
                     <content>
-                        <FlowPane fx:id="filters" hgap="15.0" prefWidth="${filters.parent.width}" vgap="15.0"/>
+                        <FlowPane fx:id="filtersPane" hgap="15.0" prefWidth="${filtersPane.parent.width}" vgap="15.0"/>
                     </content>
                     <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>

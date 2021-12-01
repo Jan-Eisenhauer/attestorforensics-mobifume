@@ -7,17 +7,15 @@ import com.attestorforensics.mobifumecore.controller.dialog.ConfirmDialogControl
 import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController;
 import com.attestorforensics.mobifumecore.controller.dialog.CreateGroupDialogController.GroupData;
 import com.attestorforensics.mobifumecore.controller.dialog.InfoDialogController;
-import com.attestorforensics.mobifumecore.controller.item.DeviceItemController;
-import com.attestorforensics.mobifumecore.controller.item.DeviceItemControllerHolder;
-import com.attestorforensics.mobifumecore.controller.item.GroupItemController;
+import com.attestorforensics.mobifumecore.controller.overview.item.DeviceItemController;
+import com.attestorforensics.mobifumecore.controller.overview.item.GroupItemController;
 import com.attestorforensics.mobifumecore.controller.util.ImageHolder;
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.DeviceType;
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.group.Group;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.Device;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import com.attestorforensics.mobifumecore.util.Kernel32;
 import com.attestorforensics.mobifumecore.util.Kernel32.SystemPowerStatus;
 import com.attestorforensics.mobifumecore.view.GroupColor;
@@ -44,32 +42,35 @@ import javafx.scene.text.Text;
 
 public class OverviewController extends Controller {
 
+  private final Map<Base, DeviceItemController> baseItemControllerPool = Maps.newHashMap();
   private final Map<Node, DeviceItemController> nodeDeviceItemControllerPool = Maps.newHashMap();
+  private final Map<Humidifier, DeviceItemController> humidifierItemControllerPool =
+      Maps.newHashMap();
   private final Map<Node, GroupItemController> nodeGroupItemControllerPool = Maps.newHashMap();
 
   private InfoDialogController connectionLostDialogController;
   private CreateGroupDialogController createGroupDialogController;
 
   @FXML
-  private ImageView wifi;
+  private ImageView wifiImageView;
   @FXML
-  private Text battery;
+  private Text batteryText;
   @FXML
-  private Pane devices;
+  private Pane devicesPane;
   @FXML
-  private Accordion groups;
+  private Accordion groupsAccordion;
 
   @Override
   @FXML
   public void initialize(URL location, ResourceBundle resources) {
     registerListeners();
     startBatteryUpdateTask();
-    Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addDevice);
+    Mobifume.getInstance().getModelManager().getDevicePool().getAllBases().forEach(this::addBase);
     Mobifume.getInstance()
         .getModelManager()
         .getDevicePool()
         .getAllHumidifier()
-        .forEach(this::addDevice);
+        .forEach(this::addHumidifier);
     Mobifume.getInstance().getModelManager().getGroupPool().getAllGroups().forEach(this::addGroup);
   }
 
@@ -78,64 +79,86 @@ public class OverviewController extends Controller {
     super.setRoot(root);
   }
 
-  void addDevice(Device device) {
+  void addBase(Base base) {
     this.<DeviceItemController>loadItem("DeviceItem.fxml").thenAccept(controller -> {
       Parent deviceItemRoot = controller.getRoot();
-      controller.setDevice(device);
+      controller.setDevice(base);
+      baseItemControllerPool.put(base, controller);
       nodeDeviceItemControllerPool.put(deviceItemRoot, controller);
-      DeviceItemControllerHolder.getInstance().addController(device, controller);
-      devices.getChildren().add(deviceItemRoot);
+      devicesPane.getChildren().add(deviceItemRoot);
       updateDeviceOrder();
     });
   }
 
-  void removeDevice(Device device) {
+  void addHumidifier(Humidifier humidifier) {
+    this.<DeviceItemController>loadItem("DeviceItem.fxml").thenAccept(controller -> {
+      Parent deviceItemRoot = controller.getRoot();
+      controller.setDevice(humidifier);
+      humidifierItemControllerPool.put(humidifier, controller);
+      nodeDeviceItemControllerPool.put(deviceItemRoot, controller);
+      devicesPane.getChildren().add(deviceItemRoot);
+      updateDeviceOrder();
+    });
+  }
+
+  void removeBase(Base base) {
     Platform.runLater(() -> {
       if (createGroupDialogController != null) {
-        createGroupDialogController.removeDevice(device);
+        createGroupDialogController.removeDevice(base);
       }
 
-      ObservableList<Node> children = devices.getChildren();
+      ObservableList<Node> children = devicesPane.getChildren();
       children.removeIf(node -> {
         DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
-        if (controller.getDevice() != device) {
+        if (controller.getDevice() != base) {
           return false;
         }
 
+        baseItemControllerPool.remove(base);
         nodeDeviceItemControllerPool.remove(node);
         return true;
       });
 
-      DeviceItemControllerHolder.getInstance().removeController(device);
       updateDeviceOrder();
     });
   }
 
-  void updateDevice(Device device) {
+  void removeHumidifier(Humidifier humidifier) {
     Platform.runLater(() -> {
-      ObservableList<Node> children = devices.getChildren();
-      children.forEach(node -> {
+      if (createGroupDialogController != null) {
+        createGroupDialogController.removeDevice(humidifier);
+      }
+
+      ObservableList<Node> children = devicesPane.getChildren();
+      children.removeIf(node -> {
         DeviceItemController controller = nodeDeviceItemControllerPool.get(node);
-        if (controller.getDevice() != device) {
-          return;
+        if (controller.getDevice() != humidifier) {
+          return false;
         }
 
-        controller.updateConnection();
+        humidifierItemControllerPool.remove(humidifier);
+        nodeDeviceItemControllerPool.remove(node);
+        return true;
       });
+
+      updateDeviceOrder();
     });
   }
 
   void addGroup(Group group) {
     this.<GroupItemController>loadItem("GroupItem.fxml").thenAccept(controller -> {
       TitledPane groupItemRoot = (TitledPane) controller.getRoot();
+      nodeGroupItemControllerPool.put(groupItemRoot, controller);
+      groupsAccordion.getPanes().add(groupItemRoot);
       String groupColor = GroupColor.getNextColor();
       controller.setGroup(group, groupColor);
-      nodeGroupItemControllerPool.put(groupItemRoot, controller);
-      groups.getPanes().add(groupItemRoot);
-      ObservableList<Node> deviceChildren = devices.getChildren();
-      deviceChildren.filtered(
-              node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
-          .forEach(node -> nodeDeviceItemControllerPool.get(node).setGroup(group, groupColor));
+      ObservableList<Node> deviceChildren = devicesPane.getChildren();
+      deviceChildren.stream()
+          .map(nodeDeviceItemControllerPool::get)
+          .filter(deviceItemController -> deviceItemController.getDevice() instanceof Base
+              ? group.containsBase((Base) deviceItemController.getDevice())
+              : group.containsHumidifier((Humidifier) deviceItemController.getDevice()))
+          .forEach(deviceItemController -> deviceItemController.setGroup(group, groupColor));
       updateOrder();
       groupItemRoot.setExpanded(true);
     });
@@ -143,7 +166,7 @@ public class OverviewController extends Controller {
 
   void removeGroup(Group group) {
     Platform.runLater(() -> {
-      ObservableList<TitledPane> groupChildren = groups.getPanes();
+      ObservableList<TitledPane> groupChildren = groupsAccordion.getPanes();
       groupChildren.removeIf(node -> {
         GroupItemController controller = nodeGroupItemControllerPool.get(node);
         if (controller.getGroup() != group) {
@@ -154,10 +177,13 @@ public class OverviewController extends Controller {
         return true;
       });
 
-      ObservableList<Node> deviceChildren = devices.getChildren();
-      deviceChildren.filtered(
-              node -> group.containsDevice(nodeDeviceItemControllerPool.get(node).getDevice()))
-          .forEach(node -> nodeDeviceItemControllerPool.get(node).clearGroup());
+      ObservableList<Node> deviceChildren = devicesPane.getChildren();
+      deviceChildren.stream()
+          .map(nodeDeviceItemControllerPool::get)
+          .filter(deviceItemController -> deviceItemController.getDevice() instanceof Base
+              ? group.containsBase((Base) deviceItemController.getDevice())
+              : group.containsHumidifier((Humidifier) deviceItemController.getDevice()))
+          .forEach(DeviceItemController::clearGroup);
 
       updateOrder();
     });
@@ -191,7 +217,7 @@ public class OverviewController extends Controller {
       }
 
       String resource = "images/" + wifiImageName + ".png";
-      wifi.setImage(ImageHolder.getInstance().getImage(resource));
+      wifiImageView.setImage(ImageHolder.getInstance().getImage(resource));
     });
   }
 
@@ -211,7 +237,7 @@ public class OverviewController extends Controller {
         .scheduleAtFixedRate(() -> Platform.runLater(() -> {
           SystemPowerStatus batteryStatus = new SystemPowerStatus();
           Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
-          battery.setText(batteryStatus.getBatteryLifePercent());
+          batteryText.setText(batteryStatus.getBatteryLifePercent());
         }), 0L, 10L, TimeUnit.SECONDS);
   }
 
@@ -221,11 +247,11 @@ public class OverviewController extends Controller {
   }
 
   private void updateDeviceOrder() {
-    List<Node> deviceElements = new ArrayList<>(devices.getChildren());
+    List<Node> deviceElements = new ArrayList<>(devicesPane.getChildren());
     deviceElements.sort((n1, n2) -> {
       DeviceItemController deviceController1 = nodeDeviceItemControllerPool.get(n1);
       Device device1 = deviceController1.getDevice();
-      Optional<Group> optionalGroup1 = device1.getType() == DeviceType.BASE ? Mobifume.getInstance()
+      Optional<Group> optionalGroup1 = device1 instanceof Base ? Mobifume.getInstance()
           .getModelManager()
           .getGroupPool()
           .getGroupOfBase((Base) device1) : Mobifume.getInstance()
@@ -235,7 +261,7 @@ public class OverviewController extends Controller {
 
       DeviceItemController deviceController2 = nodeDeviceItemControllerPool.get(n2);
       Device device2 = deviceController2.getDevice();
-      Optional<Group> optionalGroup2 = device2.getType() == DeviceType.BASE ? Mobifume.getInstance()
+      Optional<Group> optionalGroup2 = device2 instanceof Base ? Mobifume.getInstance()
           .getModelManager()
           .getGroupPool()
           .getGroupOfBase((Base) device2) : Mobifume.getInstance()
@@ -272,12 +298,12 @@ public class OverviewController extends Controller {
       return 0;
     });
 
-    devices.getChildren().clear();
-    devices.getChildren().addAll(deviceElements);
+    devicesPane.getChildren().clear();
+    devicesPane.getChildren().addAll(deviceElements);
   }
 
   private void updateGroupOrder() {
-    List<TitledPane> groupListElements = new ArrayList<>(groups.getPanes());
+    List<TitledPane> groupListElements = new ArrayList<>(groupsAccordion.getPanes());
     groupListElements.sort((n1, n2) -> {
       String name1 = nodeGroupItemControllerPool.get(n1).getGroup().getName();
       String name2 = nodeGroupItemControllerPool.get(n2).getGroup().getName();
@@ -292,8 +318,8 @@ public class OverviewController extends Controller {
       return name1.compareTo(name2);
     });
 
-    groups.getPanes().clear();
-    groups.getPanes().addAll(groupListElements);
+    groupsAccordion.getPanes().clear();
+    groupsAccordion.getPanes().addAll(groupListElements);
   }
 
   @FXML
@@ -345,7 +371,7 @@ public class OverviewController extends Controller {
   @FXML
   private void onGroupCreate() {
     Sound.click();
-    ObservableList<Node> devicesChildren = devices.getChildren();
+    ObservableList<Node> devicesChildren = devicesPane.getChildren();
     List<DeviceItemController> selectedDevices = devicesChildren.stream()
         .map(nodeDeviceItemControllerPool::get)
         .collect(Collectors.toList());
@@ -358,15 +384,14 @@ public class OverviewController extends Controller {
       return;
     }
 
-    if (selectedDevices.stream()
-        .noneMatch(controller -> controller.getDevice().getType() == DeviceType.BASE)) {
+    if (selectedDevices.stream().noneMatch(controller -> controller.getDevice() instanceof Base)) {
       // no base selected
       createGroupError();
       return;
     }
 
     if (selectedDevices.stream()
-        .noneMatch(controller -> controller.getDevice().getType() == DeviceType.HUMIDIFIER)) {
+        .noneMatch(controller -> controller.getDevice() instanceof Humidifier)) {
       // no hum selected
       createGroupError();
       return;
@@ -387,12 +412,12 @@ public class OverviewController extends Controller {
             GroupData groupData = createGroupResult.getGroupData().get();
             List<Base> bases = groupData.getDevices()
                 .stream()
-                .filter(device -> device.getType() == DeviceType.BASE)
+                .filter(Base.class::isInstance)
                 .map(Base.class::cast)
                 .collect(Collectors.toList());
             List<Humidifier> humidifiers = groupData.getDevices()
                 .stream()
-                .filter(device -> device.getType() == DeviceType.HUMIDIFIER)
+                .filter(Humidifier.class::isInstance)
                 .map(Humidifier.class::cast)
                 .collect(Collectors.toList());
 

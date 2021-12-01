@@ -11,8 +11,12 @@ public abstract class CloseableController extends Controller {
     Platform.runLater(() -> {
       SceneTransition.playBackward(getRoot().getScene(), getRoot());
       completableFuture.complete(null);
+      onClose();
     });
 
     return completableFuture;
+  }
+
+  protected void onClose() {
   }
 }

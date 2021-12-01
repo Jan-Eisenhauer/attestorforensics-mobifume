@@ -2,9 +2,9 @@ package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.base.BaseCalibrationData;
-import com.attestorforensics.mobifumecore.model.element.node.Base;
-import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.node.Base;
+import com.attestorforensics.mobifumecore.model.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.event.base.BaseCalibrationDataUpdatedEvent;
 import java.util.Optional;
 
 public class BaseCalibrationDataRoute implements MessageRoute<BaseCalibrationData> {
@@ -33,13 +33,8 @@ public class BaseCalibrationDataRoute implements MessageRoute<BaseCalibrationDat
     }
 
     Base base = optionalBase.get();
-    base.setCalibration(message.getHumidityCalibration().getGradient(),
-        message.getHumidityCalibration().getOffset(),
-        message.getTemperatureCalibration().getGradient(),
-        message.getTemperatureCalibration().getOffset());
-    Mobifume.getInstance()
-        .getEventDispatcher()
-        .call(new DeviceConnectionEvent(base,
-            DeviceConnectionEvent.DeviceStatus.CALIBRATION_DATA_UPDATED));
+    base.setHumidityCalibration(message.getHumidityCalibration());
+    base.setHeaterCalibration(message.getHeaterCalibration());
+    Mobifume.getInstance().getEventDispatcher().call(BaseCalibrationDataUpdatedEvent.create(base));
   }
 }

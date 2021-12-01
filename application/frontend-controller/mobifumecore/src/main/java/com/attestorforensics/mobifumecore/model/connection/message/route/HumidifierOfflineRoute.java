@@ -2,11 +2,12 @@ package com.attestorforensics.mobifumecore.model.connection.message.route;
 
 import com.attestorforensics.mobifumecore.Mobifume;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.humidifier.HumidifierOffline;
-import com.attestorforensics.mobifumecore.model.element.group.Group;
-import com.attestorforensics.mobifumecore.model.element.group.GroupPool;
-import com.attestorforensics.mobifumecore.model.element.node.DevicePool;
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
-import com.attestorforensics.mobifumecore.model.event.DeviceConnectionEvent;
+import com.attestorforensics.mobifumecore.model.group.Group;
+import com.attestorforensics.mobifumecore.model.group.GroupPool;
+import com.attestorforensics.mobifumecore.model.node.DevicePool;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierDisconnectedEvent;
+import com.attestorforensics.mobifumecore.model.event.humidifier.HumidifierLostEvent;
 import com.attestorforensics.mobifumecore.model.log.CustomLogger;
 import java.util.Optional;
 
@@ -42,16 +43,12 @@ public class HumidifierOfflineRoute implements MessageRoute<HumidifierOffline> {
     if (optionalGroup.isPresent()) {
       Group group = optionalGroup.get();
       CustomLogger.info(group, "DISCONNECT", humidifier.getDeviceId());
-      humidifier.setRssi(-100);
-      humidifier.setOffline(true);
-      Mobifume.getInstance()
-          .getEventDispatcher()
-          .call(new DeviceConnectionEvent(humidifier, DeviceConnectionEvent.DeviceStatus.LOST));
+      humidifier.setOffline();
+      Mobifume.getInstance().getEventDispatcher().call(HumidifierLostEvent.create(humidifier));
     } else {
       Mobifume.getInstance()
           .getEventDispatcher()
-          .call(new DeviceConnectionEvent(humidifier,
-              DeviceConnectionEvent.DeviceStatus.DISCONNECTED));
+          .call(HumidifierDisconnectedEvent.create(humidifier));
       devicePool.removeHumidifier(humidifier);
     }
   }

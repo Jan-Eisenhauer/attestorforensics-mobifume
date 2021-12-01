@@ -4,7 +4,7 @@ import com.attestorforensics.mobifumecore.model.connection.message.InvalidMessag
 import com.attestorforensics.mobifumecore.model.connection.message.MessagePattern;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessage;
 import com.attestorforensics.mobifumecore.model.connection.message.incoming.IncomingMessageFactory;
-import com.attestorforensics.mobifumecore.model.element.misc.Calibration;
+import com.attestorforensics.mobifumecore.model.node.misc.Calibration;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -17,13 +17,13 @@ public class BaseCalibrationData implements IncomingMessage {
 
   private final String deviceId;
   private final Calibration humidityCalibration;
-  private final Calibration temperatureCalibration;
+  private final Calibration heaterCalibration;
 
   private BaseCalibrationData(String deviceId, Calibration humidityCalibration,
-      Calibration temperatureCalibration) {
+      Calibration heaterCalibration) {
     this.deviceId = deviceId;
     this.humidityCalibration = humidityCalibration;
-    this.temperatureCalibration = temperatureCalibration;
+    this.heaterCalibration = heaterCalibration;
   }
 
   public static BaseCalibrationData createFromPayload(String topic, String[] arguments)
@@ -35,22 +35,22 @@ public class BaseCalibrationData implements IncomingMessage {
     String deviceId = topic.substring(TOPIC_PREFIX.length());
 
     Calibration humidityCalibration;
-    Calibration temperatureCalibration;
+    Calibration heaterCalibration;
     try {
       humidityCalibration =
           Calibration.create(Float.parseFloat(arguments[2]), Float.parseFloat(arguments[3]));
-      temperatureCalibration =
+      heaterCalibration =
           Calibration.create(Float.parseFloat(arguments[4]), Float.parseFloat(arguments[5]));
     } catch (NumberFormatException e) {
       throw new InvalidMessageArgumentException("Cannot convert arguments to calibration data");
     }
 
-    return new BaseCalibrationData(deviceId, humidityCalibration, temperatureCalibration);
+    return new BaseCalibrationData(deviceId, humidityCalibration, heaterCalibration);
   }
 
   public static BaseCalibrationData create(String deviceId, Calibration humidityCalibration,
-      Calibration temperatureCalibration) {
-    return new BaseCalibrationData(deviceId, humidityCalibration, temperatureCalibration);
+      Calibration heaterCalibration) {
+    return new BaseCalibrationData(deviceId, humidityCalibration, heaterCalibration);
   }
 
   public String getDeviceId() {
@@ -61,8 +61,8 @@ public class BaseCalibrationData implements IncomingMessage {
     return humidityCalibration;
   }
 
-  public Calibration getTemperatureCalibration() {
-    return temperatureCalibration;
+  public Calibration getHeaterCalibration() {
+    return heaterCalibration;
   }
 
   public static class Factory implements IncomingMessageFactory<BaseCalibrationData> {

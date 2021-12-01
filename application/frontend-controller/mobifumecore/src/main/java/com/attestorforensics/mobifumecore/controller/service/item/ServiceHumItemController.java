@@ -1,8 +1,8 @@
 package com.attestorforensics.mobifumecore.controller.service.item;
 
 import com.attestorforensics.mobifumecore.controller.util.Sound;
-import com.attestorforensics.mobifumecore.model.element.node.Device;
-import com.attestorforensics.mobifumecore.model.element.node.Humidifier;
+import com.attestorforensics.mobifumecore.model.node.Device;
+import com.attestorforensics.mobifumecore.model.node.Humidifier;
 import com.attestorforensics.mobifumecore.model.i18n.LocaleManager;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -57,7 +57,7 @@ public class ServiceHumItemController extends ServiceItemController {
     version.setText(hum.getVersion() + "");
     rssi.setText(hum.getRssi() + "");
     humidify.setText(LocaleManager.getInstance()
-        .getString("support.status.humidify.value", hum.isHumidify() ? 1 : 0));
+        .getString("support.status.humidify.value", hum.isHumidifying() ? 1 : 0));
     led1.setText(
         LocaleManager.getInstance().getString("support.status.led.value", hum.getLed1().ordinal()));
     led2.setText(
@@ -79,12 +79,17 @@ public class ServiceHumItemController extends ServiceItemController {
   @FXML
   public void onReset() {
     Sound.click();
-    hum.reset();
+    hum.sendReset();
   }
 
   @FXML
   public void onHumidify() {
     Sound.click();
-    hum.updateHumidify(!hum.isHumidify());
+
+    if (hum.isHumidifying()) {
+      hum.forceSendHumidifyDisable();
+    } else {
+      hum.forceSendHumidifyEnable();
+    }
   }
 }
